@@ -43,10 +43,19 @@
   ]
 }
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yomogi&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="boot" aria-hidden="true"><div class="track"><img src="images/ctr-run.png" alt=""></div></div>
+<div id="boot" aria-hidden="true">
+  <div class="bootwrap">
+    <p class="bootmsg">ロボットをもっと身近に</p>
+    <div class="track"><img src="images/ctr-run.png" alt=""></div>
+    <p class="bootload">LOADING</p>
+  </div>
+</div>
 <script>
 (function(){
   var b = document.getElementById('boot');
@@ -54,7 +63,7 @@
   try{ if(sessionStorage.getItem('booted')){ skip = true; } else { sessionStorage.setItem('booted','1'); } }catch(e){}
   if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){ skip = true; }
   if(skip){ b.remove(); return; }
-  setTimeout(function(){ b.classList.add('done'); setTimeout(function(){ b.remove(); }, 450); }, 1600);
+  setTimeout(function(){ b.classList.add('done'); setTimeout(function(){ b.remove(); }, 450); }, 2000);
 })();
 </script>
 
@@ -67,10 +76,13 @@
         <li><a href="products.html">開発製品</a></li>
         <li><a href="reports.html">レポート</a></li>
         <li><a href="news.html">ニュース</a></li>
-        <li><a href="https://matsudorobohome.wordpress.com/" target="_blank" rel="noopener">教育・支援</a></li>
-        <li><a href="https://matsudorobohome.wordpress.com/matsudo-robot-research-association/" target="_blank" rel="noopener">研究ノート</a></li>
         <li><a href="about.html">概要</a></li>
         <li><a href="contact.html">お問い合わせ</a></li>
+      </ul>
+      <ul class="extnav">
+        <li class="lbl">外部リンク</li>
+        <li><a href="https://matsudorobohome.wordpress.com/" target="_blank" rel="noopener">教育・支援</a></li>
+        <li><a href="https://matsudorobohome.wordpress.com/matsudo-robot-research-association/" target="_blank" rel="noopener">研究ノート（松ロボ）</a></li>
       </ul>
     </nav>
   </div>
