@@ -41,80 +41,130 @@
   <h1>開発製品</h1><p>Products &amp; Prototypes</p>
 </div></div>
 <section class="wrap">
-  <p style="max-width:44em;margin-bottom:36px">部品の設計・加工から組み立て、ソフトウェアまで一貫して自社開発しています。各機体の詳細な開発記録は研究ノート（旧サイト）で公開しています。</p>
+  <p style="max-width:44em;margin-bottom:36px">部品の設計・加工から組み立て、ソフトウェアまで一貫して自社開発しています。いずれも研究開発段階の機体であり、仕様は開発の進行に伴い変更されます。各機体の詳細な開発記録は研究ノート（旧サイト）で公開しています。</p>
+  <details class="filterbox">
+    <summary>カテゴリで絞り込む</summary>
+    <div class="chips" role="group" aria-label="カテゴリで絞り込み">
+    <button class="chip" aria-pressed="true" data-filter="all">全表示</button>
+    <button class="chip" aria-pressed="false" data-filter="transport">運搬・ピッキング</button>
+    <button class="chip" aria-pressed="false" data-filter="entertainment">エンターテイメント</button>
+    <button class="chip" aria-pressed="false" data-filter="experiment">実験用機体</button>
+    <button class="chip" aria-pressed="false" data-filter="other">その他</button>
+  </div>
+  </details>
   <div class="products">
-    <article class="product">
+    <article class="product" data-cat="transport">
       <div class="ph"><img src="https://matsudorobohome.wordpress.com/wp-content/uploads/2024/10/img_3449-1.jpg?w=800" alt="総合輸送型ロボットCTR" loading="lazy"></div>
       <div class="bd">
-        <p class="model">Model: CTR series <span class="status dev">開発中</span></p>
+        <p class="model">Model: CTR series <span class="status dev">開発中</span><span class="catbadge">運搬・ピッキング</span></p>
         <h3>総合輸送型ロボット CTR</h3>
         <table class="spec"><tr><td>用途</td><td>屋内カーゴの自律搬送・医療支援を想定</td></tr><tr><td>特徴</td><td>輸送に必要な多機能を搭載、多様な環境・場面に対応</td></tr><tr><td>実績</td><td>技育展・技育博（2024）、NT松戸（2025）出展</td></tr></table>
         <p style="margin-top:10px;font-size:.85rem"><a href="https://matsudorobohome.wordpress.com/series-ctr/">詳細（開発記録）</a></p>
       </div>
     </article>
-    <article class="product">
+    <article class="product" data-cat="transport">
       <div class="ph"><img src="https://matsudorobohome.wordpress.com/wp-content/uploads/2025/12/image-1.jpg" alt="CTR mini" loading="lazy"></div>
       <div class="bd">
-        <p class="model">Model: CTR mini <span class="status dev">開発中</span></p>
+        <p class="model">Model: CTR mini <span class="status dev">開発中</span><span class="catbadge">運搬・ピッキング</span></p>
         <h3>運搬＋作業ロボット CTR mini</h3>
         <table class="spec"><tr><td>用途</td><td>運搬・ピッキング</td></tr><tr><td>特徴</td><td>ユニット付け替えで形を変えるユニット構成型（BMR後継）</td></tr></table>
         <p style="margin-top:10px;font-size:.85rem"><a href="https://matsudorobohome.wordpress.com/ctr-work-mini/">詳細（開発記録）</a></p>
       </div>
     </article>
-    <article class="product">
+    <article class="product" data-cat="transport">
       <div class="ph"><img src="https://matsudorobohome.wordpress.com/wp-content/uploads/2025/03/img_7826-1.jpg?w=800" alt="汎用輸送ロボットGSS" loading="lazy"></div>
       <div class="bd">
-        <p class="model">Model: GSS series <span class="status dev">開発中</span></p>
+        <p class="model">Model: GSS series <span class="status dev">開発中</span><span class="catbadge">運搬・ピッキング</span></p>
         <h3>汎用輸送ロボット GSS</h3>
         <table class="spec"><tr><td>用途</td><td>大型の汎用輸送</td></tr><tr><td>特徴</td><td>カスタム可能・自由に運用できる機体</td></tr></table>
         <p style="margin-top:10px;font-size:.85rem"><a href="https://matsudorobohome.wordpress.com/series-gss/">詳細（開発記録）</a></p>
       </div>
     </article>
-    <article class="product">
+    <article class="product" data-cat="transport">
       <div class="ph"><img src="https://matsudorobohome.wordpress.com/wp-content/uploads/2025/04/img_8559-1.jpg?w=800" alt="汎用作業ロボットCWR CAR" loading="lazy"></div>
       <div class="bd">
-        <p class="model">Model: CWR CAR series <span class="status dev">開発中</span></p>
+        <p class="model">Model: CWR CAR series <span class="status dev">開発中</span><span class="catbadge">運搬・ピッキング</span></p>
         <h3>汎用作業ロボット CWR CAR</h3>
-        <table class="spec"><tr><td>用途</td><td>産業・作業支援</td></tr><tr><td>特徴</td><td>大型アーム搭載・自動走行</td></tr></table>
+        <table class="spec"><tr><td>用途</td><td>作業支援</td></tr><tr><td>特徴</td><td>垂直多関節アーム搭載・自動走行</td></tr></table>
         <p style="margin-top:10px;font-size:.85rem"><a href="https://matsudorobohome.wordpress.com/series-car/">詳細（開発記録）</a></p>
       </div>
     </article>
-    <article class="product">
+    <article class="product" data-cat="transport">
       <div class="ph"><img src="https://matsudorobohome.wordpress.com/wp-content/uploads/2024/10/img_3452-1.jpg?w=800" alt="荷物管理ロボットroot BMR" loading="lazy"></div>
       <div class="bd">
-        <p class="model">Model: root BMR series <span class="status ">公開中</span></p>
+        <p class="model">Model: root BMR series <span class="status dev">開発中</span><span class="catbadge">運搬・ピッキング</span></p>
         <h3>荷物管理ロボット root BMR</h3>
         <table class="spec"><tr><td>用途</td><td>荷物のピッキング・運搬・管理・輸送</td></tr><tr><td>特徴</td><td>小型走行・運搬ロボット</td></tr></table>
         <p style="margin-top:10px;font-size:.85rem"><a href="https://matsudorobohome.wordpress.com/series-root-bmr/">詳細（開発記録）</a></p>
       </div>
     </article>
-    <article class="product">
+    <article class="product" data-cat="experiment">
       <div class="ph"><img src="https://matsudorobohome.wordpress.com/wp-content/uploads/2025/03/img_7753-1.jpg?w=757" alt="総合走行ロボットBroot" loading="lazy"></div>
       <div class="bd">
-        <p class="model">Model: Broot <span class="status dev">開発中</span></p>
+        <p class="model">Model: Broot <span class="status dev">開発中</span><span class="catbadge">実験用機体</span></p>
         <h3>総合走行ロボット Broot</h3>
         <table class="spec"><tr><td>用途</td><td>多環境適応の汎用走行</td></tr><tr><td>将来想定</td><td>災害現場・危険環境での運用</td></tr></table>
         <p style="margin-top:10px;font-size:.85rem"><a href="https://matsudorobohome.wordpress.com/broot/">詳細（開発記録）</a></p>
       </div>
     </article>
-    <article class="product">
+    <article class="product" data-cat="experiment">
       <div class="ph"><img src="https://matsudorobohome.wordpress.com/wp-content/uploads/2026/08/img_5585.jpg?w=800" alt="4脚実験機Aldebaran" loading="lazy"></div>
       <div class="bd">
-        <p class="model">Model: Eclipse / Aldebaran <span class="status dev">実験機</span></p>
+        <p class="model">Model: Eclipse / Aldebaran <span class="status dev">開発中</span><span class="catbadge">実験用機体</span></p>
         <h3>4脚移動装置 試験用実験機</h3>
-        <table class="spec"><tr><td>用途</td><td>多脚移動機構の検証</td></tr><tr><td>関連</td><td>Aldebaran開発レポート公開中</td></tr></table>
+        <table class="spec"><tr><td>用途</td><td>多脚移動機構の検証</td></tr></table>
         <p style="margin-top:10px;font-size:.85rem"><a href="https://matsudorobohome.wordpress.com/aldebaran/">詳細（開発記録）</a></p>
       </div>
     </article>
-    <article class="product">
+    <article class="product" data-cat="other">
       <div class="ph"><img src="https://matsudorobohome.wordpress.com/wp-content/uploads/2024/10/img_3451-1.jpg?w=800" alt="案内ロボットA1" loading="lazy"></div>
       <div class="bd">
-        <p class="model">Model: A1 series <span class="status ">公開中</span></p>
+        <p class="model">Model: A1 series <span class="status dev">開発中</span><span class="catbadge">その他</span></p>
         <h3>案内ロボット A1</h3>
         <table class="spec"><tr><td>用途</td><td>自律型の案内・誘導</td></tr><tr><td>特徴</td><td>大型LCD・誘導アーム・音声ガイド搭載、スマートフォンから投影可能</td></tr></table>
         <p style="margin-top:10px;font-size:.85rem"><a href="https://matsudorobohome.wordpress.com/series-a1/">詳細（開発記録）</a></p>
       </div>
     </article>
+    <article class="product" data-cat="entertainment">
+      <div class="ph"><img src="images/conversing-heads.jpg" alt="空気を読むヘッド Conversing Heads" loading="lazy"></div>
+      <div class="bd">
+        <p class="model">Model: — <span class="status dev">開発中</span><span class="catbadge">エンターテイメント</span></p>
+        <h3>空気を読むヘッド（Conversing Heads）</h3>
+        <table class="spec">
+          <tr><td>分類</td><td>エンターテイメント・展示作品</td></tr>
+          <tr><td>概要</td><td>対話的に動作するヘッド型のロボット作品</td></tr>
+          <tr><td>製作</td><td>HAWLEY David</td></tr>
+        </table>
+      </div>
+    </article>
+
+    <article class="product" data-cat="entertainment">
+      <div class="ph"><img src="images/pipe-game.jpg" alt="パイプゲーム キネティックディスプレイ 8×8基板" loading="lazy"></div>
+      <div class="bd">
+        <p class="model">Model: — <span class="status dev">開発中</span><span class="catbadge">エンターテイメント</span></p>
+        <h3>パイプゲーム キネティックディスプレイ</h3>
+        <table class="spec">
+          <tr><td>分類</td><td>エンターテイメント・展示作品</td></tr>
+          <tr><td>概要</td><td>パイプを用いたキネティック（動く）ディスプレイ作品</td></tr>
+          <tr><td>製作</td><td>HAWLEY David</td></tr>
+        </table>
+      </div>
+    </article>
+    <article class="product" data-cat="other">
+      <div class="ph"><img src="images/solar-cooker.jpg" alt="アルミブランケットで作る簡易ソーラークッカー" loading="lazy"></div>
+      <div class="bd">
+        <p class="model">Model: — <span class="status dev">開発中</span><span class="catbadge">その他</span></p>
+        <h3>簡易ソーラークッカー</h3>
+        <table class="spec">
+          <tr><td>分類</td><td>防災・アウトドア機器</td></tr>
+          <tr><td>概要</td><td>防災用アルミブランケットとプラスチック桶で作る凹面鏡型ソーラークッカー。身近な材料だけで誰でも安価に製作できることを目標に開発</td></tr>
+          <tr><td>状態</td><td>高効率化を検討中</td></tr>
+          <tr><td>製作</td><td>蔭山 悠人</td></tr>
+        </table>
+      </div>
+    </article>
+
+
   </div>
 </section>
 
@@ -131,6 +181,20 @@
 </section>
 
 <section class="wrap">
+  <h2>ソフトウェア・システム</h2>
+  <p class="sec-en">Software &amp; Systems</p>
+  <table class="reports">
+    <tr><th>名称</th><th>概要</th><th></th></tr>
+    <tr><td class="num">アプリケーションソフト</td><td>機体を動かすためのオペレーションソフトを開発しています</td><td><a href="https://matsudorobohome.wordpress.com/%e3%82%a2%e3%83%97%e3%83%aa%e4%b8%80%e8%a6%a7/" target="_blank" rel="noopener">アプリ一覧</a></td></tr>
+    <tr><td class="num">汎用ソフトウェア</td><td>タスク管理ソフト、入退館システムを開発しています</td><td><a href="https://matsudorobohome.wordpress.com/%e6%b1%8e%e7%94%a8%e3%82%a2%e3%83%97%e3%83%aa%e3%82%b1%e3%83%bc%e3%82%b7%e3%83%a7%e3%83%b3/" target="_blank" rel="noopener">詳細</a></td></tr>
+    <tr><td class="num">システム</td><td>各機体に合わせてシナリオを組み込んだシステムを製作しています</td><td><a href="https://matsudorobohome.wordpress.com/%e3%82%b7%e3%82%b9%e3%83%86%e3%83%a0%e4%b8%80%e8%a6%a7/" target="_blank" rel="noopener">システム一覧</a></td></tr>
+    <tr><td class="num">システム管理</td><td>システム管理サイトでロボットを管理・制御。遠隔操作や2次元コードの生成にも挑戦しています</td><td><a href="https://matsudorobohome.wordpress.com/%e3%82%b7%e3%82%b9%e3%83%86%e3%83%a0%e7%ae%a1%e7%90%86/" target="_blank" rel="noopener">詳細</a></td></tr>
+    <tr><td class="num">ソフトウェアと検証</td><td>実際のシステムを検証するための設備を紹介しています</td><td><a href="https://matsudorobohome.wordpress.com/%e3%82%bd%e3%83%95%e3%83%88%e3%82%a6%e3%82%a7%e3%82%a2%e3%81%a8%e6%a4%9c%e8%a8%bc/" target="_blank" rel="noopener">詳細</a></td></tr>
+  </table>
+  <p style="margin-top:14px;font-size:.9rem">ロボット・ソフトウェア・システムの一覧は<a href="https://matsudorobohome.wordpress.com/%e3%82%b7%e3%82%b9%e3%83%86%e3%83%a0/" target="_blank" rel="noopener">研究ノートのシステムページ</a>でも公開しています。</p>
+</section>
+
+<section class="wrap">
   <h2>試作・構想段階</h2>
   <p class="sec-en">Prototypes</p>
   <ul class="themes">
@@ -144,6 +208,10 @@
 </main>
 
 <footer>
+  <div class="footlogos">
+    <img src="images/logo-mtic.png" alt="NPO法人松戸技術革新センター M-TIC">
+    <img src="images/logo-matsudorobo.png" alt="松戸ロボット研究会 Matsudo Robotics">
+  </div>
   <div class="wrap">
     <div>© 2026 NPO法人 松戸技術革新センター</div>
     <div>
@@ -155,5 +223,33 @@
     </div>
   </div>
 </footer>
+<script>
+document.documentElement.classList.add('js');
+document.addEventListener('DOMContentLoaded', function(){
+  var els = document.querySelectorAll('main section');
+  els.forEach(function(el){ el.classList.add('reveal'); });
+  if(!('IntersectionObserver' in window)){ els.forEach(function(el){el.classList.add('shown');}); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('shown'); io.unobserve(e.target);} });
+  }, {threshold: 0.08});
+  els.forEach(function(el){ io.observe(el); });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var chips = document.querySelectorAll('.chip');
+  var cards = document.querySelectorAll('[data-cat]');
+  chips.forEach(function(c){
+    c.addEventListener('click', function(){
+      chips.forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+      c.setAttribute('aria-pressed','true');
+      var f = c.getAttribute('data-filter');
+      cards.forEach(function(card){
+        card.classList.toggle('hidden', f !== 'all' && card.getAttribute('data-cat') !== f);
+      });
+    });
+  });
+});
+</script>
 </body>
 </html>

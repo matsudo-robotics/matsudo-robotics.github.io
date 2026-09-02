@@ -44,15 +44,20 @@
 <section class="wrap">
   <p style="max-width:44em;margin-bottom:28px">共同研究・技術相談・ものづくり支援・取材のご依頼は、お問い合わせフォームからお願いします。</p>
   <p style="text-align:center;margin:32px 0">
-    <!-- ▼ Googleフォームの直接URLが決まったら下のhrefを差し替え(タスク: フォーム直行化) -->
-    <a class="cta" href="https://matsudorobohome.wordpress.com/%e3%81%8a%e5%95%8f%e3%81%84%e5%90%88%e3%82%8f%e3%81%9b/" target="_blank" rel="noopener">お問い合わせフォームを開く</a>
+    
+    <a class="cta" href="https://docs.google.com/forms/d/e/1FAIpQLSd1z1Gec_a8TK2UDKkt0DO0kZQogsJcswmy_B9ZDqcXXhl6eQ/viewform" target="_blank" rel="noopener">お問い合わせフォームを開く</a>
   </p>
-  <p style="margin-top:20px;font-size:.9rem;text-align:center">電話: 047-345-1815（開館日: 毎週土曜日 13:00–17:00）</p>
+  <p style="margin-top:20px;font-size:.95rem;text-align:center">メール: <a href="mailto:matsudorobots@gmail.com">matsudorobots@gmail.com</a></p>
+  <p style="margin-top:6px;font-size:.9rem;text-align:center">電話: 047-345-1815（開館日: 毎週土曜日 13:00–17:00）</p>
 </section>
 
 </main>
 
 <footer>
+  <div class="footlogos">
+    <img src="images/logo-mtic.png" alt="NPO法人松戸技術革新センター M-TIC">
+    <img src="images/logo-matsudorobo.png" alt="松戸ロボット研究会 Matsudo Robotics">
+  </div>
   <div class="wrap">
     <div>© 2026 NPO法人 松戸技術革新センター</div>
     <div>
@@ -65,5 +70,17 @@
   </div>
 </footer>
 
+<script>
+document.documentElement.classList.add('js');
+document.addEventListener('DOMContentLoaded', function(){
+  var els = document.querySelectorAll('main section');
+  els.forEach(function(el){ el.classList.add('reveal'); });
+  if(!('IntersectionObserver' in window)){ els.forEach(function(el){el.classList.add('shown');}); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('shown'); io.unobserve(e.target);} });
+  }, {threshold: 0.08});
+  els.forEach(function(el){ io.observe(el); });
+});
+</script>
 </body>
 </html>

@@ -21,7 +21,7 @@
   "name": "NPO法人松戸技術革新センター",
   "alternateName": ["M-TIC", "Matsudo Technology Innovation Center", "松戸ロボット研究会", "Matsudo Robotics"],
   "url": "https://matsudo-robotics.github.io/",
-  "logo": "https://matsudo-robotics.github.io/images/logo.png",
+  "logo": "https://matsudo-robotics.github.io/images/logo-mtic.png",
   "foundingDate": "2025",
   "description": "ロボティクスの研究開発を第一事業とする非営利の技術研究機関。自律移動ロボットの開発、技術レポートの公開、科学技術教育を行う。",
   "address": {
@@ -46,6 +46,17 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="boot" aria-hidden="true"><div class="track"><img src="images/ctr-run.png" alt=""></div></div>
+<script>
+(function(){
+  var b = document.getElementById('boot');
+  var skip = false;
+  try{ if(sessionStorage.getItem('booted')){ skip = true; } else { sessionStorage.setItem('booted','1'); } }catch(e){}
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){ skip = true; }
+  if(skip){ b.remove(); return; }
+  setTimeout(function(){ b.classList.add('done'); setTimeout(function(){ b.remove(); }, 450); }, 1600);
+})();
+</script>
 
 <header>
   <div class="hd">
@@ -139,8 +150,8 @@
         <p class="model">Model: CWR CAR series <span class="status dev">開発中</span></p>
         <h3>汎用作業ロボット CWR CAR</h3>
         <table class="spec">
-          <tr><td>用途</td><td>産業・作業支援</td></tr>
-          <tr><td>特徴</td><td>大型アーム搭載・自動走行</td></tr>
+          <tr><td>用途</td><td>作業支援</td></tr>
+          <tr><td>特徴</td><td>垂直多関節アーム搭載・自動走行</td></tr>
         </table>
       </div>
     </article>
@@ -181,6 +192,10 @@
 </main>
 
 <footer>
+  <div class="footlogos">
+    <img src="images/logo-mtic.png" alt="NPO法人松戸技術革新センター M-TIC">
+    <img src="images/logo-matsudorobo.png" alt="松戸ロボット研究会 Matsudo Robotics">
+  </div>
   <div class="wrap">
     <div>© 2026 NPO法人 松戸技術革新センター</div>
     <div>
@@ -192,5 +207,17 @@
     </div>
   </div>
 </footer>
+<script>
+document.documentElement.classList.add('js');
+document.addEventListener('DOMContentLoaded', function(){
+  var els = document.querySelectorAll('main section');
+  els.forEach(function(el){ el.classList.add('reveal'); });
+  if(!('IntersectionObserver' in window)){ els.forEach(function(el){el.classList.add('shown');}); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('shown'); io.unobserve(e.target);} });
+  }, {threshold: 0.08});
+  els.forEach(function(el){ io.observe(el); });
+});
+</script>
 </body>
 </html>

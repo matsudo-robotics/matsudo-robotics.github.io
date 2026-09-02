@@ -128,3 +128,39 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
 .cta:hover{background:var(--pcb-dark);color:#fff}
 .formbox{border:1px solid var(--line);background:#fff;padding:8px}
 .formbox iframe{width:100%;border:0;min-height:900px}
+
+/* ===== カテゴリフィルタ ===== */
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 26px}
+.chip{border:1px solid var(--line);background:#fff;color:var(--ink);font-size:.85rem;padding:6px 16px;border-radius:2px;cursor:pointer;font-family:inherit}
+.chip[aria-pressed="true"]{background:var(--pcb);border-color:var(--pcb);color:#fff}
+.chip:hover{border-color:var(--pcb-dark)}
+[data-cat].hidden{display:none}
+
+/* ===== スクロールリビール(控えめ) ===== */
+html.js .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+html.js .reveal.shown{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  html.js .reveal{opacity:1;transform:none;transition:none}
+}
+
+/* ===== 起動演出(CTR走行) ===== */
+#boot{position:fixed;inset:0;background:var(--paper);z-index:99;display:flex;align-items:center;justify-content:center}
+#boot .track{position:relative;width:100%;max-width:1060px;height:150px;border-bottom:1.5px solid var(--ink)}
+#boot img{position:absolute;bottom:0;height:110px;right:-160px;animation:drive 1.5s cubic-bezier(.45,.05,.35,1) forwards}
+@keyframes drive{from{right:-160px}to{right:calc(100% + 40px)}}
+#boot.done{opacity:0;transition:opacity .4s;pointer-events:none}
+@media (prefers-reduced-motion: reduce){#boot{display:none}}
+
+/* ===== フッターロゴ ===== */
+.footlogos{display:flex;justify-content:center;align-items:center;gap:34px;padding:26px 20px 0;flex-wrap:wrap}
+.footlogos img{height:38px;width:auto;opacity:.9}
+
+/* ===== 絞り込み(折りたたみ)+カテゴリバッジ ===== */
+.filterbox{margin:0 0 26px}
+.filterbox summary{display:inline-block;border:1px solid var(--line);background:#fff;font-size:.85rem;padding:6px 18px;border-radius:2px;cursor:pointer;list-style:none;user-select:none}
+.filterbox summary::-webkit-details-marker{display:none}
+.filterbox summary::before{content:"▸ ";color:var(--pcb-dark)}
+.filterbox[open] summary::before{content:"▾ "}
+.filterbox summary:hover{border-color:var(--pcb-dark)}
+.filterbox .chips{margin-top:12px}
+.catbadge{display:inline-block;font-size:.72rem;border:1px solid var(--line);color:var(--muted);padding:2px 10px;border-radius:2px;margin-left:6px;vertical-align:1px}

@@ -52,7 +52,7 @@
     <tr><td>アルミブランケットで作る簡易ソーラークッカーの開発</td><td class="hide-sp">蔭山 悠人</td><td class="hide-sp">—</td><td><a href="https://drive.google.com/file/d/1evbb2d8miF4NDMnVwbWvbV9i7qfEZB06/view?usp=drivesdk">PDF</a></td></tr>
     <tr><td>空気を読むヘッド（Conversing Heads）</td><td class="hide-sp">HAWLEY David</td><td class="hide-sp">2026-08</td><td><a href="https://matsudorobohome.wordpress.com/wp-content/uploads/2026/08/conversing-heads-e28094-poster-ja.pdf">PDF</a></td></tr>
     <tr><td>パイプゲーム キネティックディスプレイ</td><td class="hide-sp">HAWLEY David</td><td class="hide-sp">2026-08</td><td><a href="https://matsudorobohome.wordpress.com/wp-content/uploads/2026/08/poster_a3portrait_ja.pdf">PDF</a></td></tr>
-    <tr><td>前輪（駆動輪）がゴムタイヤで後輪（受動輪）がオムニホイールの走行機構の開発</td><td class="hide-sp">大城 公平</td><td class="hide-sp">2024-09</td><td><a href="https://matsudoroboresearch.wordpress.com/wp-content/uploads/2024/09/e9968be799bae383ace3839de383bce38388e38080e5898de8bcaae3818ce382b4e383a0e382bfe382a4e383a4e381a7e5be8ce8bcaae3818ce382aae383a0e3838be3839be382a4e383bce383abe381aee8b5b0e8a18ce6a99fe6a78b.pdf">PDF</a></td></tr>
+    <tr><td>前輪（駆動輪）がゴムタイヤで後輪（受動輪）がオムニホイールの走行機構の開発</td><td class="hide-sp">大城 公平</td><td class="hide-sp">2024-09</td><td><a href="https://matsudoroboresearch.wordpress.com/wp-content/uploads/2024/09/e9968be799bae383ace3839de383bce38388e38080e5898de8bcaae3818ce382b4e383a0e382bfe382a4e383a4e381a7e5be8ce8bcaae3818ce382aae383a0e3838be3839be382a4e383bce383abe381aee8b5b0e8a18ce6a99fe6a78b.pdf">A4版</a>･<a href="https://matsudorobohome.wordpress.com/wp-content/uploads/2026/08/a3e7b8a6e8b387e69699e383bbe5898de8bcaae9a786e58b95e8bcaae3818ce382b4e383a0e382bfe382a4e383a4e381a7e5be8ce8bcaae58f97e58b95e8bcaae3818ce382aae383a0e3838be3839be382a4e383bce383abe381aee8b5-3.pdf">A3版</a></td></tr>
   </table>
 
   <h2 style="margin-top:48px">技術レポート</h2>
@@ -70,6 +70,10 @@
 </main>
 
 <footer>
+  <div class="footlogos">
+    <img src="images/logo-mtic.png" alt="NPO法人松戸技術革新センター M-TIC">
+    <img src="images/logo-matsudorobo.png" alt="松戸ロボット研究会 Matsudo Robotics">
+  </div>
   <div class="wrap">
     <div>© 2026 NPO法人 松戸技術革新センター</div>
     <div>
@@ -81,5 +85,17 @@
     </div>
   </div>
 </footer>
+<script>
+document.documentElement.classList.add('js');
+document.addEventListener('DOMContentLoaded', function(){
+  var els = document.querySelectorAll('main section');
+  els.forEach(function(el){ el.classList.add('reveal'); });
+  if(!('IntersectionObserver' in window)){ els.forEach(function(el){el.classList.add('shown');}); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('shown'); io.unobserve(e.target);} });
+  }, {threshold: 0.08});
+  els.forEach(function(el){ io.observe(el); });
+});
+</script>
 </body>
 </html>

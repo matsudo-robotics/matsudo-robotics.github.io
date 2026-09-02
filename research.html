@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>研究｜松戸技術革新センター M-TIC</title>
-<meta name="description" content="M-TICの研究テーマ。走行機構・駆動制御、多脚移動機構、搬送ロボットシステム、LiDAR応用、パフォーマンスロボティクスの研究を行っています。">
+<meta name="description" content="M-TICの研究テーマ。走行機構・駆動制御、多脚移動機構、搬送ロボットシステム、パフォーマンスロボティクスの研究を行っています。">
 <link rel="canonical" href="https://matsudo-robotics.github.io/research.html">
 <meta property="og:site_name" content="松戸技術革新センター M-TIC">
 <meta property="og:title" content="研究｜松戸技術革新センター M-TIC">
-<meta property="og:description" content="M-TICの研究テーマ。走行機構・駆動制御、多脚移動機構、搬送ロボットシステム、LiDAR応用、パフォーマンスロボティクスの研究を行っています。">
+<meta property="og:description" content="M-TICの研究テーマ。走行機構・駆動制御、多脚移動機構、搬送ロボットシステム、パフォーマンスロボティクスの研究を行っています。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://matsudo-robotics.github.io/research.html">
 <meta property="og:locale" content="ja_JP">
@@ -73,15 +73,6 @@
     </dl>
   </article>
 
-  <article class="rsec" id="lidar">
-    <h3>自律移動・LiDAR応用</h3>
-    <p class="rmeta">分野: センシング／自律走行　｜　状態: 基礎研究中</p>
-    <dl>
-      <dt>目的</dt><dd>LiDARを用いた走行および対象物ピッキングの基礎技術の確立。</dd>
-      <dt>手法</dt><dd><!-- ▼ 編集: センサ構成・実験環境を追記 -->＿＿＿</dd>
-    </dl>
-  </article>
-
   <article class="rsec" id="onstage">
     <h3>パフォーマンスロボティクス</h3>
     <p class="rmeta">分野: 表現・制御　｜　状態: 継続研究</p>
@@ -95,6 +86,10 @@
 </main>
 
 <footer>
+  <div class="footlogos">
+    <img src="images/logo-mtic.png" alt="NPO法人松戸技術革新センター M-TIC">
+    <img src="images/logo-matsudorobo.png" alt="松戸ロボット研究会 Matsudo Robotics">
+  </div>
   <div class="wrap">
     <div>© 2026 NPO法人 松戸技術革新センター</div>
     <div>
@@ -106,5 +101,17 @@
     </div>
   </div>
 </footer>
+<script>
+document.documentElement.classList.add('js');
+document.addEventListener('DOMContentLoaded', function(){
+  var els = document.querySelectorAll('main section');
+  els.forEach(function(el){ el.classList.add('reveal'); });
+  if(!('IntersectionObserver' in window)){ els.forEach(function(el){el.classList.add('shown');}); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('shown'); io.unobserve(e.target);} });
+  }, {threshold: 0.08});
+  els.forEach(function(el){ io.observe(el); });
+});
+</script>
 </body>
 </html>
