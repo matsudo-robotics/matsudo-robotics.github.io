@@ -1,0 +1,44 @@
+# M-TIC 新ウェブサイト — GitHub Pages 公開手順
+
+## 構成ファイル
+| ファイル | 内容 |
+|---|---|
+| index.html | トップページ |
+| research.html | 研究テーマ(詳細の型付き) |
+| products.html | 開発製品(データシート風カード) |
+| reports.html | 技術レポート台帳 |
+| news.html | ニュース一覧 |
+| about.html | 機関概要・受賞・アクセス |
+| contact.html | お問い合わせ(Googleフォーム埋め込み) |
+| style.css | 全ページ共通デザイン |
+
+編集箇所はHTML内の `<!-- ▼ 編集 -->` コメントで検索できます。
+写真は `images/` フォルダを作って入れ、`<img src="images/ファイル名.jpg" alt="説明">` で差し込んでください。
+
+## 公開手順(無料)
+1. GitHubの matsudo-robotics 組織に新リポジトリを作成
+   - リポジトリ名を `matsudo-robotics.github.io` にすると、URLがそのまま `https://matsudo-robotics.github.io/` になる
+   - 別名リポジトリ(例: `website`)でも可。その場合URLは `https://matsudo-robotics.github.io/website/`
+2. このフォルダの中身(README以外)をすべてアップロード(ブラウザからドラッグ&ドロップでも可)
+3. リポジトリの Settings → Pages → Branch を `main` / `(root)` にして Save
+4. 数分後にURLが発行される → まず組織内でこのURLで確認・レビュー
+
+## 独自ドメイン接続(ドメイン購入後)
+1. レジストラ(お名前.com等)でドメイン取得
+2. DNS設定: `www` の CNAME を `matsudo-robotics.github.io` に向ける。
+   ルートドメイン(wwwなし)を使う場合はGitHub PagesのAレコード(公式ドキュメント記載のIP)を設定
+3. リポジトリ Settings → Pages → Custom domain にドメインを入力
+4. 「Enforce HTTPS」にチェック(証明書は自動発行・無料)
+※ DNSの反映に最大1日程度かかることがあります。
+
+## 費用まとめ(目安)
+- GitHub Pages: 0円
+- 独自ドメイン: .jp 年3,000円前後 / or.jp 年4,000円前後 / .org 年2,000円前後(レジストラにより変動・要確認)
+- Googleフォーム(問い合わせ): 0円
+→ 合計: ドメイン代のみ
+
+## 移行時の注意
+- 公開したら旧WordPressサイトのトップに「新サイトへ移転しました」のリンクを掲載する
+  (WordPress.comの有料「サイトリダイレクト」を使わない場合の無料代替策)
+- Google Search Console に新ドメインを登録し、sitemapを送信
+- ニュース更新はnews.htmlの一番上に1行追加するだけ。GitHubのブラウザ編集(鉛筆アイコン)からスマホでも更新可能
