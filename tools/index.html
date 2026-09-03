@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>M-TIC 技術支援ツール</title>
+<title>M-TIC 便利ツール｜設計・エレキ・ソフト開発の計算機と規格データ</title>
+<meta name="description" content="ものづくりの現場向けの無料ウェブツール集。JIS機械要素の寸法データ、電子回路・PCBの計算機、組込みソフト開発の計算機とコードスニペットをブラウザだけで使えます。">
+<link rel="canonical" href="https://matsudo-robotics.github.io/tools/">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--paper:#F7F8F5;--ink:#20262E;--ink2:#5A636E;--grid:#E2E6DF;
@@ -35,22 +37,37 @@ a.card:focus-visible{outline:3px solid var(--c);outline-offset:2px}
 .card li::before{content:"—";position:absolute;left:0;color:var(--c)}
 .card .go{display:inline-block;margin-top:14px;font-size:13px;font-weight:700;color:var(--c)}
 footer{background:#fff;border-top:1px solid var(--ink);font-size:11.5px;color:var(--ink2);padding:10px 20px;line-height:1.7}
+
+.toolsearch{margin:0 0 22px}
+.toolsearch input{width:100%;max-width:480px;font-family:var(--sans);font-size:14px;padding:10px 14px;
+ border:1px solid var(--ink);background:#fff;border-radius:0}
+.toolsearch input:focus{outline:2px solid var(--mech);outline-offset:1px}
+.toolsearch .hint{display:block;font-size:11.5px;color:var(--ink2);margin-top:6px;font-family:var(--mono)}
+.card li.off{display:none}
+a.card.dim{opacity:.35}
+mark{background:#FFE9A8;color:inherit;padding:0 1px}
 </style>
 </head>
 <body>
-<p style="max-width:1060px;margin:14px auto 0;padding:0 20px;font-size:.85rem"><a href="../" style="text-decoration:none">← 松戸技術革新センター 研究事業サイトへ</a></p>
 <header>
  <div class="tb-cell" style="flex:1;min-width:240px">
-  <span class="tb-label">名称 TITLE</span>
-  <span class="tb-value">M-TIC 技術支援ツール</span>
+  <span class="tb-label">WEB TOOLS</span>
+  <span class="tb-value">M-TIC 便利ツール</span>
+ </div>
+ <div class="tb-cell" style="border-right:none;justify-content:center">
+  <a href="../" style="font-size:12.5px;text-decoration:none;color:var(--ink2)">← 研究事業サイトへ</a>
  </div>
  <div class="tb-cell">
   <span class="tb-label">運営</span>
-  <span class="tb-value" style="font-size:13px">NPO法人 松戸技術革新センター</span>
+  <span class="tb-value" style="font-size:13px">NPO法人松戸技術革新センターM-TIC</span>
  </div>
 </header>
 <main>
  <p class="lead">ものづくりの現場で「今すぐ知りたい・計算したい」に答える3つのツールです。規格データ・計算機・実装ノウハウをブラウザだけで使えます。会員登録不要・無料。</p>
+ <div class="toolsearch">
+  <input type="search" id="q" placeholder="キーワードで探す（例: ねじ / PID / 抵抗 / I2C）" aria-label="ツール内の項目を検索">
+  <span class="hint" id="hint"></span>
+ </div>
  <div class="cards">
   <a class="card" style="--c:var(--mech)" href="mech.html">
    <h2>設計支援・メカ情報ツール</h2>
@@ -95,5 +112,35 @@ footer{background:#fff;border-top:1px solid var(--ink);font-size:11.5px;color:va
  掲載の数値はJIS規格等に基づく参考値・目安です。最終決定時は最新の規格票・メーカーカタログ・データシートをご確認ください。文中の製品型番・規格名称は各社・各団体の商標または登録商標です。<br>
  © NPO法人 松戸技術革新センター（M-TIC）／ 松戸ロボティクス
 </footer>
+<script>
+(function(){
+  var q = document.getElementById('q');
+  var hint = document.getElementById('hint');
+  var cards = Array.prototype.slice.call(document.querySelectorAll('a.card'));
+  function esc(t){return t.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+  cards.forEach(function(c){
+    Array.prototype.forEach.call(c.querySelectorAll('li'), function(li){ li.dataset.raw = li.textContent; });
+  });
+  q.addEventListener('input', function(){
+    var kw = q.value.trim().toLowerCase();
+    var total = 0;
+    cards.forEach(function(c){
+      var hits = 0;
+      Array.prototype.forEach.call(c.querySelectorAll('li'), function(li){
+        var raw = li.dataset.raw;
+        if(!kw){ li.classList.remove('off'); li.textContent = raw; return; }
+        var idx = raw.toLowerCase().indexOf(kw);
+        if(idx >= 0){
+          hits++; li.classList.remove('off');
+          li.innerHTML = esc(raw.slice(0,idx)) + '<mark>' + esc(raw.slice(idx, idx+kw.length)) + '</mark>' + esc(raw.slice(idx+kw.length));
+        } else { li.classList.add('off'); li.textContent = raw; }
+      });
+      c.classList.toggle('dim', !!kw && hits === 0);
+      total += hits;
+    });
+    hint.textContent = kw ? (total ? total + '件の項目が見つかりました。ツールを開いて該当機能をご利用ください' : '見つかりませんでした。ツール内の検索もお試しください') : '';
+  });
+})();
+</script>
 </body>
 </html>
