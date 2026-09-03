@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>研究｜松戸技術革新センター M-TIC</title>
-<meta name="description" content="M-TICの研究テーマ。走行機構・駆動制御、多脚移動機構、搬送ロボットシステム、パフォーマンスロボティクスの研究を行っています。">
+<meta name="description" content="M-TICの研究テーマ。走行機構・駆動制御、多脚移動機構、搬送ロボットシステム、パフォーマンスロボティクス、キネティック表現、防災応用技術の研究を行っています。">
 <link rel="canonical" href="https://matsudo-robotics.github.io/research.html">
 <meta property="og:site_name" content="松戸技術革新センター M-TIC">
 <meta property="og:title" content="研究｜松戸技術革新センター M-TIC">
-<meta property="og:description" content="M-TICの研究テーマ。走行機構・駆動制御、多脚移動機構、搬送ロボットシステム、パフォーマンスロボティクスの研究を行っています。">
+<meta property="og:description" content="M-TICの研究テーマ。走行機構・駆動制御、多脚移動機構、搬送ロボットシステム、パフォーマンスロボティクス、キネティック表現、防災応用技術の研究を行っています。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://matsudo-robotics.github.io/research.html">
 <meta property="og:locale" content="ja_JP">
@@ -28,7 +28,7 @@
         <li><a href="products.html">開発製品</a></li>
         <li><a href="reports.html">レポート</a></li>
         <li><a href="news.html">ニュース</a></li>
-        <li><a href="tools/">技術支援</a></li>
+        <li><a href="tools/">便利ツール</a></li>
         <li><a href="about.html">概要</a></li>
         <li><a href="contact.html">お問い合わせ</a></li>
       </ul>
@@ -48,7 +48,17 @@
 <section class="wrap">
   <p style="max-width:44em;margin-bottom:36px">機械・電気・情報を横断するロボティクスの研究を行っています。成果は<a href="reports.html">技術レポート</a>として公開し、詳細な開発記録は<a href="https://matsudorobohome.wordpress.com/">研究ノート（旧サイト）</a>に蓄積しています。</p>
 
-  <article class="rsec" id="drive">
+  <details class="filterbox">
+    <summary>カテゴリで絞り込む</summary>
+    <div class="chips" role="group" aria-label="カテゴリで絞り込み">
+    <button class="chip" aria-pressed="true" data-filter="all">全表示</button>
+    <button class="chip" aria-pressed="false" data-filter="mech">機構・制御</button>
+    <button class="chip" aria-pressed="false" data-filter="system">システム</button>
+    <button class="chip" aria-pressed="false" data-filter="expression">表現・エンターテイメント</button>
+    <button class="chip" aria-pressed="false" data-filter="applied">応用技術</button>
+    </div>
+  </details>
+  <article class="rsec" id="drive" data-cat="mech">
     <h3>走行機構・駆動制御</h3>
     <p class="rmeta">分野: 機構設計／モーター制御　｜　状態: 継続研究</p>
     <dl>
@@ -58,7 +68,7 @@
     </dl>
   </article>
 
-  <article class="rsec" id="legged">
+  <article class="rsec" id="legged" data-cat="mech">
     <h3>多脚移動機構</h3>
     <p class="rmeta">分野: 脚式移動　｜　状態: 実験機による検証中</p>
     <dl>
@@ -68,7 +78,7 @@
     </dl>
   </article>
 
-  <article class="rsec" id="transport">
+  <article class="rsec" id="transport" data-cat="system">
     <h3>搬送ロボットシステム</h3>
     <p class="rmeta">分野: 自律搬送／運行管理　｜　状態: 開発中</p>
     <dl>
@@ -78,7 +88,7 @@
     </dl>
   </article>
 
-  <article class="rsec" id="onstage">
+  <article class="rsec" id="onstage" data-cat="expression">
     <h3>パフォーマンスロボティクス</h3>
     <p class="rmeta">分野: 表現・制御　｜　状態: 継続研究</p>
     <dl>
@@ -86,6 +96,27 @@
       <dt>実績</dt><dd>RCJ Japan World League OnStage 準優勝（2024）、人工知能学会賞（2024）、ブラザー工業株式会社賞（2025）、関東ブロック プレゼンテーション オンステージ部門ワールドリーグ1位（2024）。</dd>
     </dl>
   </article>
+
+  <article class="rsec" id="kinetic" data-cat="expression">
+    <h3>キネティックディスプレイ・インタラクティブ表現</h3>
+    <p class="rmeta">分野: 表現・エンターテイメント　｜　状態: 開発中　｜　担当: HAWLEY David</p>
+    <dl>
+      <dt>目的</dt><dd>モーター駆動による物理的なディスプレイと、人と対話するロボット表現の探求。計算の過程やアルゴリズムの動きを、誰にとっても分かりやすい実体のある形で可視化する。</dd>
+      <dt>これまでの成果</dt><dd>8×8のパズルボードをモーターで駆動し、コンピュータがパイプゲームを解く様子を物理的に観察できる「パイプゲーム キネティックディスプレイ」、対話的に動作するヘッド型作品「空気を読むヘッド（Conversing Heads）」を開発。</dd>
+      <dt>関連</dt><dd>開発機: <a href="products.html">エンターテイメント作品一覧</a>　成果: <a href="reports.html">開発レポート</a></dd>
+    </dl>
+  </article>
+
+  <article class="rsec" id="daily" data-cat="applied">
+    <h3>防災・エネルギー応用技術</h3>
+    <p class="rmeta">分野: 応用技術・防災　｜　状態: 高効率化を検討中　｜　担当: 蔭山 悠人</p>
+    <dl>
+      <dt>目的</dt><dd>身近な材料だけで誰でも安価に作れる防災器具の開発。技術を災害時の暮らしに役立つ形へ落とし込む。</dd>
+      <dt>これまでの成果</dt><dd>防災用アルミブランケットとプラスチック桶を組み合わせた凹面鏡型の簡易ソーラークッカーを開発し、加熱実験で有効性を確認。</dd>
+      <dt>関連</dt><dd>開発機: <a href="products.html">簡易ソーラークッカー</a>　成果: <a href="reports.html">開発レポート</a></dd>
+    </dl>
+  </article>
+
 </section>
 
 </main>
@@ -128,6 +159,22 @@ document.addEventListener('DOMContentLoaded', function(){
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var chips = document.querySelectorAll('.chip');
+  var cards = document.querySelectorAll('[data-cat]');
+  chips.forEach(function(c){
+    c.addEventListener('click', function(){
+      chips.forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+      c.setAttribute('aria-pressed','true');
+      var f = c.getAttribute('data-filter');
+      cards.forEach(function(card){
+        card.classList.toggle('hidden', f !== 'all' && card.getAttribute('data-cat') !== f);
+      });
+    });
+  });
 });
 </script>
 </body>
