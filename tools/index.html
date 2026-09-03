@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M-TIC 技術支援ツール</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F7F8F5;--ink:#20262E;--ink2:#5A636E;--grid:#E2E6DF;
+ --mech:#2456A6;--elec:#0E7A5F;--soft:#6D4FA8;--red:#B23A2E;
+ --mono:'IBM Plex Mono',Consolas,monospace;--sans:'IBM Plex Sans JP','Hiragino Kaku Gothic ProN',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);min-height:100vh;
+ background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+ background-size:24px 24px;display:flex;flex-direction:column}
+header{background:#fff;border-bottom:2px solid var(--ink);display:flex;align-items:stretch;flex-wrap:wrap}
+.tb-cell{border-right:1px solid var(--ink);padding:10px 18px;display:flex;flex-direction:column;justify-content:center}
+.tb-label{font-size:10px;color:var(--ink2);letter-spacing:.08em}
+.tb-value{font-size:20px;font-weight:700}
+.tb-stamp{align-self:center;margin:6px 16px;width:46px;height:46px;border:2px solid var(--red);border-radius:50%;
+ color:var(--red);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transform:rotate(-8deg)}
+main{flex:1;max-width:1060px;margin:0 auto;padding:44px 24px 60px;width:100%}
+.lead{font-size:15px;margin-bottom:30px;max-width:640px;line-height:1.9}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+a.card{display:block;text-decoration:none;color:var(--ink);background:#fff;border:1px solid var(--ink);
+ padding:22px 22px 18px;position:relative;transition:transform .12s ease,box-shadow .12s ease}
+a.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--c)}
+a.card:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 rgba(32,38,46,.18)}
+a.card:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+.card h2{font-size:18px;color:var(--c);margin-bottom:4px}
+.card .en{font-family:var(--mono);font-size:11px;color:var(--ink2);letter-spacing:.06em;margin-bottom:12px}
+.card p{font-size:13px;line-height:1.75;color:var(--ink)}
+.card ul{margin:10px 0 0;padding:0;list-style:none;font-size:12px;color:var(--ink2)}
+.card li{padding:2px 0 2px 14px;position:relative}
+.card li::before{content:"—";position:absolute;left:0;color:var(--c)}
+.card .go{display:inline-block;margin-top:14px;font-size:13px;font-weight:700;color:var(--c)}
+footer{background:#fff;border-top:1px solid var(--ink);font-size:11.5px;color:var(--ink2);padding:10px 20px;line-height:1.7}
+</style>
+</head>
+<body>
+<p style="max-width:1060px;margin:14px auto 0;padding:0 20px;font-size:.85rem"><a href="../" style="text-decoration:none">← 松戸技術革新センター 研究事業サイトへ</a></p>
+<header>
+ <div class="tb-cell" style="flex:1;min-width:240px">
+  <span class="tb-label">名称 TITLE</span>
+  <span class="tb-value">M-TIC 技術支援ツール</span>
+ </div>
+ <div class="tb-cell">
+  <span class="tb-label">運営</span>
+  <span class="tb-value" style="font-size:13px">NPO法人 松戸技術革新センター</span>
+ </div>
+</header>
+<main>
+ <p class="lead">ものづくりの現場で「今すぐ知りたい・計算したい」に答える3つのツールです。規格データ・計算機・実装ノウハウをブラウザだけで使えます。会員登録不要・無料。</p>
+ <div class="cards">
+  <a class="card" style="--c:var(--mech)" href="mech.html">
+   <h2>設計支援・メカ情報ツール</h2>
+   <div class="en">MECHANICAL</div>
+   <p>JIS機械要素の寸法データベース（図面表示付き）と設計計算。</p>
+   <ul>
+    <li>ねじ・ナット・軸受・キー・止め輪 ほか</li>
+    <li>はめあい公差・タップ下穴・ねじ強度</li>
+    <li>歯車・ベルト・チェーン・遊星・ばね</li>
+    <li>リンク機構・アームFK/IKシミュ・クローラ計算</li>
+    <li>めっき・塗装・やすり・3Dプリント補正・切削条件</li>
+   </ul>
+   <span class="go">ツールを開く →</span>
+  </a>
+  <a class="card" style="--c:var(--elec)" href="elec.html">
+   <h2>エレキ支援ツール</h2>
+   <div class="en">ELECTRICAL</div>
+   <p>電子回路・配線・PCB設計のためのデータと計算機。</p>
+   <ul>
+    <li>抵抗カラーコード・E系列・コネクタ・端子台</li>
+    <li>電圧降下・LED抵抗・DCDC・レギュレータ発熱</li>
+    <li>PCBトレース幅計算・パッケージ寸法・論理回路</li>
+    <li>モータードライバ・センサー配線・マイコンピン早見</li>
+   </ul>
+   <span class="go">ツールを開く →</span>
+  </a>
+  <a class="card" style="--c:var(--soft)" href="soft.html">
+   <h2>ソフト開発支援ツール</h2>
+   <div class="en">SOFTWARE</div>
+   <p>組込み・ロボットソフト開発の計算機とノウハウ集。</p>
+   <ul>
+    <li>進数変換・ビット演算・CRC・カラーコード</li>
+    <li>PIDチューニング・フィルタ設計・オドメトリ</li>
+    <li>CAN／UART／I2C／SPI・データ型早見</li>
+    <li>コピーして使えるコードスニペット</li>
+   </ul>
+   <span class="go">ツールを開く →</span>
+  </a>
+ </div>
+</main>
+<footer>
+ 掲載の数値はJIS規格等に基づく参考値・目安です。最終決定時は最新の規格票・メーカーカタログ・データシートをご確認ください。文中の製品型番・規格名称は各社・各団体の商標または登録商標です。<br>
+ © NPO法人 松戸技術革新センター（M-TIC）／ 松戸ロボティクス
+</footer>
+</body>
+</html>

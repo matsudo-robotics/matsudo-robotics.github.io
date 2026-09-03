@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M-TIC ソフト開発支援ツール</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F7F8F5;
+  --panel:#FFFFFF;
+  --ink:#20262E;
+  --ink2:#5A636E;
+  --grid:#E2E6DF;
+  --line:#C9CFC6;
+  --blue:#6D4FA8;
+  --blue-soft:#EFEAF7;
+  --red:#B23A2E;
+  --mono:'IBM Plex Mono',Consolas,monospace;
+  --sans:'IBM Plex Sans JP','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--sans);color:var(--ink);background:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  font-size:14px;line-height:1.6;
+}
+/* ===== 表題欄風ヘッダー ===== */
+header{
+  background:var(--panel);border-bottom:2px solid var(--ink);
+  display:flex;align-items:stretch;flex-wrap:wrap;
+}
+.tb-cell{border-right:1px solid var(--ink);padding:8px 16px;display:flex;flex-direction:column;justify-content:center}
+.tb-label{font-size:10px;color:var(--ink2);letter-spacing:.08em}
+.tb-value{font-size:16px;font-weight:700}
+.tb-title{flex:1;min-width:220px}
+.tb-title .tb-value{font-size:20px;letter-spacing:.04em}
+.tb-title .tb-value span{color:var(--blue)}
+.tb-stamp{
+  align-self:center;margin:6px 14px;width:44px;height:44px;border:2px solid var(--red);
+  border-radius:50%;color:var(--red);display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;transform:rotate(-8deg);flex-shrink:0;
+}
+/* ===== レイアウト ===== */
+.app{display:flex;min-height:calc(100vh - 62px)}
+nav{
+  width:216px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--ink);
+  padding:12px 0 80px;
+}
+.nav-group{padding:10px 14px 4px;font-size:11px;color:var(--ink2);letter-spacing:.1em;border-top:1px dashed var(--line);margin-top:8px}
+.nav-group:first-child{border-top:none;margin-top:0}
+.nav-item{
+  display:block;width:100%;text-align:left;padding:7px 14px 7px 22px;border:none;background:none;
+  font-family:var(--sans);font-size:13.5px;color:var(--ink);cursor:pointer;position:relative;
+}
+.nav-item:hover{background:var(--blue-soft)}
+.nav-item.active{background:var(--blue-soft);color:var(--blue);font-weight:700}
+.nav-item.active::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--blue)}
+main{flex:1;padding:20px 24px 120px;min-width:0}
+h2.page-title{font-size:19px;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:4px}
+.page-sub{color:var(--ink2);font-size:12.5px;margin-bottom:14px}
+.page-sub code{font-family:var(--mono)}
+/* ===== テーブル ===== */
+.tool-bar{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+input[type=text],input[type=number],select{
+  font-family:var(--mono);font-size:13.5px;padding:6px 9px;border:1px solid var(--ink);
+  border-radius:0;background:#fff;color:var(--ink);
+}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.data-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--ink)}
+table.data{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+table.data th{
+  background:var(--ink);color:#fff;font-weight:500;padding:6px 10px;text-align:left;
+  font-size:12px;white-space:nowrap;position:sticky;top:0;
+}
+table.data td{padding:5px 10px;border-bottom:1px solid var(--grid);font-family:var(--mono);white-space:nowrap}
+table.data td.jp{font-family:var(--sans)}
+table.data tr.sel-row{cursor:pointer}
+table.data tr.sel-row:hover{background:var(--blue-soft)}
+table.data tr.selected{background:var(--blue-soft);box-shadow:inset 3px 0 0 var(--blue)}
+/* ===== 詳細パネル ===== */
+.detail{
+  display:none;margin-top:16px;background:var(--panel);border:1px solid var(--ink);
+}
+.detail.open{display:grid;grid-template-columns:minmax(300px,420px) 1fr}
+.detail-draw{border-right:1px dashed var(--line);padding:14px;display:flex;align-items:center;justify-content:center;background:
+  linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:16px 16px;background-color:#FCFDFB}
+.detail-info{padding:14px 18px}
+.detail-info h3{font-size:16px;margin-bottom:8px;color:var(--blue)}
+.spec-grid{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;font-size:13.5px}
+.spec-grid dt{color:var(--ink2)}
+.spec-grid dd{font-family:var(--mono);font-weight:500}
+.note{margin-top:10px;font-size:12px;color:var(--ink2);border-left:3px solid var(--line);padding-left:8px}
+/* ===== 計算フォーム ===== */
+.calc-card{background:var(--panel);border:1px solid var(--ink);padding:16px 18px;margin-bottom:16px;max-width:760px}
+.calc-card h3{font-size:15px;margin-bottom:10px}
+.form-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.form-row label{display:flex;flex-direction:column;font-size:12px;color:var(--ink2);gap:3px}
+.result-box{
+  margin-top:10px;border:1px solid var(--blue);background:var(--blue-soft);padding:10px 14px;
+  font-family:var(--mono);font-size:14px;white-space:pre-wrap;display:none;
+}
+.result-box.show{display:block}
+.result-box .big{font-size:19px;font-weight:600;color:var(--blue)}
+.result-box .warn{color:var(--red);font-weight:600}
+button.act{
+  font-family:var(--sans);font-size:13.5px;font-weight:700;padding:7px 18px;cursor:pointer;
+  background:var(--blue);color:#fff;border:1px solid var(--blue);
+}
+button.act:hover{background:#55398a}
+button.ghost{
+  font-family:var(--sans);font-size:12.5px;padding:5px 12px;cursor:pointer;
+  background:#fff;color:var(--ink);border:1px solid var(--ink);
+}
+button.ghost:hover{background:var(--blue-soft)}
+.preset-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+/* ===== SVG図面 ===== */
+svg text{font-family:var(--mono);font-size:11px;fill:var(--ink)}
+svg .dim{stroke:var(--blue);stroke-width:1;fill:none}
+svg .dimtxt{fill:var(--blue);font-size:11px}
+svg .body{stroke:var(--ink);stroke-width:1.6;fill:#fff}
+svg .hatch{stroke:var(--ink2);stroke-width:.7}
+svg .cl{stroke:var(--red);stroke-width:.7;stroke-dasharray:8 3 2 3}
+/* ===== 電卓 ===== */
+#calcFab{
+  position:fixed;right:22px;bottom:22px;z-index:900;width:58px;height:58px;border-radius:50%;
+  background:var(--ink);color:#fff;border:none;font-size:22px;cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.25);font-family:var(--mono);
+}
+#calcFab:hover{background:var(--blue)}
+#calcWin{
+  position:fixed;z-index:950;width:300px;background:var(--panel);border:2px solid var(--ink);
+  box-shadow:6px 6px 0 rgba(32,38,46,.18);display:none;top:90px;right:30px;
+}
+#calcWin.open{display:block}
+#calcHead{
+  background:var(--ink);color:#fff;padding:6px 10px;font-size:12.5px;cursor:move;
+  display:flex;justify-content:space-between;align-items:center;user-select:none;touch-action:none;
+}
+#calcHead button{background:none;border:none;color:#fff;font-size:15px;cursor:pointer;padding:0 4px}
+#calcDisp{
+  font-family:var(--mono);padding:8px 10px 2px;text-align:right;min-height:26px;font-size:13px;
+  color:var(--ink2);word-break:break-all;
+}
+#calcRes{font-family:var(--mono);padding:0 10px 8px;text-align:right;font-size:22px;font-weight:600;min-height:32px}
+#calcKeys{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border-top:1px solid var(--line)}
+#calcKeys button{
+  font-family:var(--mono);font-size:14px;padding:10px 0;border:none;background:var(--panel);cursor:pointer;
+}
+#calcKeys button:hover{background:var(--blue-soft)}
+#calcKeys button.op{background:#F0F2ED}
+#calcKeys button.eq{background:var(--blue);color:#fff}
+#calcKeys button.eq:hover{background:#55398a}
+#calcHist{max-height:90px;overflow-y:auto;border-top:1px dashed var(--line);font-family:var(--mono);font-size:11.5px;padding:4px 10px;color:var(--ink2)}
+#calcHist div{cursor:pointer;padding:1px 0}
+#calcHist div:hover{color:var(--blue)}
+.deg-toggle{font-family:var(--mono);font-size:11px;background:var(--red);padding:1px 6px;border-radius:2px;cursor:pointer}
+/* code block */
+.code-wrap{position:relative;margin:10px 0}
+.code-wrap pre{background:#23272E;color:#E8EAED;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.55;border:1px solid var(--ink)}
+.code-wrap .copy-btn{position:absolute;top:6px;right:6px;font-family:var(--sans);font-size:11px;padding:3px 10px;background:var(--blue);color:#fff;border:none;cursor:pointer}
+.code-wrap .copy-btn:hover{opacity:.85}
+.bitgrid{display:flex;flex-wrap:wrap;gap:2px;font-family:var(--mono);font-size:12px;margin-top:8px}
+.bitgrid span{width:22px;height:26px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:#fff;cursor:pointer;user-select:none}
+.bitgrid span.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.bitgrid i{width:8px}
+/* footer note */
+.foot-note{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--ink);
+  font-size:11px;color:var(--ink2);padding:4px 14px;z-index:800}
+@media(max-width:860px){
+  .app{flex-direction:column}
+  nav{width:100%;display:flex;overflow-x:auto;padding:0}
+  .nav-group{display:none}
+  .nav-item{white-space:nowrap;padding:10px 12px}
+  .nav-item.active::before{left:0;right:0;top:auto;bottom:0;width:auto;height:3px}
+  .detail.open{grid-template-columns:1fr}
+  .detail-draw{border-right:none;border-bottom:1px dashed var(--line)}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tb-cell tb-title">
+    <span class="tb-label">名称 TITLE</span>
+    <span class="tb-value">M-TIC <span>ソフト開発支援ツール</span></span>
+  </div>
+  <div class="tb-cell">
+    <span class="tb-label">所属</span>
+    <span class="tb-value" style="font-size:13px">NPO法人 松戸技術革新センター</span>
+  </div>
+  <div class="tb-cell">
+    <span class="tb-label">版</span>
+    <span class="tb-value" style="font-size:13px;font-family:var(--mono)">Rev.3.0</span>
+  </div>
+</header>
+
+<div class="app">
+<nav id="nav"></nav>
+<main id="main"></main>
+</div>
+
+<button id="calcFab" title="関数電卓を開く">∑</button>
+
+<div id="calcWin" role="dialog" aria-label="関数電卓">
+  <div id="calcHead">
+    <span>関数電卓 <span class="deg-toggle" id="degToggle">DEG</span></span>
+    <span>
+      <button id="calcClearHist" title="履歴クリア">⌫</button>
+      <button id="calcClose" title="閉じる">×</button>
+    </span>
+  </div>
+  <div id="calcDisp">&nbsp;</div>
+  <div id="calcRes">0</div>
+  <div id="calcKeys"></div>
+  <div id="calcHist"></div>
+</div>
+
+<div class="foot-note">※ コード例はそのまま使ってOK（M-TIC内製・改変自由）。制御パラメータは必ず実機で安全に確認してください。文中の製品型番・規格名称は各社・各団体の商標または登録商標です。</div>
+
+<script>
+
+const $=s=>document.querySelector(s);
+const fmt=(x,n=3)=>Number(x.toFixed(n)).toString();
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function show(sel,html){const el=$(sel);el.innerHTML=html;el.classList.add("show")}
+function specList(pairs){return `<dl class="spec-grid">${pairs.map(p=>`<dt>${p[0]}</dt><dd>${p[1]}</dd>`).join("")}</dl>`}
+function codeBlock(code,id){
+ return `<div class="code-wrap"><button class="copy-btn" onclick="copyCode('${id}')">コピー</button><pre id="${id}">${esc(code)}</pre></div>`;
+}
+function copyCode(id){
+ const t=document.getElementById(id).textContent;
+ if(navigator.clipboard){navigator.clipboard.writeText(t)}
+ else{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove()}
+ event.target.textContent="コピーした！";setTimeout(()=>{event.target.textContent="コピー"},1200);
+}
+
+/* =========================================================
+   ソフト開発支援ツール
+   ========================================================= */
+const PAGES=[
+ {group:"変換・計算"},
+ {id:"radix",label:"進数変換・ビット操作"},
+ {id:"bitop",label:"ビット演算計算機"},
+ {id:"crc",label:"チェックサム・CRC計算"},
+ {id:"encoder",label:"エンコーダ・分解能計算"},
+ {id:"timing",label:"周期・周波数・タイマ"},
+ {group:"制御"},
+ {id:"pid",label:"PIDチューニング"},
+ {id:"filter",label:"フィルタ設計（平滑化）"},
+ {id:"odometry",label:"オドメトリ（自己位置）"},
+ {group:"通信"},
+ {id:"comm",label:"UART / I2C / SPI 早見"},
+ {id:"can",label:"CAN通信"},
+ {id:"i2caddr",label:"I2Cアドレス一覧"},
+ {id:"ascii",label:"ASCIIコード表"},
+ {id:"colorhex",label:"カラーコード変換(HEX/RGB)"},
+ {group:"コード・開発"},
+ {id:"snippets",label:"定番コードスニペット"},
+ {id:"types",label:"データ型・落とし穴早見"},
+ {id:"git",label:"Gitチートシート"},
+ {id:"practice",label:"開発の作法・大会運用"}
+];
+const RENDER={};
+
+/* ---- 進数変換 ---- */
+RENDER.radix=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">進数変換・ビット操作</h2>
+ <p class="page-sub">どれか1つ入力すると他が更新。ビットのマスをクリックしてもOK（32bit・符号なし）。</p>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>10進<input type="text" id="rDec" value="180"></label>
+  <label>16進<input type="text" id="rHex"></label>
+  <label>2進<input type="text" id="rBin" style="min-width:260px"></label>
+ </div>
+ <div id="rBits" class="bitgrid"></div>
+ <div class="result-box show" id="rInfo"></div>
+ </div>
+ <div class="calc-card"><h3>シフト・便利表示</h3>
+ <div class="form-row">
+  <label>シフト量<input type="number" id="rShift" value="1" min="0" max="31"></label>
+ </div>
+ <button class="ghost" id="rShl">&lt;&lt; 左シフト</button>
+ <button class="ghost" id="rShr">&gt;&gt; 右シフト</button>
+ <button class="ghost" id="rNot">~ 反転(NOT)</button>
+ </div>`;
+ let val=180n;
+ const MASK=0xFFFFFFFFn;
+ const render=()=>{
+  val&=MASK;
+  $("#rDec").value=val.toString(10);
+  $("#rHex").value="0x"+val.toString(16).toUpperCase().padStart(2,"0");
+  $("#rBin").value="0b"+val.toString(2);
+  // bit grid (31..0)
+  let g="";
+  for(let i=31;i>=0;i--){
+   const on=(val>>BigInt(i))&1n;
+   g+=`<span data-b="${i}" class="${on?"on":""}">${on}</span>`;
+   if(i%8===0&&i>0)g+=`<i></i>`;
+  }
+  $("#rBits").innerHTML=g+`<div style="width:100%;font-size:10px;color:var(--ink2);margin-top:2px">← bit31　　　　　　　　　　　　　　　　bit0 →</div>`;
+  document.querySelectorAll("#rBits span").forEach(sp=>sp.onclick=()=>{val^=(1n<<BigInt(sp.dataset.b));render()});
+  const bytes=[];
+  for(let i=3;i>=0;i--)bytes.push(((val>>BigInt(i*8))&0xFFn).toString(16).toUpperCase().padStart(2,"0"));
+  $("#rInfo").innerHTML=`バイト表現: [${bytes.join(", ")}]（ビッグエンディアン順）　立っているビット数: ${val.toString(2).split("1").length-1}
+8bitとして: ${val&0xFFn}　16bitとして: ${val&0xFFFFn}　符号付き8bit: ${(val&0xFFn)>127n?(val&0xFFn)-256n:val&0xFFn}`;
+ };
+ const parse=(s,base)=>{try{s=s.trim().replace(/^0x/i,"").replace(/^0b/i,"").replace(/[\s_]/g,"");if(!s)return null;const v=BigInt((base===16?"0x":base===2?"0b":"")+s);return v>=0n?v&MASK:null}catch(e){return null}};
+ $("#rDec").oninput=e=>{const v=parse(e.target.value,10);if(v!=null){val=v;render();e.target.focus()}};
+ $("#rHex").oninput=e=>{const v=parse(e.target.value,16);if(v!=null){val=v;render()}};
+ $("#rBin").oninput=e=>{const v=parse(e.target.value,2);if(v!=null){val=v;render()}};
+ $("#rShl").onclick=()=>{val=(val<<BigInt(+$("#rShift").value))&MASK;render()};
+ $("#rShr").onclick=()=>{val=val>>BigInt(+$("#rShift").value);render()};
+ $("#rNot").onclick=()=>{val=(~val)&MASK;render()};
+ render();
+};
+
+/* ---- ビット演算 ---- */
+RENDER.bitop=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">ビット演算計算機</h2>
+ <p class="page-sub">A・Bは 10進 / 0x16進 / 0b2進 どれでも入力OK。</p>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>A<input type="text" id="bA" value="0xF0"></label>
+  <label>演算<select id="bOp"><option>AND</option><option>OR</option><option>XOR</option><option>A &lt;&lt; B</option><option>A &gt;&gt; B</option></select></label>
+  <label>B<input type="text" id="bB" value="0b10101010"></label>
+ </div>
+ <button class="act" id="bGo">計算</button><div class="result-box" id="bRes"></div>
+ <p class="note">レジスタ操作の定番イディオム：セット reg |= (1&lt;&lt;n) ／ クリア reg &amp;= ~(1&lt;&lt;n) ／ 反転 reg ^= (1&lt;&lt;n) ／ 判定 if(reg &amp; (1&lt;&lt;n))</p>
+ </div>`;
+ const parse=s=>{try{s=s.trim().replace(/[\s_]/g,"");return BigInt(s)&0xFFFFFFFFn}catch(e){return null}};
+ $("#bGo").onclick=()=>{
+  const a=parse($("#bA").value),b=parse($("#bB").value),op=$("#bOp").value;
+  if(a==null||b==null){show("#bRes","<span class='warn'>入力を確認してください（例: 255 / 0xFF / 0b1111）</span>");return}
+  let r;
+  if(op==="AND")r=a&b;else if(op==="OR")r=a|b;else if(op==="XOR")r=a^b;
+  else if(op.includes("<<"))r=(a<<b)&0xFFFFFFFFn;else r=a>>b;
+  show("#bRes",`<span class="big">= ${r}（0x${r.toString(16).toUpperCase()}）</span>
+2進: 0b${r.toString(2)}`);
+ };
+};
+
+/* ---- CRC ---- */
+function crc8(bytes){let c=0;for(const b of bytes){c^=b;for(let i=0;i<8;i++)c=c&0x80?((c<<1)^0x07)&0xFF:(c<<1)&0xFF}return c}
+function crc16ccitt(bytes){let c=0xFFFF;for(const b of bytes){c^=b<<8;for(let i=0;i<8;i++)c=c&0x8000?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF}return c}
+RENDER.crc=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">チェックサム・CRC計算</h2>
+ <p class="page-sub">通信プロトコル自作やセンサのデータ検証に。バイト列は16進をスペース区切りで。</p>
+ <div class="calc-card">
+ <div class="form-row"><label style="flex:1">バイト列（例: 01 A2 FF 30）<input type="text" id="cIn" value="01 A2 FF 30" style="width:100%"></label></div>
+ <button class="act" id="cGo">計算</button><div class="result-box" id="cRes"></div>
+ <p class="note">CRC-8: 多項式0x07・初期値0x00 ／ CRC-16-CCITT-FALSE: 多項式0x1021・初期値0xFFFF。相手側の仕様（初期値・反転・XOR出力）が違うと一致しないので、既存機器と合わせるときはデータシートの仕様を確認。</p>
+ </div>
+ <div class="calc-card"><h3>C言語 実装例（CRC-8）</h3>
+ ${codeBlock(`uint8_t crc8(const uint8_t *data, size_t len) {
+  uint8_t crc = 0x00;
+  for (size_t i = 0; i < len; i++) {
+    crc ^= data[i];
+    for (uint8_t b = 0; b < 8; b++) {
+      crc = (crc & 0x80) ? (crc << 1) ^ 0x07 : (crc << 1);
+    }
+  }
+  return crc;
+}`,"crcCode")}</div>`;
+ $("#cGo").onclick=()=>{
+  const parts=$("#cIn").value.trim().split(/[\s,]+/).filter(x=>x);
+  const bytes=[];
+  for(const p of parts){
+   const v=parseInt(p,16);
+   if(isNaN(v)||v<0||v>255){show("#cRes","<span class='warn'>16進バイト(00〜FF)で入力してください</span>");return}
+   bytes.push(v);
+  }
+  const sum=bytes.reduce((a,b)=>a+b,0);
+  const xor=bytes.reduce((a,b)=>a^b,0);
+  const h=v=>"0x"+v.toString(16).toUpperCase().padStart(2,"0");
+  show("#cRes",`バイト数: ${bytes.length}
+合計: ${sum}（下位8bit: ${h(sum&0xFF)}）　2の補数チェックサム: ${h((~sum+1)&0xFF)}
+XORチェックサム: ${h(xor)}
+<span class="big">CRC-8: ${h(crc8(bytes))}　CRC-16-CCITT: 0x${crc16ccitt(bytes).toString(16).toUpperCase().padStart(4,"0")}</span>`);
+ };
+};
+
+/* ---- エンコーダ ---- */
+RENDER.encoder=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">エンコーダ・分解能計算</h2>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>エンコーダ PPR [パルス/回転]<input type="number" id="ePpr" value="11" step="any"></label>
+  <label>逓倍<select id="eMult"><option value="1">1逓倍</option><option value="2">2逓倍</option><option value="4" selected>4逓倍（AB相標準）</option></select></label>
+  <label>ギア比（モーター:出力軸）<input type="number" id="eGear" value="30" step="any"></label>
+  <label>車輪径 [mm]<input type="number" id="eWheel" value="60" step="any"></label>
+ </div>
+ <button class="act" id="eGo">計算</button><div class="result-box" id="eRes"></div>
+ <p class="note">PPRはエンコーダ単体の1回転パルス数（モーター軸側に付いている場合が多い）。CPR＝PPR×逓倍。ギヤドモーターの「エンコーダ分解能」表記がモーター軸か出力軸かはデータシートで要確認。</p>
+ </div>
+ <div class="calc-card"><h3>速度換算</h3>
+ <div class="form-row">
+  <label>カウント速度 [count/s]<input type="number" id="eCps" value="5000" step="any"></label>
+ </div>
+ <button class="act" id="eGo2">上の設定で速度に換算</button><div class="result-box" id="eRes2"></div>
+ </div>`;
+ const calc=()=>{
+  const ppr=+$("#ePpr").value,m=+$("#eMult").value,g=+$("#eGear").value,d=+$("#eWheel").value;
+  const cprOut=ppr*m*g; // 出力軸1回転あたり
+  const mmPer=Math.PI*d/cprOut;
+  return{cprOut,mmPer,d};
+ };
+ $("#eGo").onclick=()=>{
+  const c=calc();
+  show("#eRes",`出力軸1回転あたり: <span class="big">${fmt(c.cprOut,0)} count</span>
+距離分解能: <span class="big">${fmt(c.mmPer*1000,2)} µm/count</span>（${fmt(c.mmPer,4)} mm/count）
+角度分解能: ${fmt(360/c.cprOut,4)} °/count`);
+ };
+ $("#eGo2").onclick=()=>{
+  const c=calc(),cps=+$("#eCps").value;
+  const v=cps*c.mmPer;
+  show("#eRes2",`<span class="big">速度 ≈ ${fmt(v,1)} mm/s（${fmt(v/1000,3)} m/s）</span>
+車輪回転数 = ${fmt(cps/c.cprOut*60,1)} rpm`);
+ };
+};
+
+/* ---- 周期・タイマ ---- */
+RENDER.timing=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">周期・周波数・タイマ</h2>
+ <div class="calc-card"><h3>周波数 ⇔ 周期</h3>
+ <div class="form-row">
+  <label>周波数 [Hz]<input type="number" id="tF" value="50" step="any"></label>
+  <label>周期 [ms]<input type="number" id="tT" step="any"></label>
+ </div>
+ <p class="note">どちらかを入力すると相互に更新されます。</p></div>
+ <div class="calc-card"><h3>制御ループ周期の目安（ロボット）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>処理</th><th>目安周期</th><th>メモ</th></tr></thead><tbody>
+ <tr><td class="jp">モーター電流制御</td><td>10〜50 kHz</td><td class="jp">ドライバIC/専用マイコン側の仕事</td></tr>
+ <tr><td class="jp">速度制御（PID）</td><td>100 Hz〜1 kHz</td><td class="jp">エンコーダ読取と同periodで</td></tr>
+ <tr><td class="jp">姿勢制御（倒立・IMU）</td><td>100 Hz〜1 kHz</td><td class="jp">IMUの出力レートに合わせる</td></tr>
+ <tr><td class="jp">ライントレース</td><td>100 Hz〜1 kHz</td><td class="jp">速度が上がるほど高周期が必要</td></tr>
+ <tr><td class="jp">経路計画・状態遷移</td><td>10〜50 Hz</td><td class="jp">重い処理はこの層に</td></tr>
+ <tr><td class="jp">テレメトリ・ログ</td><td>1〜20 Hz</td><td class="jp">通信量と相談</td></tr>
+ </tbody></table></div>
+ <p class="note">鉄則：<b>制御周期は一定に保つ</b>。delay()での待ち合わせをやめて、millis()/タイマ割込みで周期実行に（スニペット集参照）。</p></div>
+ <div class="calc-card"><h3>タイマカウント計算</h3>
+ <div class="form-row">
+  <label>クロック [MHz]<input type="number" id="tClk" value="16" step="any"></label>
+  <label>プリスケーラ<input type="number" id="tPre" value="64"></label>
+  <label>欲しい周期 [ms]<input type="number" id="tPer" value="1" step="any"></label>
+ </div>
+ <button class="act" id="tGo">計算</button><div class="result-box" id="tRes"></div>
+ </div>`;
+ $("#tF").oninput=()=>{const f=+$("#tF").value;if(f>0)$("#tT").value=fmt(1000/f,4)};
+ $("#tT").oninput=()=>{const t=+$("#tT").value;if(t>0)$("#tF").value=fmt(1000/t,4)};
+ $("#tF").oninput();
+ $("#tGo").onclick=()=>{
+  const clk=+$("#tClk").value*1e6,pre=+$("#tPre").value,per=+$("#tPer").value/1000;
+  const cnt=clk/pre*per;
+  show("#tRes",`タイマクロック = ${fmt(clk/pre/1e3,2)} kHz（1カウント ${fmt(pre/clk*1e6,3)} µs）
+<span class="big">必要カウント = ${fmt(cnt,1)}</span>${cnt>65535?'　<span class="warn">16bitタイマを超過→プリスケーラを大きく</span>':cnt<100?'　<span class="warn">分解能が粗い→プリスケーラを小さく</span>':""}
+コンペア値の目安 = ${Math.round(cnt)-1}（0起点のカウンタの場合）`);
+ };
+};
+
+/* ---- PID ---- */
+RENDER.pid=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">PIDチューニング</h2>
+ <div class="calc-card"><h3>手動チューニングの手順（実戦向け）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>手順</th><th>やること</th></tr></thead><tbody>
+ <tr><td>1</td><td class="jp">Ki=Kd=0にして、Kpだけを振動する直前まで上げる</td></tr>
+ <tr><td>2</td><td class="jp">定常偏差（目標に届かない分）が残るならKiを少しずつ追加。入れすぎると揺れが収まらなくなる</td></tr>
+ <tr><td>3</td><td class="jp">オーバーシュートや振動が気になるならKdを追加。入れすぎるとノイズに過敏になりガタつく</td></tr>
+ <tr><td>4</td><td class="jp">外乱（手で押す等）への戻りを見て微調整。ログを取って波形で判断すると速い</td></tr>
+ </tbody></table></div>
+ <p class="note">実装の落とし穴：①制御周期を一定に ②積分のアンチワインドアップ（出力飽和中は積分を止める）③D項は「偏差の微分」でなく「測定値の微分」にすると目標値変更時のキックが消える。スニペット集のPIDクラスは全部入りです。</p></div>
+ <div class="calc-card"><h3>ジーグラ・ニコルス法（限界感度法）</h3>
+ <p>手順1でちょうど持続振動するゲイン（限界ゲイン Ku）と、そのときの振動周期（Tu）を測って入力：</p>
+ <div class="form-row">
+  <label>限界ゲイン Ku<input type="number" id="zKu" value="10" step="any"></label>
+  <label>振動周期 Tu [s]<input type="number" id="zTu" value="0.5" step="any"></label>
+ </div>
+ <button class="act" id="zGo">計算</button><div class="result-box" id="zRes"></div>
+ <p class="note">あくまで初期値の目安。ここから手動で詰めるのが実用的です。ロボットの姿勢系はオーバーシュート小さめが好まれるので、出た値の7〜8割から始めるのも手。</p></div>`;
+ $("#zGo").onclick=()=>{
+  const Ku=+$("#zKu").value,Tu=+$("#zTu").value;
+  const rows=[
+   ["P制御",0.5*Ku,null,null],
+   ["PI制御",0.45*Ku,0.45*Ku/(Tu/1.2),null],
+   ["PID制御",0.6*Ku,0.6*Ku/(0.5*Tu),0.6*Ku*0.125*Tu]
+  ];
+  show("#zRes",rows.map(r=>`${r[0]}:  Kp=${fmt(r[1],3)}${r[2]!=null?"  Ki="+fmt(r[2],3):""}${r[3]!=null?"  Kd="+fmt(r[3],4):""}`).join("\n")
+  +`\n<span class="big">PID推奨: Kp=${fmt(0.6*Ku,3)} Ki=${fmt(0.6*Ku/(0.5*Tu),3)} Kd=${fmt(0.6*Ku*0.125*Tu,4)}</span>`);
+ };
+};
+
+/* ---- フィルタ ---- */
+RENDER.filter=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">フィルタ設計（センサ平滑化）</h2>
+ <div class="calc-card"><h3>指数移動平均（EMA）の係数設計</h3>
+ <p>filtered += α × (raw − filtered)。αが小さいほど滑らか＆遅い。</p>
+ <div class="form-row">
+  <label>サンプリング周波数 [Hz]<input type="number" id="fFs" value="500" step="any"></label>
+  <label>カットオフ周波数 [Hz]<input type="number" id="fFc" value="20" step="any"></label>
+ </div>
+ <button class="act" id="fGo">αを計算</button><div class="result-box" id="fRes"></div>
+ <p class="note">目安：残したい信号の変化より速く、消したいノイズより遅いfcを選ぶ。ライントレースのセンサなら fc＝制御帯域の3〜5倍くらいから試すとバランスが取りやすい。</p></div>
+ <div class="calc-card"><h3>フィルタの使い分け</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>フィルタ</th><th>向いている場面</th><th>弱点</th></tr></thead><tbody>
+ <tr><td class="jp">指数移動平均（EMA）</td><td class="jp">とにかく軽い。メモリ1変数。まずこれ</td><td class="jp">遅延がある</td></tr>
+ <tr><td class="jp">単純移動平均（SMA）</td><td class="jp">周期ノイズをN点で消せる</td><td class="jp">バッファが必要・遅延大きめ</td></tr>
+ <tr><td class="jp">メディアンフィルタ</td><td class="jp">スパイク（外れ値）除去。測距センサに◎</td><td class="jp">ソートコスト。3〜5点で使う</td></tr>
+ <tr><td class="jp">相補フィルタ</td><td class="jp">IMUの姿勢（ジャイロ×加速度の融合）</td><td class="jp">係数調整が必要</td></tr>
+ <tr><td class="jp">カルマンフィルタ</td><td class="jp">モデルがあるときの本命</td><td class="jp">実装・調整の難度高</td></tr>
+ </tbody></table></div>
+ <p class="note">相補フィルタの定番: angle = 0.98×(angle＋gyro×dt) ＋ 0.02×accAngle。まずこれで十分なことが多い。</p></div>`;
+ $("#fGo").onclick=()=>{
+  const fs=+$("#fFs").value,fc=+$("#fFc").value;
+  if(fc>=fs/2){show("#fRes","<span class='warn'>fcはナイキスト周波数(fs/2)未満にしてください</span>");return}
+  const dt=1/fs, rc=1/(2*Math.PI*fc);
+  const a=dt/(rc+dt);
+  show("#fRes",`<span class="big">α ≈ ${fmt(a,4)}</span>
+時定数 τ = ${fmt(rc*1000,2)} ms（63%応答）　95%応答 ≈ ${fmt(3*rc*1000,1)} ms`);
+ };
+};
+
+/* ---- 通信早見 ---- */
+RENDER.comm=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">UART / I2C / SPI 早見</h2>
+ <div class="calc-card"><h3>3つの使い分け</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th></th><th>UART</th><th>I2C</th><th>SPI</th></tr></thead><tbody>
+ <tr><td class="jp">線数</td><td>2（TX/RX）＋GND</td><td>2（SDA/SCL）＋GND</td><td>4（MOSI/MISO/SCK/CS）＋GND</td></tr>
+ <tr><td class="jp">速度</td><td class="jp">〜1Mbps級</td><td class="jp">100k/400k/1M</td><td class="jp">〜数十Mbps</td></tr>
+ <tr><td class="jp">複数接続</td><td class="jp">1対1が基本</td><td class="jp">アドレスで最大100個超</td><td class="jp">CS線をデバイス分</td></tr>
+ <tr><td class="jp">得意分野</td><td class="jp">デバッグ・モジュール間・PC通信</td><td class="jp">センサをたくさん</td><td class="jp">高速（SDカード・ディスプレイ・IMU）</td></tr>
+ <tr><td class="jp">注意</td><td class="jp">TX→RXの<b>交差接続</b>・ボーレート一致</td><td class="jp">プルアップ必須・アドレス衝突</td><td class="jp">モード(0〜3)の一致</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>SPIモード表</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>モード</th><th>CPOL</th><th>CPHA</th><th>意味</th></tr></thead><tbody>
+ <tr><td>0</td><td>0</td><td>0</td><td class="jp">アイドルL・立上りでサンプル（いちばん多い）</td></tr>
+ <tr><td>1</td><td>0</td><td>1</td><td class="jp">アイドルL・立下りでサンプル</td></tr>
+ <tr><td>2</td><td>1</td><td>0</td><td class="jp">アイドルH・立下りでサンプル</td></tr>
+ <tr><td>3</td><td>1</td><td>1</td><td class="jp">アイドルH・立上りでサンプル</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>UARTボーレート誤差計算</h3>
+ <div class="form-row">
+  <label>目標ボーレート<select id="uBaud"><option>9600</option><option selected>115200</option><option>230400</option><option>460800</option><option>1000000</option></select></label>
+  <label>クロック [MHz]<input type="number" id="uClk" value="16" step="any"></label>
+ </div>
+ <button class="act" id="uGo">計算（16分周UART想定）</button><div class="result-box" id="uRes"></div>
+ <p class="note">誤差の目安：±2%以内なら通ることが多い、±3%超は文字化けリスク大。16MHzのAVRで115200bpsは誤差ギリギリ（-3.5%）という有名な罠があります → 250000bpsなど割り切れる値が安全。</p></div>`;
+ $("#uGo").onclick=()=>{
+  const baud=+$("#uBaud").value,clk=+$("#uClk").value*1e6;
+  const ubrr=Math.round(clk/16/baud-1);
+  const actual=clk/16/(ubrr+1);
+  const err=(actual-baud)/baud*100;
+  show("#uRes",`分周設定値(UBRR) = ${ubrr}　実ボーレート = ${fmt(actual,1)} bps
+<span class="big">誤差 = ${err>=0?"+":""}${fmt(err,2)} %</span> ${Math.abs(err)>2.5?'<span class="warn">→ 危険域。クロックかボーレートの変更を</span>':"（OK）"}`);
+ };
+};
+
+/* ---- I2Cアドレス ---- */
+RENDER.i2caddr=()=>{
+ const ADDRS=[
+  ["0x1E","HMC5883L","3軸磁気センサ"],
+  ["0x27 / 0x3F","PCF8574","キャラクタLCDのI2Cバックパック"],
+  ["0x29","VL53L0X / VL53L1X","ToF測距センサ（XSHUTでアドレス変更可）"],
+  ["0x3C / 0x3D","SSD1306","OLEDディスプレイ"],
+  ["0x40","PCA9685","16chサーボ/PWMドライバ（A0-A5で0x40〜7F）"],
+  ["0x40〜0x45","INA219","電流センサ（PCA9685と衝突注意）"],
+  ["0x48〜0x4B","ADS1115","16bit ADC"],
+  ["0x50〜0x57","24Cxx EEPROM","外付けメモリ"],
+  ["0x53","ADXL345","3軸加速度センサ"],
+  ["0x5A","MLX90614","非接触温度センサ"],
+  ["0x68","MPU6050 / DS3231","6軸IMU（AD0=Hで0x69）／ RTC"],
+  ["0x76 / 0x77","BMP280 / BME280","気圧・温湿度センサ"]
+ ];
+ $("#main").innerHTML=`<h2 class="page-title">I2Cアドレス一覧（定番デバイス）</h2>
+ <p class="page-sub">7bitアドレス表記。同アドレスのデバイスは同一バスに載せられない（アドレス変更ピンかマルチプレクサTCA9548Aで回避）。</p>
+ <div class="data-wrap"><table class="data"><thead><tr><th>アドレス</th><th>デバイス</th><th>内容</th></tr></thead><tbody>
+ ${ADDRS.map(a=>`<tr><td>${a[0]}</td><td><b>${a[1]}</b></td><td class="jp" style="white-space:normal;min-width:240px">${a[2]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <div class="calc-card" style="margin-top:16px"><h3>I2Cスキャナ（Arduino）— バスにいる全デバイスを列挙</h3>
+ ${codeBlock(`#include <Wire.h>
+void setup() {
+  Wire.begin();
+  Serial.begin(115200);
+  Serial.println("I2C scan...");
+  for (uint8_t addr = 1; addr < 127; addr++) {
+    Wire.beginTransmission(addr);
+    if (Wire.endTransmission() == 0) {
+      Serial.print("Found: 0x");
+      Serial.println(addr, HEX);
+    }
+  }
+  Serial.println("done");
+}
+void loop() {}`,"i2cscan")}
+ <p class="note">「センサが見つからない」時の切り分け1手目。0x00〜が大量に出るときはSDA/SCLの入れ違いかプルアップ不足を疑う。</p></div>`;
+};
+
+/* ---- ASCII ---- */
+RENDER.ascii=()=>{
+ let rows="";
+ for(let i=32;i<127;i++){
+  const ch=i===32?"(space)":String.fromCharCode(i);
+  rows+=`<tr><td>${i}</td><td>0x${i.toString(16).toUpperCase().padStart(2,"0")}</td><td class="jp">${esc(ch)}</td></tr>`;
+ }
+ const ctrl=[[0,"NUL","文字列終端 \\0"],[9,"TAB","\\t"],[10,"LF","改行 \\n（Unix系）"],[13,"CR","復帰 \\r（CR+LFでWindows改行）"],[27,"ESC","エスケープ"]];
+ $("#main").innerHTML=`<h2 class="page-title">ASCIIコード表</h2>
+ <div class="calc-card"><h3>よく使う制御文字</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>10進</th><th>名前</th><th>意味</th></tr></thead><tbody>
+ ${ctrl.map(c=>`<tr><td>${c[0]}</td><td>${c[1]}</td><td class="jp">${c[2]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <p class="note">シリアル通信の文字化け調査では「受け取ったバイトを10進/16進でダンプして表と突き合わせる」のが基本動作。</p></div>
+ <div class="data-wrap"><table class="data"><thead><tr><th>10進</th><th>16進</th><th>文字</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+};
+
+/* ---- スニペット ---- */
+RENDER.snippets=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">定番コードスニペット（Arduino / C++）</h2>
+ <p class="page-sub">M-TIC内製・コピーして自由に改変OK。ロボットで「delayを使わない」書き方の基本セット。</p>
+ <div class="calc-card"><h3>① ノンブロッキング周期実行（delay追放の基本形）</h3>
+ ${codeBlock(`unsigned long lastRun = 0;
+const unsigned long INTERVAL_MS = 10;  // 100Hz
+
+void loop() {
+  unsigned long now = millis();
+  if (now - lastRun >= INTERVAL_MS) {
+    lastRun += INTERVAL_MS;   // now を代入するよりドリフトしない
+    controlUpdate();          // ここに周期処理
+  }
+  // ここには常に回したい処理（通信の受信など）
+}`,"sn1")}</div>
+ <div class="calc-card"><h3>② スイッチのデバウンス（チャタリング除去）</h3>
+ ${codeBlock(`const uint8_t PIN_SW = 2;
+bool stableState = HIGH;          // INPUT_PULLUP想定
+bool lastRead   = HIGH;
+unsigned long lastChange = 0;
+
+bool buttonPressed() {            // 押した瞬間だけtrue
+  bool now = digitalRead(PIN_SW);
+  if (now != lastRead) { lastChange = millis(); lastRead = now; }
+  if (millis() - lastChange > 20 && now != stableState) {
+    stableState = now;
+    if (stableState == LOW) return true;
+  }
+  return false;
+}`,"sn2")}</div>
+ <div class="calc-card"><h3>③ 指数移動平均フィルタ（センサ平滑化）</h3>
+ ${codeBlock(`float filtered = 0;
+const float ALPHA = 0.2f;   // 小さいほど滑らか（フィルタ設計ページで計算）
+
+float emaUpdate(float raw) {
+  filtered += ALPHA * (raw - filtered);
+  return filtered;
+}`,"sn3")}</div>
+ <div class="calc-card"><h3>④ PIDクラス（アンチワインドアップ＋微分キック対策済み）</h3>
+ ${codeBlock(`class Pid {
+public:
+  float kp = 1, ki = 0, kd = 0;
+  float outMin = -255, outMax = 255;
+
+  float update(float target, float measured, float dt) {
+    float err = target - measured;
+    // 微分は「測定値の微分」→ 目標変更時のキックを防ぐ
+    float dTerm = -kd * (measured - prevMeasured_) / dt;
+    prevMeasured_ = measured;
+
+    float out = kp * err + integral_ + dTerm;
+    // アンチワインドアップ: 飽和していなければ積分を進める
+    if (out > outMin && out < outMax) integral_ += ki * err * dt;
+    return constrain(out, outMin, outMax);
+  }
+  void reset() { integral_ = 0; prevMeasured_ = 0; }
+private:
+  float integral_ = 0, prevMeasured_ = 0;
+};`,"sn4")}</div>
+ <div class="calc-card"><h3>⑤ 状態機械（競技ロボットの骨格）</h3>
+ ${codeBlock(`enum class State { IDLE, SEARCH, APPROACH, GRAB, RETURN_HOME };
+State state = State::IDLE;
+unsigned long stateSince = 0;
+
+void changeState(State next) {
+  state = next;
+  stateSince = millis();          // 状態タイムアウト用
+}
+
+void stateMachine() {
+  unsigned long elapsed = millis() - stateSince;
+  switch (state) {
+    case State::IDLE:
+      if (startButton()) changeState(State::SEARCH);
+      break;
+    case State::SEARCH:
+      spinSlowly();
+      if (targetFound())   changeState(State::APPROACH);
+      if (elapsed > 5000)  changeState(State::RETURN_HOME); // 詰み回避
+      break;
+    case State::APPROACH:
+      driveToTarget();
+      if (targetClose())   changeState(State::GRAB);
+      break;
+    // ...
+  }
+}`,"sn5")}
+ <p class="note">状態ごとに「何をするか」「どこへ遷移するか」「タイムアウト」を必ずセットで書くと、大会で固まらないロボットになります。</p></div>
+ <div class="calc-card"><h3>⑥ メディアンフィルタ3点（測距センサのスパイク除去）</h3>
+ ${codeBlock(`float med3(float a, float b, float c) {
+  if (a > b) { float t = a; a = b; b = t; }
+  if (b > c) { float t = b; b = c; c = t; }
+  if (a > b) { float t = a; a = b; b = t; }
+  return b;
+}
+// 使い方: 直近3サンプルを保持して med3(s0, s1, s2)`,"sn6")}</div>`;
+};
+
+/* ---- Git ---- */
+RENDER.git=()=>{
+ const CHEAT=[
+  ["日常","git status","状態確認。迷ったらまずこれ"],
+  ["日常","git add -p","変更を対話的に選んでステージ（雑コミット防止）"],
+  ["日常","git commit -m \"メッセージ\"","コミット"],
+  ["日常","git push / git pull","リモートと同期"],
+  ["確認","git log --oneline --graph --all","履歴をツリー表示"],
+  ["確認","git diff / git diff --staged","差分確認"],
+  ["ブランチ","git switch -c feature/arm-control","ブランチ作成して移動"],
+  ["ブランチ","git switch main → git merge feature/…","取り込み"],
+  ["取り消し","git restore ファイル名","未ステージの変更を破棄"],
+  ["取り消し","git restore --staged ファイル名","ステージ解除"],
+  ["取り消し","git revert コミットID","履歴を残して打ち消し（共有後はこっち）"],
+  ["取り消し","git reset --hard HEAD~1","直前コミットを完全に消す（共有前限定・注意）"],
+  ["救助","git stash / git stash pop","作業を一時退避"],
+  ["救助","git reflog","「消えた」コミットの捜索。だいたい生きてる"]
+ ];
+ $("#main").innerHTML=`<h2 class="page-title">Gitチートシート</h2>
+ <div class="data-wrap"><table class="data"><thead><tr><th>場面</th><th>コマンド</th><th>意味</th></tr></thead><tbody>
+ ${CHEAT.map(c=>`<tr><td class="jp">${c[0]}</td><td>${esc(c[1])}</td><td class="jp" style="white-space:normal;min-width:220px">${c[2]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <div class="calc-card" style="margin-top:16px"><h3>チーム運用のおすすめルール（M-TIC向け）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>ルール</th><th>理由</th></tr></thead><tbody>
+ <tr><td class="jp">mainは常に動く状態を保つ</td><td class="jp">大会直前に「動くコード」へ即戻れる</td></tr>
+ <tr><td class="jp">作業はブランチで、動作確認してからマージ</td><td class="jp">他メンバーの環境を壊さない</td></tr>
+ <tr><td class="jp">コミットメッセージは「何を・なぜ」</td><td class="jp">例:「ライン検出の閾値を120→90に変更（会場照明が暗い想定）」</td></tr>
+ <tr><td class="jp">動いた瞬間にコミット＆タグ</td><td class="jp">git tag v-taikai-yosen のように地点を打つと復元が一瞬</td></tr>
+ <tr><td class="jp">パラメータはコードと分ける</td><td class="jp">閾値・ゲインは設定ファイルor定数ヘッダに集約して差分を見やすく</td></tr>
+ </tbody></table></div></div>`;
+};
+
+/* ---- 開発の作法 ---- */
+RENDER.practice=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">開発の作法・大会運用</h2>
+ <div class="calc-card"><h3>命名・コードの基本ルール</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>対象</th><th>推奨</th><th>例</th></tr></thead><tbody>
+ <tr><td class="jp">変数・関数</td><td class="jp">camelCase・動詞から始める関数名</td><td>lineSensorValue / updateMotor()</td></tr>
+ <tr><td class="jp">定数</td><td class="jp">大文字スネーク</td><td>MAX_SPEED / KP_LINE</td></tr>
+ <tr><td class="jp">クラス・型</td><td class="jp">PascalCase</td><td>MotorDriver / Pid</td></tr>
+ <tr><td class="jp">ピン番号</td><td class="jp">先頭にPIN_を付けて1箇所に集約</td><td>PIN_MOTOR_L_PWM</td></tr>
+ <tr><td class="jp">マジックナンバー</td><td class="jp">禁止。名前を付ける</td><td class="jp">if(d &lt; 80) → if(d &lt; GRAB_DISTANCE_MM)</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>デバッグの基本動作</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>動作</th><th>内容</th></tr></thead><tbody>
+ <tr><td class="jp">まずログ</td><td class="jp">センサ生値・状態・出力を1行で定期出力。「思い込み」と「実測」のズレを見る</td></tr>
+ <tr><td class="jp">半分に切る</td><td class="jp">怪しい範囲を二分探索。ハードかソフトかの切り分けが最優先</td></tr>
+ <tr><td class="jp">1回に1変更</td><td class="jp">2つ同時に変えると原因が特定できなくなる</td></tr>
+ <tr><td class="jp">最小再現コード</td><td class="jp">問題の部品だけの短いスケッチで再現させる</td></tr>
+ <tr><td class="jp">電源を疑う</td><td class="jp">「たまに再起動する」「動かすと死ぬ」は大体電圧降下かノイズ（エレキ支援ツール参照）</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>大会前後の運用（RCJ実戦向け）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>タイミング</th><th>ルール</th></tr></thead><tbody>
+ <tr><td class="jp">1週間前</td><td class="jp"><b>機能凍結</b>。新機能追加禁止、バグ修正とパラメータ調整のみ</td></tr>
+ <tr><td class="jp">前日</td><td class="jp">動く版にタグを打つ。予備マイコンに同じバイナリを書いておく</td></tr>
+ <tr><td class="jp">会場練習</td><td class="jp">照明・床が変わる前提で、調整するパラメータをあらかじめ一覧化しておく</td></tr>
+ <tr><td class="jp">走行間</td><td class="jp">変更したら必ず1回テスト走行してから本番へ。「ノールック変更」で本番投入しない</td></tr>
+ <tr><td class="jp">大会後</td><td class="jp">壊れた点・ヒヤリを48時間以内にメモ（次の設計への最高の入力）</td></tr>
+ </tbody></table></div></div>`;
+};
+
+
+/* =========================================================
+   Rev.2.0 追加：CAN・オドメトリ・データ型
+   ========================================================= */
+/* ---- CAN通信 ---- */
+RENDER.can=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">CAN通信</h2>
+ <p class="page-sub">差動2線・マルチノードの堅牢な通信。ノイズに強く、モータードライバや車載系の標準。</p>
+ <div class="calc-card"><h3>基本仕様</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>項目</th><th>内容</th></tr></thead><tbody>
+ <tr><td class="jp">配線</td><td class="jp">CANH／CANLの2線（＋GND共通推奨）。ツイストペアで敷設</td></tr>
+ <tr><td class="jp">終端抵抗</td><td class="jp"><b>バス両端に120Ωを1個ずつ</b>（合計2個）。途中のノードには付けない</td></tr>
+ <tr><td class="jp">電圧（ハイスピードCAN）</td><td class="jp">レセシブ(1): H=L≈2.5V ／ ドミナント(0): H≈3.5V, L≈1.5V</td></tr>
+ <tr><td class="jp">ID</td><td class="jp">標準11bit（0x000〜0x7FF）／拡張29bit。<b>IDが小さいほど優先</b>（衝突時に自動調停）</td></tr>
+ <tr><td class="jp">データ長</td><td class="jp">1フレーム0〜8バイト（CAN FDなら最大64バイト）</td></tr>
+ <tr><td class="jp">トポロジ</td><td class="jp">1本のバスに数珠つなぎ。スタブ（枝）は短く（30cm以下目安）</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>ビットレートとバス長の目安</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>ビットレート</th><th>バス長の目安</th><th>用途例</th></tr></thead><tbody>
+ <tr><td>1 Mbps</td><td>〜40 m</td><td class="jp">ロボット内・機器内（迷ったらこれか500k）</td></tr>
+ <tr><td>500 kbps</td><td>〜100 m</td><td class="jp">車載標準・一般</td></tr>
+ <tr><td>250 kbps</td><td>〜250 m</td><td class="jp">建機・農機系</td></tr>
+ <tr><td>125 kbps</td><td>〜500 m</td><td class="jp">長距離・低速</td></tr>
+ </tbody></table></div>
+ <p class="note">全ノードのビットレートは完全一致が必須。サンプルポイントは75〜87.5%あたりが一般的（ライブラリのデフォルトで大抵OK）。</p></div>
+ <div class="calc-card"><h3>Arduino＋MCP2515 送受信の最小コード</h3>
+ ${codeBlock(`#include <SPI.h>
+#include <mcp2515.h>          // autowp/arduino-mcp2515 ライブラリ
+
+MCP2515 mcp2515(10);           // CSピン
+struct can_frame msg;
+
+void setup() {
+  Serial.begin(115200);
+  mcp2515.reset();
+  mcp2515.setBitrate(CAN_500KBPS, MCP_8MHZ); // 基板の水晶(8/16MHz)に合わせる！
+  mcp2515.setNormalMode();
+}
+
+void loop() {
+  // 送信: ID 0x036 に2バイト
+  msg.can_id  = 0x036;
+  msg.can_dlc = 2;
+  msg.data[0] = 0x12;
+  msg.data[1] = 0x34;
+  mcp2515.sendMessage(&msg);
+
+  // 受信
+  if (mcp2515.readMessage(&msg) == MCP2515::ERROR_OK) {
+    Serial.print("ID:0x"); Serial.print(msg.can_id, HEX);
+    for (int i = 0; i < msg.can_dlc; i++) {
+      Serial.print(" "); Serial.print(msg.data[i], HEX);
+    }
+    Serial.println();
+  }
+  delay(100);
+}`,"canCode")}
+ <p class="note">ハマりどころNo.1：setBitrateの第2引数（基板の水晶周波数）。安価モジュールは8MHzが多く、16MHz設定だと通信速度が倍ズレて一切通じません。</p></div>
+ <div class="calc-card"><h3>トラブルシュート手順</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>手順</th><th>確認</th></tr></thead><tbody>
+ <tr><td>1</td><td class="jp">電源OFFでCANH-CANL間の抵抗を測る → <b>約60Ω</b>ならOK（120Ω×2並列）。120Ωなら終端が1個しかない</td></tr>
+ <tr><td>2</td><td class="jp">全ノードのビットレート・水晶設定が同じか</td></tr>
+ <tr><td>3</td><td class="jp">2ノード最小構成で疎通確認 → 増やしていく</td></tr>
+ <tr><td>4</td><td class="jp">HとLの入れ違い配線がないか（1台逆だとバス全体が死にます）</td></tr>
+ <tr><td>5</td><td class="jp">送信だけで受信ノードがいないとエラーカウンタが溜まって送信停止(Bus-Off)する仕様に注意</td></tr>
+ </tbody></table></div></div>`;
+};
+
+/* ---- オドメトリ ---- */
+RENDER.odometry=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">2輪差動オドメトリ（自己位置推定）</h2>
+ <p class="page-sub">左右エンコーダから機体の位置(x, y)と向きθを積算する基本手法。RCJレスキュー・サッカーの土台。</p>
+ <div class="calc-card"><h3>計算式</h3>
+ ${specList([["左右の移動量","dL, dR ＝ カウント差 × mm/count（エンコーダ計算ページ）"],["中心の移動量","d ＝ (dR ＋ dL) / 2"],["向きの変化","Δθ ＝ (dR − dL) / W　（W＝トレッド幅：左右車輪の中心間距離）"],["位置更新","x ＋= d·cos(θ＋Δθ/2)　　y ＋= d·sin(θ＋Δθ/2)　　θ ＋= Δθ"]])}
+ <p class="note">cos/sinの引数を「θ＋Δθ/2」（区間の中間の向き）にするのが精度のコツ。θは±πに正規化して回し続けること。</p></div>
+ <div class="calc-card"><h3>実装コード（そのまま使える形）</h3>
+ ${codeBlock(`struct Pose { float x = 0, y = 0, theta = 0; };
+Pose pose;
+
+const float MM_PER_COUNT = 0.0733f;  // エンコーダ計算ページで算出
+const float TREAD_W_MM   = 152.0f;   // 左右車輪の中心間距離(実測推奨)
+
+// 周期処理内で呼ぶ（例:100Hz）。dCountL/Rは前回からのカウント増分
+void odomUpdate(long dCountL, long dCountR) {
+  float dL = dCountL * MM_PER_COUNT;
+  float dR = dCountR * MM_PER_COUNT;
+  float d      = (dR + dL) * 0.5f;
+  float dTheta = (dR - dL) / TREAD_W_MM;
+
+  pose.x     += d * cosf(pose.theta + dTheta * 0.5f);
+  pose.y     += d * sinf(pose.theta + dTheta * 0.5f);
+  pose.theta += dTheta;
+  // -π〜π に正規化
+  while (pose.theta >  PI) pose.theta -= TWO_PI;
+  while (pose.theta < -PI) pose.theta += TWO_PI;
+}`,"odomCode")}</div>
+ <div class="calc-card"><h3>直進・旋回チェック計算</h3>
+ <div class="form-row">
+  <label>mm/count<input type="number" id="odK" value="0.0733" step="any"></label>
+  <label>トレッド幅 W [mm]<input type="number" id="odW" value="152" step="any"></label>
+  <label>左カウント増分<input type="number" id="odL" value="1000"></label>
+  <label>右カウント増分<input type="number" id="odR" value="1200"></label>
+ </div>
+ <button class="act" id="odGo">計算</button><div class="result-box" id="odRes"></div>
+ </div>
+ <div class="calc-card"><h3>精度を上げるコツ・限界</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>項目</th><th>内容</th></tr></thead><tbody>
+ <tr><td class="jp">トレッド幅は「その場旋回で校正」</td><td class="jp">10回転させて実際の角度誤差からWを補正する（図面値と数mmズレるのが普通）</td></tr>
+ <tr><td class="jp">mm/countは「直進で校正」</td><td class="jp">2m走らせて実測距離÷カウントで求める</td></tr>
+ <tr><td class="jp">スリップで誤差が蓄積する</td><td class="jp">急加速・衝突・段差で一気に狂う。オドメトリは短期用と割り切る</td></tr>
+ <tr><td class="jp">ジャイロ融合が定番</td><td class="jp">θだけIMUのヨー角で置き換える（or 相補フィルタ）と大幅に安定</td></tr>
+ <tr><td class="jp">絶対補正</td><td class="jp">ラインや壁・マーカーを検出したら座標をリセット/補正する仕組みを入れる</td></tr>
+ </tbody></table></div></div>`;
+ $("#odGo").onclick=()=>{
+  const k=+$("#odK").value,W=+$("#odW").value,l=+$("#odL").value*k,r=+$("#odR").value*k;
+  const d=(l+r)/2, dth=(r-l)/W;
+  show("#odRes",`左 ${fmt(l,1)} mm ／ 右 ${fmt(r,1)} mm
+<span class="big">中心移動 d = ${fmt(d,1)} mm　旋回 Δθ = ${fmt(dth*180/Math.PI,2)}°</span>
+${Math.abs(dth)>1e-9?"旋回半径 ≈ "+fmt(d/dth,1)+" mm":"（直進）"}`);
+ };
+};
+
+/* ---- データ型 ---- */
+RENDER.types=()=>{
+ const T=[
+  ["bool","1","true / false",""],
+  ["int8_t","1","−128 〜 127",""],
+  ["uint8_t (byte)","1","0 〜 255","センサ値・バッファの基本"],
+  ["int16_t","2","−32,768 〜 32,767","エンコーダ短期値など"],
+  ["uint16_t","2","0 〜 65,535","analogRead等"],
+  ["int32_t (long)","4","±約21億","カウンタ・ミリ秒差分"],
+  ["uint32_t","4","0 〜 約42.9億","millis()の戻り値"],
+  ["float","4","有効約7桁","小数。組込みの標準"],
+  ["double","8","有効約15桁","AVR系Arduinoではfloatと同じ4バイトなので注意"]
+ ];
+ $("#main").innerHTML=`<h2 class="page-title">データ型・範囲早見（C/C++組込み）</h2>
+ <div class="data-wrap"><table class="data"><thead><tr><th>型</th><th>バイト</th><th>範囲・精度</th><th>メモ</th></tr></thead><tbody>
+ ${T.map(t=>`<tr><td><b>${t[0]}</b></td><td>${t[1]}</td><td>${t[2]}</td><td class="jp">${t[3]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <div class="calc-card" style="margin-top:16px"><h3>定番の落とし穴</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>落とし穴</th><th>対策</th></tr></thead><tbody>
+ <tr><td class="jp">millis()のオーバーフロー（約49.7日で一周）</td><td class="jp">必ず「if (now − last >= T)」の<b>引き算形</b>で書く。符号なしの引き算は一周をまたいでも正しく動く</td></tr>
+ <tr><td class="jp">int同士の割り算で小数が消える</td><td class="jp">5/2＝2。片方を明示的にfloatへ：5/2.0f</td></tr>
+ <tr><td class="jp">uint8_tの掛け算あふれ</td><td class="jp">200×200＝40000は8bitに収まらない。計算途中の型を意識（int32_tへキャスト）</td></tr>
+ <tr><td class="jp">floatの等値比較</td><td class="jp">if(a==0.1)はほぼ効かない。fabsf(a−b)&lt;EPSで比較</td></tr>
+ <tr><td class="jp">符号あり⇔なしの比較警告</td><td class="jp">for(uint8_t i=n−1; i&gt;=0; i--)は無限ループ（常に≥0）。符号ありで回す</td></tr>
+ <tr><td class="jp">角度の−π/π境界</td><td class="jp">差分を取ったら atan2f(sinf(d), cosf(d)) で正規化するのが安全</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>millis()オーバーフロー安全形（コピー用）</h3>
+ ${codeBlock(`// OK: 一周またぎでも正しい
+if ((unsigned long)(millis() - lastTime) >= INTERVAL_MS) { ... }
+
+// NG: 絶対時刻での比較は一周で壊れる
+if (millis() >= lastTime + INTERVAL_MS) { ... }`,"ovfCode")}</div>`;
+};
+
+
+/* ---- HEXカラーコード変換 ---- */
+RENDER.colorhex=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">カラーコード変換（HEX / RGB / RGB565）</h2>
+ <p class="page-sub">NeoPixel(WS2812)・TFT液晶・UIの色指定用。どれか入力すると他が更新されます。</p>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>HEX（例: #FF8800）<input type="text" id="cxHex" value="#FF8800"></label>
+  <label>R (0-255)<input type="number" id="cxR" min="0" max="255"></label>
+  <label>G<input type="number" id="cxG" min="0" max="255"></label>
+  <label>B<input type="number" id="cxB" min="0" max="255"></label>
+  <label>色ピッカー<input type="color" id="cxPick" value="#FF8800" style="width:60px;height:36px;padding:2px"></label>
+ </div>
+ <div id="cxSwatch" style="height:56px;border:1px solid var(--ink);margin:8px 0"></div>
+ <div class="result-box show" id="cxRes"></div>
+ <p class="note">RGB565はTFT液晶（ILI9341等）の16bit色形式：R5bit・G6bit・B5bit。LEDテープは電流に注意——WS2812は白全点灯で1個あたり最大約60mA（30個で1.8A！）。明るさを1/4に落とすだけで電源がかなり楽になります。</p>
+ </div>
+ <div class="calc-card"><h3>コード例</h3>
+ ${codeBlock(`// NeoPixel (Adafruit_NeoPixel)
+strip.setPixelColor(i, strip.Color(255, 136, 0));
+
+// TFT (RGB565を直接指定)
+tft.fillRect(x, y, w, h, 0xFC40);
+
+// RGB888 → RGB565 変換マクロ
+#define RGB565(r,g,b) ((((r)&0xF8)<<8) | (((g)&0xFC)<<3) | ((b)>>3))`,"cxCode")}</div>`;
+ const upd=(r,g,b)=>{
+  r=Math.max(0,Math.min(255,r|0));g=Math.max(0,Math.min(255,g|0));b=Math.max(0,Math.min(255,b|0));
+  const hex="#"+[r,g,b].map(v=>v.toString(16).toUpperCase().padStart(2,"0")).join("");
+  $("#cxHex").value=hex;$("#cxR").value=r;$("#cxG").value=g;$("#cxB").value=b;$("#cxPick").value=hex.toLowerCase();
+  $("#cxSwatch").style.background=hex;
+  const c565=((r&0xF8)<<8)|((g&0xFC)<<3)|(b>>3);
+  const lum=0.2126*r+0.7152*g+0.0722*b;
+  $("#cxRes").innerHTML=`<span class="big">${hex}　rgb(${r}, ${g}, ${b})　RGB565: 0x${c565.toString(16).toUpperCase().padStart(4,"0")}</span>
+輝度(相対) ≈ ${fmt(lum/255*100,0)}%　${lum>140?"→ 上に載せる文字は黒が読みやすい":"→ 上に載せる文字は白が読みやすい"}`;
+ };
+ $("#cxHex").addEventListener("input",e=>{
+  const m=e.target.value.trim().replace("#","");
+  if(/^[0-9a-fA-F]{6}$/.test(m))upd(parseInt(m.slice(0,2),16),parseInt(m.slice(2,4),16),parseInt(m.slice(4,6),16));
+  else if(/^[0-9a-fA-F]{3}$/.test(m))upd(parseInt(m[0]+m[0],16),parseInt(m[1]+m[1],16),parseInt(m[2]+m[2],16));
+ });
+ ["cxR","cxG","cxB"].forEach(id=>$("#"+id).addEventListener("input",()=>upd(+$("#cxR").value,+$("#cxG").value,+$("#cxB").value)));
+ $("#cxPick").addEventListener("input",e=>{const m=e.target.value.replace("#","");upd(parseInt(m.slice(0,2),16),parseInt(m.slice(2,4),16),parseInt(m.slice(4,6),16))});
+ upd(255,136,0);
+};
+
+function buildNav(){
+ const nav=$("#nav");
+ PAGES.forEach(p=>{
+  if(p.group){const g=document.createElement("div");g.className="nav-group";g.textContent=p.group;nav.appendChild(g);return}
+  const b=document.createElement("button");b.className="nav-item";b.textContent=p.label;b.dataset.id=p.id;
+  b.onclick=()=>{
+   document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));
+   b.classList.add("active");
+   RENDER[p.id]();
+   window.scrollTo({top:0});
+  };
+  nav.appendChild(b);
+ });
+ nav.querySelector(".nav-item").click();
+}
+/* =========================================================
+   関数電卓
+   ========================================================= */
+let calcExpr="", degMode=true;
+const KEYS_LAYOUT=[
+ ["sin","cos","tan","π","C"],
+ ["asin","acos","atan","e","⌫"],
+ ["log","ln","√","^","("],
+ ["7","8","9","/",")"],
+ ["4","5","6","*","%"],
+ ["1","2","3","-","Ans"],
+ ["0",".","±","+","="]
+];
+let lastAns=0;
+function calcInit(){
+ const keys=$("#calcKeys");
+ KEYS_LAYOUT.flat().forEach(k=>{
+  const b=document.createElement("button");
+  b.textContent=k;
+  if("+-*/^%()".includes(k)||["sin","cos","tan","asin","acos","atan","log","ln","√","π","e","±","Ans"].includes(k))b.className="op";
+  if(k==="=")b.className="eq";
+  b.onclick=()=>keyPress(k);
+  keys.appendChild(b);
+ });
+ $("#calcFab").onclick=()=>{$("#calcWin").classList.toggle("open")};
+ $("#calcClose").onclick=()=>$("#calcWin").classList.remove("open");
+ $("#calcClearHist").onclick=()=>$("#calcHist").innerHTML="";
+ $("#degToggle").onclick=()=>{degMode=!degMode;$("#degToggle").textContent=degMode?"DEG":"RAD";update()};
+ // ドラッグ移動
+ const win=$("#calcWin"),head=$("#calcHead");
+ let drag=null;
+ const start=(x,y)=>{const r=win.getBoundingClientRect();drag={dx:x-r.left,dy:y-r.top};win.style.right="auto"};
+ const move=(x,y)=>{if(!drag)return;win.style.left=Math.max(0,Math.min(x-drag.dx,innerWidth-80))+"px";win.style.top=Math.max(0,Math.min(y-drag.dy,innerHeight-60))+"px"};
+ head.addEventListener("mousedown",e=>{if(e.target.tagName!=="BUTTON"&&!e.target.classList.contains("deg-toggle")){start(e.clientX,e.clientY);e.preventDefault()}});
+ addEventListener("mousemove",e=>move(e.clientX,e.clientY));
+ addEventListener("mouseup",()=>drag=null);
+ head.addEventListener("touchstart",e=>{if(e.target.tagName!=="BUTTON"&&!e.target.classList.contains("deg-toggle")){const t=e.touches[0];start(t.clientX,t.clientY)}},{passive:true});
+ addEventListener("touchmove",e=>{if(drag){const t=e.touches[0];move(t.clientX,t.clientY)}},{passive:true});
+ addEventListener("touchend",()=>drag=null);
+ // キーボード入力
+ addEventListener("keydown",e=>{
+  if(!$("#calcWin").classList.contains("open"))return;
+  if(document.activeElement&&["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;
+  if(/^[0-9+\-*/().^%]$/.test(e.key)){keyPress(e.key)}
+  else if(e.key==="Enter"){keyPress("=");e.preventDefault()}
+  else if(e.key==="Backspace")keyPress("⌫");
+  else if(e.key==="Escape")$("#calcWin").classList.remove("open");
+ });
+}
+function keyPress(k){
+ if(k==="C"){calcExpr="";update();return}
+ if(k==="⌫"){
+  const m=calcExpr.match(/(asin|acos|atan|sin|cos|tan|log|ln|√|Ans)$/);
+  calcExpr=m?calcExpr.slice(0,-m[0].length):calcExpr.slice(0,-1);
+  update();return}
+ if(k==="="){evaluate();return}
+ if(k==="±"){
+  // 最後の数値の符号反転
+  const m=calcExpr.match(/(\d+\.?\d*)$/);
+  if(m){calcExpr=calcExpr.slice(0,-m[0].length)+"(-"+m[0]+")"}
+  update();return}
+ if(k==="√"){calcExpr+="sqrt(";update();return}
+ if(["sin","cos","tan","asin","acos","atan","log","ln"].includes(k)){calcExpr+=k+"(";update();return}
+ calcExpr+=k;update();
+}
+function update(){
+ $("#calcDisp").textContent=calcExpr||"\u00a0";
+ // ライブプレビュー
+ const v=tryEval(calcExpr);
+ $("#calcRes").textContent=(v==null)?(calcExpr?"…":"0"):fmtCalc(v);
+}
+function fmtCalc(v){
+ if(!isFinite(v))return "エラー";
+ if(Math.abs(v)>=1e10||(Math.abs(v)<1e-7&&v!==0))return v.toExponential(6);
+ return Number(v.toPrecision(10)).toString();
+}
+function tryEval(expr){
+ if(!expr)return null;
+ try{return calcEval(expr)}catch(e){return null}
+}
+function calcEval(expr){
+ // トークン検証
+ const ok=/^(\s|\d|\.|\+|\-|\*|\/|\(|\)|\^|%|π|e|Ans|sin|cos|tan|asin|acos|atan|log|ln|sqrt)+$/;
+ if(!ok.test(expr))throw new Error("invalid");
+ let s=expr
+  .replace(/Ans/g,`(${lastAns})`)
+  .replace(/π/g,"(F.PI)")
+  .replace(/\^/g,"**")
+  .replace(/%/g,"*0.01")
+  .replace(/(asin|acos|atan|sin|cos|tan|log|ln|sqrt)/g,"F.$1")
+  .replace(/(?<![a-zA-Z.])e(?![a-zA-Z0-9])/g,"(F.E)");
+ const rad=x=>degMode?x*Math.PI/180:x;
+ const inv=x=>degMode?x*180/Math.PI:x;
+ const F={
+  PI:Math.PI,E:Math.E,
+  sin:x=>Math.sin(rad(x)),cos:x=>Math.cos(rad(x)),tan:x=>Math.tan(rad(x)),
+  asin:x=>inv(Math.asin(x)),acos:x=>inv(Math.acos(x)),atan:x=>inv(Math.atan(x)),
+  log:Math.log10,ln:Math.log,sqrt:Math.sqrt
+ };
+ // 置換後の安全確認
+ if(/[a-zA-Z]/.test(s.replace(/F\.(PI|E|sin|cos|tan|asin|acos|atan|log|ln|sqrt)/g,"")))throw new Error("invalid");
+ const v=Function("F",`"use strict";return (${s})`)(F);
+ if(typeof v!=="number")throw new Error("invalid");
+ return v;
+}
+function evaluate(){
+ const v=tryEval(calcExpr);
+ if(v==null||!isFinite(v)){$("#calcRes").textContent="エラー";return}
+ lastAns=v;
+ const h=document.createElement("div");
+ h.textContent=`${calcExpr} = ${fmtCalc(v)}`;
+ h.onclick=()=>{calcExpr=String(fmtCalc(v));update()};
+ $("#calcHist").prepend(h);
+ calcExpr=fmtCalc(v);
+ update();
+}
+
+buildNav();
+calcInit();
+</script>
+</body>
+</html>

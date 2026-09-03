@@ -21,12 +21,14 @@
 <header>
   <div class="hd">
     <a class="brand" href="index.html">松戸技術革新センター<small>研究事業サイト — Matsudo Technology Innovation Center</small></a>
-    <nav aria-label="主要メニュー">
+    <button class="menubtn" aria-expanded="false" aria-controls="mainnav">メニュー</button>
+    <nav aria-label="主要メニュー" id="mainnav">
       <ul>
         <li><a href="research.html" aria-current="page">研究</a></li>
         <li><a href="products.html">開発製品</a></li>
         <li><a href="reports.html">レポート</a></li>
         <li><a href="news.html">ニュース</a></li>
+        <li><a href="tools/">技術支援</a></li>
         <li><a href="about.html">概要</a></li>
         <li><a href="contact.html">お問い合わせ</a></li>
       </ul>
@@ -114,6 +116,18 @@ document.addEventListener('DOMContentLoaded', function(){
     entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('shown'); io.unobserve(e.target);} });
   }, {threshold: 0.08});
   els.forEach(function(el){ io.observe(el); });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var btn = document.querySelector('.menubtn');
+  var nav = document.querySelector('.hd nav');
+  if(btn && nav){
+    btn.addEventListener('click', function(){
+      var open = nav.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
 });
 </script>
 </body>

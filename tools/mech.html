@@ -1,0 +1,2234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M-TIC 設計支援・メカ情報ツール</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F7F8F5;
+  --panel:#FFFFFF;
+  --ink:#20262E;
+  --ink2:#5A636E;
+  --grid:#E2E6DF;
+  --line:#C9CFC6;
+  --blue:#2456A6;
+  --blue-soft:#E8EEF8;
+  --red:#B23A2E;
+  --mono:'IBM Plex Mono',Consolas,monospace;
+  --sans:'IBM Plex Sans JP','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--sans);color:var(--ink);background:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  font-size:14px;line-height:1.6;
+}
+/* ===== 表題欄風ヘッダー ===== */
+header{
+  background:var(--panel);border-bottom:2px solid var(--ink);
+  display:flex;align-items:stretch;flex-wrap:wrap;
+}
+.tb-cell{border-right:1px solid var(--ink);padding:8px 16px;display:flex;flex-direction:column;justify-content:center}
+.tb-label{font-size:10px;color:var(--ink2);letter-spacing:.08em}
+.tb-value{font-size:16px;font-weight:700}
+.tb-title{flex:1;min-width:220px}
+.tb-title .tb-value{font-size:20px;letter-spacing:.04em}
+.tb-title .tb-value span{color:var(--blue)}
+.tb-stamp{
+  align-self:center;margin:6px 14px;width:44px;height:44px;border:2px solid var(--red);
+  border-radius:50%;color:var(--red);display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;transform:rotate(-8deg);flex-shrink:0;
+}
+/* ===== レイアウト ===== */
+.app{display:flex;min-height:calc(100vh - 62px)}
+nav{
+  width:216px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--ink);
+  padding:12px 0 80px;
+}
+.nav-group{padding:10px 14px 4px;font-size:11px;color:var(--ink2);letter-spacing:.1em;border-top:1px dashed var(--line);margin-top:8px}
+.nav-group:first-child{border-top:none;margin-top:0}
+.nav-item{
+  display:block;width:100%;text-align:left;padding:7px 14px 7px 22px;border:none;background:none;
+  font-family:var(--sans);font-size:13.5px;color:var(--ink);cursor:pointer;position:relative;
+}
+.nav-item:hover{background:var(--blue-soft)}
+.nav-item.active{background:var(--blue-soft);color:var(--blue);font-weight:700}
+.nav-item.active::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--blue)}
+main{flex:1;padding:20px 24px 120px;min-width:0}
+h2.page-title{font-size:19px;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:4px}
+.page-sub{color:var(--ink2);font-size:12.5px;margin-bottom:14px}
+.page-sub code{font-family:var(--mono)}
+/* ===== テーブル ===== */
+.tool-bar{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+input[type=text],input[type=number],select{
+  font-family:var(--mono);font-size:13.5px;padding:6px 9px;border:1px solid var(--ink);
+  border-radius:0;background:#fff;color:var(--ink);
+}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.data-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--ink)}
+table.data{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+table.data th{
+  background:var(--ink);color:#fff;font-weight:500;padding:6px 10px;text-align:left;
+  font-size:12px;white-space:nowrap;position:sticky;top:0;
+}
+table.data td{padding:5px 10px;border-bottom:1px solid var(--grid);font-family:var(--mono);white-space:nowrap}
+table.data td.jp{font-family:var(--sans)}
+table.data tr.sel-row{cursor:pointer}
+table.data tr.sel-row:hover{background:var(--blue-soft)}
+table.data tr.selected{background:var(--blue-soft);box-shadow:inset 3px 0 0 var(--blue)}
+/* ===== 詳細パネル ===== */
+.detail{
+  display:none;margin-top:16px;background:var(--panel);border:1px solid var(--ink);
+}
+.detail.open{display:grid;grid-template-columns:minmax(300px,420px) 1fr}
+.detail-draw{border-right:1px dashed var(--line);padding:14px;display:flex;align-items:center;justify-content:center;background:
+  linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:16px 16px;background-color:#FCFDFB}
+.detail-info{padding:14px 18px}
+.detail-info h3{font-size:16px;margin-bottom:8px;color:var(--blue)}
+.spec-grid{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;font-size:13.5px}
+.spec-grid dt{color:var(--ink2)}
+.spec-grid dd{font-family:var(--mono);font-weight:500}
+.note{margin-top:10px;font-size:12px;color:var(--ink2);border-left:3px solid var(--line);padding-left:8px}
+/* ===== 計算フォーム ===== */
+.calc-card{background:var(--panel);border:1px solid var(--ink);padding:16px 18px;margin-bottom:16px;max-width:760px}
+.calc-card h3{font-size:15px;margin-bottom:10px}
+.form-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.form-row label{display:flex;flex-direction:column;font-size:12px;color:var(--ink2);gap:3px}
+.result-box{
+  margin-top:10px;border:1px solid var(--blue);background:var(--blue-soft);padding:10px 14px;
+  font-family:var(--mono);font-size:14px;white-space:pre-wrap;display:none;
+}
+.result-box.show{display:block}
+.result-box .big{font-size:19px;font-weight:600;color:var(--blue)}
+.result-box .warn{color:var(--red);font-weight:600}
+button.act{
+  font-family:var(--sans);font-size:13.5px;font-weight:700;padding:7px 18px;cursor:pointer;
+  background:var(--blue);color:#fff;border:1px solid var(--blue);
+}
+button.act:hover{background:#1a4183}
+button.ghost{
+  font-family:var(--sans);font-size:12.5px;padding:5px 12px;cursor:pointer;
+  background:#fff;color:var(--ink);border:1px solid var(--ink);
+}
+button.ghost:hover{background:var(--blue-soft)}
+.preset-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+/* ===== SVG図面 ===== */
+svg text{font-family:var(--mono);font-size:11px;fill:var(--ink)}
+svg .dim{stroke:var(--blue);stroke-width:1;fill:none}
+svg .dimtxt{fill:var(--blue);font-size:11px}
+svg .body{stroke:var(--ink);stroke-width:1.6;fill:#fff}
+svg .hatch{stroke:var(--ink2);stroke-width:.7}
+svg .cl{stroke:var(--red);stroke-width:.7;stroke-dasharray:8 3 2 3}
+/* ===== 電卓 ===== */
+#calcFab{
+  position:fixed;right:22px;bottom:22px;z-index:900;width:58px;height:58px;border-radius:50%;
+  background:var(--ink);color:#fff;border:none;font-size:22px;cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.25);font-family:var(--mono);
+}
+#calcFab:hover{background:var(--blue)}
+#calcWin{
+  position:fixed;z-index:950;width:300px;background:var(--panel);border:2px solid var(--ink);
+  box-shadow:6px 6px 0 rgba(32,38,46,.18);display:none;top:90px;right:30px;
+}
+#calcWin.open{display:block}
+#calcHead{
+  background:var(--ink);color:#fff;padding:6px 10px;font-size:12.5px;cursor:move;
+  display:flex;justify-content:space-between;align-items:center;user-select:none;touch-action:none;
+}
+#calcHead button{background:none;border:none;color:#fff;font-size:15px;cursor:pointer;padding:0 4px}
+#calcDisp{
+  font-family:var(--mono);padding:8px 10px 2px;text-align:right;min-height:26px;font-size:13px;
+  color:var(--ink2);word-break:break-all;
+}
+#calcRes{font-family:var(--mono);padding:0 10px 8px;text-align:right;font-size:22px;font-weight:600;min-height:32px}
+#calcKeys{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border-top:1px solid var(--line)}
+#calcKeys button{
+  font-family:var(--mono);font-size:14px;padding:10px 0;border:none;background:var(--panel);cursor:pointer;
+}
+#calcKeys button:hover{background:var(--blue-soft)}
+#calcKeys button.op{background:#F0F2ED}
+#calcKeys button.eq{background:var(--blue);color:#fff}
+#calcKeys button.eq:hover{background:#1a4183}
+#calcHist{max-height:90px;overflow-y:auto;border-top:1px dashed var(--line);font-family:var(--mono);font-size:11.5px;padding:4px 10px;color:var(--ink2)}
+#calcHist div{cursor:pointer;padding:1px 0}
+#calcHist div:hover{color:var(--blue)}
+.deg-toggle{font-family:var(--mono);font-size:11px;background:var(--red);padding:1px 6px;border-radius:2px;cursor:pointer}
+/* footer note */
+.foot-note{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--ink);
+  font-size:11px;color:var(--ink2);padding:4px 14px;z-index:800}
+@media(max-width:860px){
+  .app{flex-direction:column}
+  nav{width:100%;display:flex;overflow-x:auto;padding:0}
+  .nav-group{display:none}
+  .nav-item{white-space:nowrap;padding:10px 12px}
+  .nav-item.active::before{left:0;right:0;top:auto;bottom:0;width:auto;height:3px}
+  .detail.open{grid-template-columns:1fr}
+  .detail-draw{border-right:none;border-bottom:1px dashed var(--line)}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tb-cell tb-title">
+    <span class="tb-label">名称 TITLE</span>
+    <span class="tb-value">M-TIC <span>設計支援・メカ情報ツール</span></span>
+  </div>
+  <div class="tb-cell">
+    <span class="tb-label">所属</span>
+    <span class="tb-value" style="font-size:13px">NPO法人 松戸技術革新センター</span>
+  </div>
+  <div class="tb-cell">
+    <span class="tb-label">版</span>
+    <span class="tb-value" style="font-size:13px;font-family:var(--mono)">Rev.5.0</span>
+  </div>
+</header>
+
+<div class="app">
+<nav id="nav"></nav>
+<main id="main"></main>
+</div>
+
+<button id="calcFab" title="関数電卓を開く">∑</button>
+
+<div id="calcWin" role="dialog" aria-label="関数電卓">
+  <div id="calcHead">
+    <span>関数電卓 <span class="deg-toggle" id="degToggle">DEG</span></span>
+    <span>
+      <button id="calcClearHist" title="履歴クリア">⌫</button>
+      <button id="calcClose" title="閉じる">×</button>
+    </span>
+  </div>
+  <div id="calcDisp">&nbsp;</div>
+  <div id="calcRes">0</div>
+  <div id="calcKeys"></div>
+  <div id="calcHist"></div>
+</div>
+
+<div class="foot-note">※ 本ツールの数値はJIS規格等に基づく<b>参考値</b>です。最終決定時は必ず最新の規格票・メーカーカタログで確認してください。文中の製品型番・規格名称は各社・各団体の商標または登録商標です。</div>
+
+<script>
+/* =========================================================
+   データベース
+   ========================================================= */
+// --- メートルねじ（並目 JIS B 0205 / 細目 JIS B 0207）---
+// [呼び, ピッチ, 種別]  有効径・谷径は式から算出
+const THREADS = [
+ ["M1.6",0.35,"並目"],["M2",0.4,"並目"],["M2.5",0.45,"並目"],["M3",0.5,"並目"],
+ ["M4",0.7,"並目"],["M5",0.8,"並目"],["M6",1.0,"並目"],["M8",1.25,"並目"],
+ ["M10",1.5,"並目"],["M12",1.75,"並目"],["M14",2.0,"並目"],["M16",2.0,"並目"],
+ ["M18",2.5,"並目"],["M20",2.5,"並目"],["M22",2.5,"並目"],["M24",3.0,"並目"],
+ ["M8",1.0,"細目"],["M10",1.25,"細目"],["M10",1.0,"細目"],["M12",1.5,"細目"],
+ ["M12",1.25,"細目"],["M16",1.5,"細目"],["M20",1.5,"細目"],["M24",2.0,"細目"]
+];
+// --- 六角穴付きボルト JIS B 1176 ---
+// size: [d, dk(頭径max), k(頭高), s(六角二面幅), キリ穴2級, 深ざぐり径]
+const CAPSCREW = [
+ ["M2",2,3.8,2,1.5,2.4,4.4],["M2.5",2.5,4.5,2.5,2,2.9,5.4],
+ ["M3",3,5.5,3,2.5,3.4,6.5],["M4",4,7,4,3,4.5,8],
+ ["M5",5,8.5,5,4,5.5,9.5],["M6",6,10,6,5,6.6,11],
+ ["M8",8,13,8,6,9,14],["M10",10,16,10,8,11,17.5],
+ ["M12",12,18,12,10,13.5,20],["M16",16,24,16,14,17.5,26],
+ ["M20",20,30,20,17,22,32]
+];
+// --- 六角ボルト JIS B 1180（本体規格＝ISO寸法）---
+// [呼び, d, s(二面幅), k(頭高), 備考]
+const HEXBOLT = [
+ ["M3",3,5.5,2,""],["M4",4,7,2.8,""],["M5",5,8,3.5,""],["M6",6,10,4,""],
+ ["M8",8,13,5.3,""],["M10",10,16,6.4,"附属書品(旧JIS)は s=17"],
+ ["M12",12,18,7.5,"附属書品(旧JIS)は s=19"],["M14",14,21,8.8,"附属書品は s=22"],
+ ["M16",16,24,10,""],["M20",20,30,12.5,""],["M24",24,36,15,""]
+];
+// --- 六角ナット JIS B 1181 ---
+// [呼び, d, s, m(1種/スタイル1), m3(3種/低)]
+const NUTS = [
+ ["M2",2,4,1.6,1.2],["M2.5",2.5,5,2,1.6],["M3",3,5.5,2.4,1.8],
+ ["M4",4,7,3.2,2.2],["M5",5,8,4.7,2.7],["M6",6,10,5.2,3.2],
+ ["M8",8,13,6.8,4],["M10",10,16,8.4,5],["M12",12,18,10.8,6],
+ ["M16",16,24,14.8,8],["M20",20,30,18,10]
+];
+// --- 平座金 JIS B 1256 並形 ---
+// [呼び, d1(内径), d2(外径), t]
+const WASHERS = [
+ ["M2",2.2,5,0.3],["M2.5",2.7,6,0.5],["M3",3.2,7,0.5],["M4",4.3,9,0.8],
+ ["M5",5.3,10,1],["M6",6.4,12,1.6],["M8",8.4,16,1.6],["M10",10.5,20,2],
+ ["M12",13,24,2.5],["M16",17,30,3],["M20",21,37,3]
+];
+// --- 深溝玉軸受 ---
+// [呼び番号, d, D, B, 系列]
+const BEARINGS = [
+ ["623",3,10,4,"62"],["624",4,13,5,"62"],["625",5,16,5,"62"],
+ ["626",6,19,6,"62"],["627",7,22,7,"62"],["628",8,24,8,"62"],
+ ["604",4,12,4,"60ミニ"],["605",5,14,5,"60ミニ"],["606",6,17,6,"60ミニ"],
+ ["607",7,19,6,"60ミニ"],["608",8,22,7,"60ミニ"],["609",9,24,7,"60ミニ"],
+ ["695",5,13,4,"69ミニ"],["696",6,15,5,"69ミニ"],
+ ["6800",10,19,5,"68"],["6801",12,21,5,"68"],["6802",15,24,5,"68"],
+ ["6900",10,22,6,"69"],["6901",12,24,6,"69"],["6902",15,28,7,"69"],
+ ["6000",10,26,8,"60"],["6001",12,28,8,"60"],["6002",15,32,9,"60"],
+ ["6003",17,35,10,"60"],["6004",20,42,12,"60"],["6005",25,47,12,"60"],
+ ["6200",10,30,9,"62"],["6201",12,32,10,"62"],["6202",15,35,11,"62"],
+ ["6203",17,40,12,"62"],["6204",20,47,14,"62"],
+ ["6300",10,35,11,"63"],["6301",12,37,12,"63"],["6302",15,42,13,"63"]
+];
+// --- 平行キー JIS B 1301 ---
+// [適用軸径, b, h, t1(軸溝深さ), t2(穴溝深さ)]
+const KEYS = [
+ ["6を超え8以下",2,2,1.2,1.0],["8を超え10以下",3,3,1.8,1.4],
+ ["10を超え12以下",4,4,2.5,1.8],["12を超え17以下",5,5,3.0,2.3],
+ ["17を超え22以下",6,6,3.5,2.8],["22を超え30以下",8,7,4.0,3.3],
+ ["30を超え38以下",10,8,5.0,3.3],["38を超え44以下",12,8,5.0,3.3],
+ ["44を超え50以下",14,9,5.5,3.8]
+];
+// --- C形止め輪 軸用 JIS B 2804 ---
+// [適用軸径d, 溝径d2, 板厚t, 溝幅m]
+const SNAPRINGS = [
+ [5,4.8,0.6,0.7],[6,5.7,0.7,0.8],[8,7.6,0.8,0.9],[10,9.6,1.0,1.15],
+ [12,11.5,1.0,1.15],[15,14.3,1.0,1.15],[17,16.2,1.0,1.15],
+ [20,19.0,1.2,1.35],[25,23.9,1.2,1.35]
+];
+// --- 平行ピン JIS B 1354 ---
+const PINS = [1,1.5,2,2.5,3,4,5,6,8,10,12];
+// --- 材料 ---
+// [名称, 分類, 密度g/cm3, 引張強さMPa, ヤング率GPa, 特徴]
+const MATERIALS = [
+ ["SS400","鉄鋼",7.85,"400〜510",206,"一般構造用。溶接性良好、安価。フレームやブラケットの定番"],
+ ["S45C","鉄鋼",7.85,"570(生材)〜690(調質)",205,"機械構造用炭素鋼。軸・シャフトの定番。焼入れ可"],
+ ["SUS304","ステンレス",7.93,"520以上",193,"耐食性◎。加工硬化しやすく切削はやや難。非磁性(加工で弱磁性化)"],
+ ["A5052","アルミ",2.68,"約260",70,"中強度・耐食性◎・曲げ加工向き。板金の定番"],
+ ["A2017（ジュラルミン）","アルミ",2.79,"約425",73,"高強度。切削性良好。耐食性は低め(要表面処理)"],
+ ["A7075(超々ジュラルミン)","アルミ",2.80,"約570",72,"アルミ最強クラス。ロボットの軽量高強度部品向き。溶接不可"],
+ ["C3604(快削黄銅)","銅合金",8.50,"約335",96,"切削性◎。ブッシュ・小物部品向き"],
+ ["POM（ポリアセタール）","樹脂",1.41,"約61",2.8,"摺動性◎・寸法安定性◎。ギア・ブッシュの定番。接着は難。商品名：ジュラコン®・デルリン®など"],
+ ["キャストナイロン（PA6）","樹脂",1.16,"約96",3.3,"強靭・耐摩耗。大型ギアやローラー向き。吸水で寸法変化あり。商品名：MCナイロン®など"],
+ ["ABS","樹脂",1.05,"約40",2.1,"3Dプリント・切削とも扱いやすい汎用樹脂"],
+ ["PLA(3Dプリント)","樹脂",1.24,"約50(造形条件で低下)",3.5,"印刷しやすいが熱に弱い(約60℃で軟化)。治具・試作向き"],
+ ["PC(ポリカーボネート)","樹脂",1.20,"約62",2.3,"耐衝撃性◎。透明カバーやガード向き"]
+];
+// --- はめあい JIS B 0401 ---
+const FIT_RANGES=[[0,3],[3,6],[6,10],[10,18],[18,30],[30,50],[50,80],[80,120]];
+const IT={5:[4,5,6,8,9,11,13,15],6:[6,8,9,11,13,16,19,22],7:[10,12,15,18,21,25,30,35],
+ 8:[14,18,22,27,33,39,46,54],9:[25,30,36,43,52,62,74,87],10:[40,48,58,70,84,100,120,140],
+ 11:[60,75,90,110,130,160,190,220]};
+const SHAFT_DEV={ // es(上) or ei(下) µm
+ e:{type:"es",v:[-14,-20,-25,-32,-40,-50,-60,-72]},
+ f:{type:"es",v:[-6,-10,-13,-16,-20,-25,-30,-36]},
+ g:{type:"es",v:[-2,-4,-5,-6,-7,-9,-10,-12]},
+ h:{type:"es",v:[0,0,0,0,0,0,0,0]},
+ js:{type:"js"},
+ k:{type:"ei",v:[0,1,1,1,2,2,2,3]},
+ m:{type:"ei",v:[2,4,6,7,8,9,11,13]},
+ n:{type:"ei",v:[4,8,10,12,15,17,20,23]},
+ p:{type:"ei",v:[6,12,15,18,22,26,32,37]}
+};
+const HOLE_DEV={
+ H:{type:"EI",v:[0,0,0,0,0,0,0,0]},
+ G:{type:"EI",v:[2,4,5,6,7,9,10,12]},
+ F:{type:"EI",v:[6,10,13,16,20,25,30,36]},
+ E:{type:"EI",v:[14,20,25,32,40,50,60,72]},
+ JS:{type:"js"},
+ K:{type:"ES7",v:[0,3,5,6,6,7,9,10]},   // 7級のみ
+ N:{type:"ES7",v:[-4,-4,-4,-5,-7,-8,-9,-10]},
+ P:{type:"ES7",v:[-6,-8,-9,-11,-14,-17,-21,-24]}
+};
+// ねじ強度区分 [表示, 耐力MPa]
+const STRENGTH=[["4.8 (一般鋼)",320],["8.8 (中強度)",640],["10.9 (高強度)",900],["12.9 (キャップスクリュー標準)",1080],["A2-70 (ステンレス)",450]];
+
+/* =========================================================
+   ユーティリティ
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const fmt=(x,n=3)=>Number(x.toFixed(n)).toString();
+const threadCalc=(d,p)=>({d2:d-0.6495*p, d1:d-1.0825*p, As:Math.PI/4*Math.pow((d-0.6495*p + d-1.2269*p)/2,2)});
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+/* ---- SVG 寸法線ヘルパー ---- */
+function dimH(x1,x2,y,label,off=0){
+ return `<line class="dim" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>
+ <line class="dim" x1="${x1}" y1="${y-4}" x2="${x1}" y2="${y+4}"/>
+ <line class="dim" x1="${x2}" y1="${y-4}" x2="${x2}" y2="${y+4}"/>
+ <text class="dimtxt" x="${(x1+x2)/2}" y="${y-5+off}" text-anchor="middle">${label}</text>`;
+}
+function dimV(x,y1,y2,label){
+ return `<line class="dim" x1="${x}" y1="${y1}" x2="${x}" y2="${y2}"/>
+ <line class="dim" x1="${x-4}" y1="${y1}" x2="${x+4}" y2="${y1}"/>
+ <line class="dim" x1="${x-4}" y1="${y2}" x2="${x+4}" y2="${y2}"/>
+ <text class="dimtxt" x="${x+7}" y="${(y1+y2)/2+4}">${label}</text>`;
+}
+
+/* =========================================================
+   図面描画（模式図・寸法入り）
+   ========================================================= */
+function svgWrap(inner,w=380,h=300){return `<svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:${w}px" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`}
+
+// 六角穴付きボルト
+function drawCapScrew(r){
+ const [nm,d,dk,k,s]=r;
+ const sc=Math.min(120/dk, 26); // scale
+ const DK=dk*sc, K=k*sc, D=d*sc, L=Math.min(d*3.2*sc,150);
+ const cx=120, topY=60;
+ let g="";
+ // 側面図
+ g+=`<rect class="body" x="${cx-DK/2}" y="${topY}" width="${DK}" height="${K}"/>`;
+ g+=`<rect class="body" x="${cx-D/2}" y="${topY+K}" width="${D}" height="${L}"/>`;
+ // ねじ山ハッチ
+ for(let y=topY+K+6;y<topY+K+L-2;y+=7){g+=`<line class="hatch" x1="${cx-D/2}" y1="${y+4}" x2="${cx+D/2}" y2="${y}"/>`}
+ g+=`<line class="cl" x1="${cx}" y1="${topY-12}" x2="${cx}" y2="${topY+K+L+12}"/>`;
+ // 六角穴（正面から見えるへこみ表現）
+ g+=`<rect class="hatch" x="${cx-s*sc/2}" y="${topY+3}" width="${s*sc}" height="${K-6}" fill="none" stroke-dasharray="3 2"/>`;
+ g+=dimH(cx-DK/2,cx+DK/2,topY-14,`dk ${dk}`);
+ g+=dimH(cx-D/2,cx+D/2,topY+K+L+18,`${nm}`);
+ g+=dimV(cx+DK/2+16,topY,topY+K,`k ${k}`);
+ // 上面図（六角穴）
+ const tx=300,ty=120,R=DK/2;
+ g+=`<circle class="body" cx="${tx}" cy="${ty}" r="${R}"/>`;
+ let hex="";const rs=s*sc/2/Math.cos(Math.PI/6);
+ for(let i=0;i<6;i++){const a=Math.PI/3*i+Math.PI/6;hex+=`${tx+rs*Math.cos(a)},${ty+rs*Math.sin(a)} `}
+ g+=`<polygon class="body" points="${hex}" fill="none"/>`;
+ g+=dimH(tx-s*sc/2,tx+s*sc/2,ty-R-10,`s ${s}`);
+ g+=`<text x="${tx}" y="${ty+R+18}" text-anchor="middle">上面（六角穴）</text>`;
+ return svgWrap(g,380,topY+K+L+40);
+}
+// 六角ボルト／ナット上面
+function hexTop(tx,ty,s,sc,holeD){
+ let g="";const rs=s*sc/2/Math.cos(Math.PI/6);let hex="";
+ for(let i=0;i<6;i++){const a=Math.PI/3*i+Math.PI/6;hex+=`${tx+rs*Math.cos(a)},${ty+rs*Math.sin(a)} `}
+ g+=`<polygon class="body" points="${hex}"/>`;
+ g+=`<circle class="body" cx="${tx}" cy="${ty}" r="${s*sc*0.5*0.95}" fill="none" stroke-dasharray="4 3" stroke-width="0.8"/>`;
+ if(holeD)g+=`<circle class="body" cx="${tx}" cy="${ty}" r="${holeD*sc/2}"/>`;
+ return g;
+}
+function drawHexBolt(r){
+ const [nm,d,s,k]=r;
+ const sc=Math.min(110/s,22);
+ const S=s*sc,K=k*sc,D=d*sc,L=Math.min(d*3*sc,140),cx=110,topY=60;
+ let g=`<rect class="body" x="${cx-S/2}" y="${topY}" width="${S}" height="${K}"/>
+ <rect class="body" x="${cx-D/2}" y="${topY+K}" width="${D}" height="${L}"/>`;
+ for(let y=topY+K+6;y<topY+K+L-2;y+=7){g+=`<line class="hatch" x1="${cx-D/2}" y1="${y+4}" x2="${cx+D/2}" y2="${y}"/>`}
+ g+=`<line class="cl" x1="${cx}" y1="${topY-12}" x2="${cx}" y2="${topY+K+L+12}"/>`;
+ g+=dimH(cx-S/2,cx+S/2,topY-14,`s ${s}`);
+ g+=dimV(cx+S/2+16,topY,topY+K,`k ${k}`);
+ g+=dimH(cx-D/2,cx+D/2,topY+K+L+18,nm);
+ g+=hexTop(295,130,s,sc,0);
+ g+=`<text x="295" y="${130+S/2+20}" text-anchor="middle">上面</text>`;
+ return svgWrap(g,380,topY+K+L+40);
+}
+function drawNut(r){
+ const [nm,d,s,m]=r;
+ const sc=Math.min(110/s,22);
+ const S=s*sc,M=m*sc,cx=110,topY=90;
+ let g=`<rect class="body" x="${cx-S/2}" y="${topY}" width="${S}" height="${M}"/>`;
+ // ねじ穴破線
+ g+=`<line class="hatch" x1="${cx-d*sc/2}" y1="${topY}" x2="${cx-d*sc/2}" y2="${topY+M}" stroke-dasharray="4 3"/>`;
+ g+=`<line class="hatch" x1="${cx+d*sc/2}" y1="${topY}" x2="${cx+d*sc/2}" y2="${topY+M}" stroke-dasharray="4 3"/>`;
+ g+=`<line class="cl" x1="${cx}" y1="${topY-14}" x2="${cx}" y2="${topY+M+14}"/>`;
+ g+=dimH(cx-S/2,cx+S/2,topY-14,`s ${s}`);
+ g+=dimV(cx+S/2+16,topY,topY+M,`m ${m}`);
+ g+=hexTop(290,140,s,sc,d);
+ g+=dimH(290-d*sc/2,290+d*sc/2,140-S/2-12,`ねじ ${nm}`);
+ return svgWrap(g,380,260);
+}
+function drawWasher(r){
+ const [nm,d1,d2,t]=r;
+ const sc=Math.min(140/d2,18);
+ const cx=120,cy=130;
+ let g=`<circle class="body" cx="${cx}" cy="${cy}" r="${d2*sc/2}"/>
+ <circle class="body" cx="${cx}" cy="${cy}" r="${d1*sc/2}"/>
+ <line class="cl" x1="${cx-d2*sc/2-12}" y1="${cy}" x2="${cx+d2*sc/2+12}" y2="${cy}"/>`;
+ g+=dimH(cx-d2*sc/2,cx+d2*sc/2,cy-d2*sc/2-12,`外径 ${d2}`);
+ g+=dimH(cx-d1*sc/2,cx+d1*sc/2,cy+d1*sc/2+16,`内径 ${d1}`,26);
+ const sx=300;
+ const T=Math.max(t*sc,4);
+ g+=`<rect class="body" x="${sx-T/2}" y="${cy-d2*sc/2}" width="${T}" height="${d2*sc}"/>`;
+ g+=dimH(sx-T/2,sx+T/2,cy-d2*sc/2-12,`t ${t}`);
+ g+=`<text x="${sx}" y="${cy+d2*sc/2+18}" text-anchor="middle">側面</text>`;
+ return svgWrap(g,380,270);
+}
+function drawBearing(r){
+ const [no,d,D,B]=r;
+ const sc=Math.min(180/D,10);
+ const cx=150,cy=140,Ro=D*sc/2,Ri=d*sc/2,W=B*sc;
+ const ringT=(Ro-Ri)*0.36, ballR=(Ro-Ri)*0.30;
+ let g="";
+ // 断面（上下）
+ for(const sgn of [-1,1]){
+  const yOut=cy+sgn*Ro, yOutIn=cy+sgn*(Ro-ringT);
+  const yInOut=cy+sgn*(Ri+ringT), yIn=cy+sgn*Ri;
+  g+=`<rect class="body" x="${cx-W/2}" y="${Math.min(yOut,yOutIn)}" width="${W}" height="${ringT}"/>`;
+  g+=`<rect class="body" x="${cx-W/2}" y="${Math.min(yInOut,yIn)}" width="${W}" height="${ringT}"/>`;
+  g+=`<circle class="body" cx="${cx}" cy="${cy+sgn*(Ri+(Ro-Ri)/2)}" r="${ballR}"/>`;
+ }
+ g+=`<line class="cl" x1="${cx-W/2-24}" y1="${cy}" x2="${cx+W/2+24}" y2="${cy}"/>`;
+ g+=dimV(cx-W/2-20,cy-Ro,cy+Ro,`φD ${D}`);
+ g+=dimV(cx+W/2+20,cy-Ri,cy+Ri,`φd ${d}`);
+ g+=dimH(cx-W/2,cx+W/2,cy-Ro-12,`B ${B}`);
+ g+=`<text x="${cx}" y="${cy+Ro+24}" text-anchor="middle">深溝玉軸受 ${no} 断面</text>`;
+ return svgWrap(g,380,300);
+}
+function drawKey(r){
+ const [range,b,h,t1,t2]=r;
+ // 代表軸径＝範囲上限
+ const dmax=parseFloat(range.match(/([0-9.]+)以下/)[1]);
+ const sc=Math.min(150/dmax,14);
+ const cx=120,cy=150,R=dmax*sc/2,Bw=b*sc,T1=t1*sc;
+ let g=`<circle class="body" cx="${cx}" cy="${cy}" r="${R}"/>`;
+ // キー溝
+ g+=`<rect class="body" x="${cx-Bw/2}" y="${cy-R-2}" width="${Bw}" height="${R-(R-T1)+2}" fill="#fff"/>`;
+ g+=`<line class="cl" x1="${cx-R-14}" y1="${cy}" x2="${cx+R+14}" y2="${cy}"/>
+ <line class="cl" x1="${cx}" y1="${cy-R-14}" x2="${cx}" y2="${cy+R+14}"/>`;
+ g+=dimH(cx-Bw/2,cx+Bw/2,cy-R-16,`b ${b}`);
+ g+=dimV(cx+R+22,cy-R+T1,cy+R,`d−t1`);
+ g+=`<text x="${cx}" y="${cy+R+28}" text-anchor="middle">軸断面（代表径 φ${dmax}）</text>`;
+ // キー本体
+ const kx=290,ky=120,Kb=b*sc,Kh=h*sc;
+ g+=`<rect class="body" x="${kx-Kb/2}" y="${ky}" width="${Kb}" height="${Kh}"/>`;
+ g+=dimH(kx-Kb/2,kx+Kb/2,ky-10,`b ${b}`);
+ g+=dimV(kx+Kb/2+14,ky,ky+Kh,`h ${h}`);
+ g+=`<text x="${kx}" y="${ky+Kh+20}" text-anchor="middle">キー断面</text>`;
+ return svgWrap(g,390,310);
+}
+function drawSnapRing(r){
+ const [d,d2,t,m]=r;
+ const sc=Math.min(120/d,14);
+ const cx=150,cy=130,R=d*sc/2,R2=d2*sc/2,M=Math.max(m*sc,4);
+ const L=140;
+ let g=`<rect class="body" x="${cx-L/2}" y="${cy-R}" width="${L}" height="${R*2}"/>`;
+ // 溝
+ g+=`<rect class="body" x="${cx+20-M/2}" y="${cy-R}" width="${M}" height="${R-R2}" fill="#fff"/>`;
+ g+=`<rect class="body" x="${cx+20-M/2}" y="${cy+R2}" width="${M}" height="${R-R2}" fill="#fff"/>`;
+ g+=`<line class="cl" x1="${cx-L/2-12}" y1="${cy}" x2="${cx+L/2+12}" y2="${cy}"/>`;
+ g+=dimV(cx-L/2-16,cy-R,cy+R,`φd ${d}`);
+ g+=dimV(cx+L/2+18,cy-R2,cy+R2,`溝径 ${d2}`);
+ g+=dimH(cx+20-M/2,cx+20+M/2,cy-R-12,`溝幅 ${m}`);
+ g+=`<text x="${cx}" y="${cy+R+26}" text-anchor="middle">軸の止め輪溝（板厚 t=${t}）</text>`;
+ return svgWrap(g,380,280);
+}
+function drawThread(r){
+ const [nm,p,kind]=r;
+ const d=parseFloat(nm.slice(1));
+ const t=threadCalc(d,p);
+ const sc=Math.min(200/d,30);
+ const cx=60,cy0=60,H=180;
+ const rD=d*sc/2, r2=t.d2*sc/2, r1=t.d1*sc/2;
+ const cxm=190;
+ let g=`<line class="cl" x1="${cxm}" y1="${cy0-14}" x2="${cxm}" y2="${cy0+H+14}"/>`;
+ // ねじ山プロファイル（左右）
+ const P=Math.max(p*sc,10);
+ for(const sgn of[-1,1]){
+  let path=`M ${cxm+sgn*r1} ${cy0}`;
+  for(let y=cy0;y<cy0+H-P;y+=P){
+   path+=` L ${cxm+sgn*rD} ${y+P/2} L ${cxm+sgn*r1} ${y+P}`;
+  }
+  g+=`<path class="body" d="${path}" fill="none"/>`;
+ }
+ g+=dimH(cxm-rD,cxm+rD,cy0-16,`外径 d=${d}`);
+ g+=dimH(cxm-r2,cxm+r2,cy0+H+20,`有効径 d2≈${fmt(t.d2)}`,0);
+ g+=dimH(cxm-r1,cxm+r1,cy0+H+44,`谷径 d1≈${fmt(t.d1)}`,0);
+ g+=dimV(cxm+rD+22,cy0+P/2,cy0+P*1.5,`P ${p}`);
+ return svgWrap(g,390,cy0+H+64);
+}
+function drawPin(dv){
+ const sc=Math.min(80/dv,20);
+ const D=dv*sc,L=170,cx=190,cy=120;
+ let g=`<rect class="body" x="${cx-L/2}" y="${cy-D/2}" width="${L}" height="${D}"/>`;
+ g+=`<line class="body" x1="${cx-L/2+8}" y1="${cy-D/2}" x2="${cx-L/2}" y2="${cy-D/2+3}"/>`;
+ g+=`<line class="cl" x1="${cx-L/2-12}" y1="${cy}" x2="${cx+L/2+12}" y2="${cy}"/>`;
+ g+=dimV(cx+L/2+18,cy-D/2,cy+D/2,`φ${dv}`);
+ g+=`<text x="${cx}" y="${cy+D/2+24}" text-anchor="middle">平行ピン（両端面取り）</text>`;
+ return svgWrap(g,380,220);
+}
+
+/* =========================================================
+   ページ定義
+   ========================================================= */
+const PAGES=[
+ {group:"ねじ・締結"},
+ {id:"thread",label:"メートルねじ 基準寸法"},
+ {id:"capscrew",label:"六角穴付きボルト"},
+ {id:"screwheads",label:"小ねじ・頭部形状いろいろ"},
+ {id:"hexbolt",label:"六角ボルト"},
+ {id:"nut",label:"六角ナット"},
+ {id:"washer",label:"平座金"},
+ {id:"setscrew",label:"止めねじ・セットカラー"},
+ {id:"pin",label:"平行ピン"},
+ {group:"軸まわり・案内"},
+ {id:"bearing",label:"深溝玉軸受"},
+ {id:"key",label:"平行キー・キー溝"},
+ {id:"snap",label:"C形止め輪（軸用）"},
+ {id:"ballscrew",label:"ボールねじ"},
+ {id:"linear",label:"リニアガイド"},
+ {group:"伝動"},
+ {id:"geartypes",label:"歯車の種類・遊星計算"},
+ {id:"drive",label:"歯車・ベルト・慣性計算"},
+ {id:"chain",label:"チェーン・スプロケット"},
+ {group:"機構・シミュレーション"},
+ {id:"linkage",label:"リンク機構シミュレータ"},
+ {id:"arm",label:"ロボットアーム FK/IK"},
+ {id:"crawler",label:"クローラ（履帯）"},
+ {id:"pulley",label:"滑車・ワイヤ"},
+ {id:"slidedoor",label:"戸車・スライド機構"},
+ {id:"suspension",label:"サスペンション・衝撃吸収"},
+ {group:"設計計算"},
+ {id:"fit",label:"はめあい公差計算"},
+ {id:"tap",label:"タップ下穴計算"},
+ {id:"bolt-strength",label:"ねじ強度計算"},
+ {id:"beam",label:"はり(梁)たわみ計算"},
+ {id:"motor",label:"モーター・減速比計算"},
+ {id:"friction",label:"摩擦・転がり抵抗"},
+ {id:"spring",label:"ばね計算"},
+ {id:"oring",label:"Oリング溝計算"},
+ {id:"unit",label:"単位変換"},
+ {group:"加工・仕上げ"},
+ {id:"milling",label:"切削条件（フライス）"},
+ {id:"print3d",label:"3Dプリント補正計算"},
+ {id:"plating",label:"表面処理・めっき"},
+ {id:"finishing",label:"塗装・やすり"},
+ {group:"資料"},
+ {id:"material",label:"材料データベース"},
+ {id:"surface",label:"表面粗さ・幾何公差メモ"}
+];
+
+/* ---- 汎用テーブルページ ---- */
+function tablePage(o){
+ // o: {title, std, cols, rows, rowHtml, detail(row), searchKey}
+ let html=`<h2 class="page-title">${o.title}</h2><p class="page-sub">${o.std}　<b>行をクリックすると図面と詳細を表示します。</b></p>
+ <div class="tool-bar"><input type="text" id="filt" placeholder="絞り込み（例: M3）" aria-label="絞り込み"></div>
+ <div class="data-wrap"><table class="data"><thead><tr>${o.cols.map(c=>`<th>${c}</th>`).join("")}</tr></thead><tbody id="tbody"></tbody></table></div>
+ <div class="detail" id="detail"><div class="detail-draw" id="ddraw"></div><div class="detail-info" id="dinfo"></div></div>`;
+ $("#main").innerHTML=html;
+ const render=q=>{
+  const tb=$("#tbody");tb.innerHTML="";
+  o.rows.forEach((r,i)=>{
+   const key=o.searchKey(r).toLowerCase();
+   if(q && !key.includes(q.toLowerCase()))return;
+   const tr=document.createElement("tr");
+   tr.className="sel-row";tr.innerHTML=o.rowHtml(r);
+   tr.onclick=()=>{
+    document.querySelectorAll("#tbody tr").forEach(x=>x.classList.remove("selected"));
+    tr.classList.add("selected");
+    const d=o.detail(r);
+    $("#ddraw").innerHTML=d.svg;
+    $("#dinfo").innerHTML=d.info;
+    $("#detail").classList.add("open");
+    $("#detail").scrollIntoView({behavior:"smooth",block:"nearest"});
+   };
+   tb.appendChild(tr);
+  });
+ };
+ render("");
+ $("#filt").addEventListener("input",e=>render(e.target.value.trim()));
+}
+function specList(pairs){return `<dl class="spec-grid">${pairs.map(p=>`<dt>${p[0]}</dt><dd>${p[1]}</dd>`).join("")}</dl>`}
+
+/* ---- 各ページ ---- */
+const RENDER={};
+
+RENDER.thread=()=>tablePage({
+ title:"メートルねじ 基準寸法",std:"JIS B 0205(並目)／B 0207(細目)準拠。有効径・谷径は基準山形の計算値。",
+ cols:["呼び","種別","ピッチ P","有効径 d2","谷径 d1","有効断面積 As mm²","下穴目安(75%)"],
+ rows:THREADS,
+ searchKey:r=>r[0]+r[2],
+ rowHtml:r=>{const d=parseFloat(r[0].slice(1)),t=threadCalc(d,r[1]);
+  return `<td>${r[0]}${r[2]==="細目"?"×"+r[1]:""}</td><td class="jp">${r[2]}</td><td>${r[1]}</td><td>${fmt(t.d2)}</td><td>${fmt(t.d1)}</td><td>${fmt(t.As,1)}</td><td>${fmt(d-1.299*r[1]*0.75,2)}</td>`},
+ detail:r=>{const d=parseFloat(r[0].slice(1)),t=threadCalc(d,r[1]);
+  return {svg:drawThread(r),info:`<h3>${r[0]}${r[2]==="細目"?"×"+r[1]:""}（${r[2]}）</h3>`+specList([
+   ["外径 d",d+" mm"],["ピッチ P",r[1]+" mm"],["有効径 d2",fmt(t.d2)+" mm"],["谷径 d1",fmt(t.d1)+" mm"],
+   ["有効断面積 As",fmt(t.As,1)+" mm²"],["下穴径(75%)",fmt(d-1.299*r[1]*0.75,2)+" mm"],["下穴径(≒d−P)",fmt(d-r[1],2)+" mm"]
+  ])+`<p class="note">下穴はひっかかり率75%基準。詳細は「タップ下穴計算」で任意の率を計算できます。</p>`}}
+});
+
+RENDER.capscrew=()=>tablePage({
+ title:"六角穴付きボルト（キャップスクリュー）",std:"JIS B 1176 準拠。キリ穴はJIS B 1001 2級。",
+ cols:["呼び","頭径 dk(max)","頭高 k","六角二面幅 s","キリ穴(2級)","深ざぐり径"],
+ rows:CAPSCREW,searchKey:r=>r[0],
+ rowHtml:r=>`<td>${r[0]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td>`,
+ detail:r=>({svg:drawCapScrew(r),info:`<h3>六角穴付きボルト ${r[0]}</h3>`+specList([
+  ["頭径 dk (max)",r[2]+" mm"],["頭高さ k",r[3]+" mm"],["六角二面幅 s",r[4]+" mm"],
+  ["通しキリ穴(2級)","φ"+r[5]+" mm"],["深ざぐり径","φ"+r[6]+" mm"],["ざぐり深さ目安","k＋0.5 mm 程度"]
+ ])+`<p class="note">強度区分12.9が標準。頭を沈める場合は深ざぐり径×(k+0.5)程度で加工するのが一般的です。</p>`})
+});
+
+RENDER.hexbolt=()=>tablePage({
+ title:"六角ボルト",std:"JIS B 1180 本体規格（ISO寸法）準拠。旧JIS(附属書品)と二面幅が違うサイズあり。",
+ cols:["呼び","二面幅 s","頭高 k","備考"],
+ rows:HEXBOLT,searchKey:r=>r[0],
+ rowHtml:r=>`<td>${r[0]}</td><td>${r[2]}</td><td>${r[3]}</td><td class="jp">${r[4]||"—"}</td>`,
+ detail:r=>({svg:drawHexBolt(r),info:`<h3>六角ボルト ${r[0]}</h3>`+specList([
+  ["二面幅 s",r[2]+" mm"],["頭高さ k",r[3]+" mm"],["対角寸法(約)",fmt(r[2]/Math.cos(Math.PI/6),1)+" mm"]
+ ])+(r[4]?`<p class="note">⚠ ${esc(r[4])}。工具・在庫と混在しやすいので要注意。</p>`:"")})
+});
+
+RENDER.nut=()=>tablePage({
+ title:"六角ナット",std:"JIS B 1181 準拠。スタイル1(1種相当)と低ナット(3種相当)。",
+ cols:["呼び","二面幅 s","高さ m(1種)","高さ(3種/低)"],
+ rows:NUTS,searchKey:r=>r[0],
+ rowHtml:r=>`<td>${r[0]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td>`,
+ detail:r=>({svg:drawNut(r),info:`<h3>六角ナット ${r[0]}</h3>`+specList([
+  ["二面幅 s",r[2]+" mm"],["高さ m（1種）",r[3]+" mm"],["高さ（3種・低）",r[4]+" mm"],
+  ["対角寸法(約)",fmt(r[2]/Math.cos(Math.PI/6),1)+" mm"]
+ ])+`<p class="note">ゆるみ止めが必要ならナイロンナットやダブルナット、ねじロック剤の併用を検討。</p>`})
+});
+
+RENDER.washer=()=>tablePage({
+ title:"平座金（並形）",std:"JIS B 1256 準拠。",
+ cols:["呼び","内径 d1","外径 d2","厚さ t"],
+ rows:WASHERS,searchKey:r=>r[0],
+ rowHtml:r=>`<td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td>`,
+ detail:r=>({svg:drawWasher(r),info:`<h3>平座金 ${r[0]}（並形）</h3>`+specList([
+  ["内径 d1",r[1]+" mm"],["外径 d2",r[2]+" mm"],["厚さ t",r[3]+" mm"]
+ ])+`<p class="note">アルミや樹脂など柔らかい相手材への締結では座面陥没防止に有効。長穴には大径の「大形」も検討。</p>`})
+});
+
+RENDER.bearing=()=>tablePage({
+ title:"深溝玉軸受",std:"呼び番号系列（604/608/62x/68xx/69xx/60xx/62xx/63xx）。ZZ=両シールド, 2RS=両接触シール。",
+ cols:["呼び番号","内径 d","外径 D","幅 B","系列"],
+ rows:BEARINGS,searchKey:r=>r[0]+" "+r[1],
+ rowHtml:r=>`<td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td class="jp">${r[4]}</td>`,
+ detail:r=>({svg:drawBearing(r),info:`<h3>深溝玉軸受 ${r[0]}</h3>`+specList([
+  ["内径 d",r[1]+" mm"],["外径 D",r[2]+" mm"],["幅 B",r[3]+" mm"],
+  ["軸のはめあい目安","js6〜k5（回転軸・普通荷重）"],["ハウジング目安","H7（外輪静止・普通荷重）"]
+ ])+`<p class="note">はめあいは荷重条件・回転側で変わります。詳細は「はめあい公差計算」で数値を確認できます。</p>`})
+});
+
+RENDER.key=()=>tablePage({
+ title:"平行キー・キー溝",std:"JIS B 1301 準拠。t1=軸側溝深さ, t2=穴(ボス)側溝深さ。",
+ cols:["適用軸径 d","キー b×h","軸溝深さ t1","穴溝深さ t2"],
+ rows:KEYS,searchKey:r=>r[0]+r[1],
+ rowHtml:r=>`<td class="jp">${r[0]}</td><td>${r[1]}×${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td>`,
+ detail:r=>({svg:drawKey(r),info:`<h3>平行キー ${r[1]}×${r[2]}</h3>`+specList([
+  ["適用軸径",r[0]+" mm"],["キー幅 b",r[1]+" mm"],["キー高さ h",r[2]+" mm"],
+  ["軸溝深さ t1",r[3]+" mm"],["穴溝深さ t2",r[4]+" mm"],["溝幅公差の例","軸: N9 ／ 穴: Js9（普通形）"]
+ ])+`<p class="note">キー長さは軸径の1.5倍程度が目安。ロボットの小径軸ではDカット＋止めねじやイモねじ2本の方が加工が楽な場合も多いです。</p>`})
+});
+
+RENDER.snap=()=>tablePage({
+ title:"C形止め輪（軸用）",std:"JIS B 2804 準拠（主要サイズ抜粋）。",
+ cols:["適用軸径 d","溝径 d2","板厚 t","溝幅 m"],
+ rows:SNAPRINGS,searchKey:r=>String(r[0]),
+ rowHtml:r=>`<td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td>`,
+ detail:r=>({svg:drawSnapRing(r),info:`<h3>C形止め輪 軸用 呼び${r[0]}</h3>`+specList([
+  ["適用軸径 d","φ"+r[0]+" mm"],["溝径 d2","φ"+r[1]+" mm"],["板厚 t",r[2]+" mm"],["溝幅 m",r[3]+" mm"]
+ ])+`<p class="note">組付けには止め輪プライヤー(軸用)が必要。小径ではE形止め輪の方が着脱が楽です。</p>`})
+});
+
+RENDER.pin=()=>tablePage({
+ title:"平行ピン",std:"JIS B 1354 準拠。公差はm6(打込み)またはh7(すきま)が一般的。",
+ cols:["呼び径","m6公差の実寸法","h7公差の実寸法"],
+ rows:PINS.map(d=>[d]),searchKey:r=>String(r[0]),
+ rowHtml:r=>{
+  const m6=fitCalcOne(r[0],"shaft","m",6), h7=fitCalcOne(r[0],"shaft","h",7);
+  return `<td>φ${r[0]}</td><td>${m6}</td><td>${h7}</td>`},
+ detail:r=>({svg:drawPin(r[0]),info:`<h3>平行ピン φ${r[0]}</h3>`+specList([
+  ["m6（打込み用）",fitCalcOne(r[0],"shaft","m",6)+" mm"],
+  ["h7（すきま用）",fitCalcOne(r[0],"shaft","h",7)+" mm"],
+  ["位置決め穴の例","H7リーマ仕上げ"]
+ ])+`<p class="note">2部品の位置決めは「ピン2本＋ボルト締結」が基本。ピン間距離はなるべく離すと角度精度が出ます。</p>`})
+});
+
+/* ---- 材料 ---- */
+RENDER.material=()=>{
+ let html=`<h2 class="page-title">材料データベース</h2><p class="page-sub">ロボット・機械設計でよく使う材料の代表値。値は代表値・目安です。</p>
+ <div class="data-wrap"><table class="data"><thead><tr><th>材料</th><th>分類</th><th>密度 g/cm³</th><th>引張強さ MPa</th><th>ヤング率 GPa</th><th>特徴・用途</th></tr></thead><tbody>`;
+ MATERIALS.forEach(m=>{html+=`<tr><td class="jp"><b>${m[0]}</b></td><td class="jp">${m[1]}</td><td>${m[2]}</td><td>${m[3]}</td><td>${m[4]}</td><td class="jp" style="white-space:normal;min-width:240px">${m[5]}</td></tr>`});
+ html+=`</tbody></table></div>
+ <div class="calc-card" style="margin-top:16px"><h3>質量クイック計算</h3>
+ <div class="form-row">
+  <label>材料<select id="mMat">${MATERIALS.map((m,i)=>`<option value="${m[2]}">${m[0]}</option>`).join("")}</select></label>
+  <label>形状<select id="mShape"><option value="plate">板 (縦×横×厚)</option><option value="rod">丸棒 (径×長さ)</option><option value="pipe">パイプ (外径×内径×長さ)</option></select></label>
+ </div>
+ <div class="form-row" id="mDims"></div>
+ <button class="act" id="mGo">計算</button>
+ <div class="result-box" id="mRes"></div></div>`;
+ $("#main").innerHTML=html;
+ const dimSets={
+  plate:[["縦 mm","mA",100],["横 mm","mB",100],["厚さ mm","mC",5]],
+  rod:[["直径 mm","mA",10],["長さ mm","mB",100]],
+  pipe:[["外径 mm","mA",20],["内径 mm","mB",16],["長さ mm","mC",100]]
+ };
+ const renderDims=()=>{ $("#mDims").innerHTML=dimSets[$("#mShape").value].map(d=>`<label>${d[0]}<input type="number" id="${d[1]}" value="${d[2]}" step="any"></label>`).join("") };
+ renderDims();
+ $("#mShape").onchange=renderDims;
+ $("#mGo").onclick=()=>{
+  const rho=parseFloat($("#mMat").value);const s=$("#mShape").value;
+  const A=parseFloat($("#mA").value),B=parseFloat($("#mB").value),C=$("#mC")?parseFloat($("#mC").value):0;
+  let v=0;
+  if(s==="plate")v=A*B*C;
+  else if(s==="rod")v=Math.PI/4*A*A*B;
+  else v=Math.PI/4*(A*A-B*B)*C;
+  if(!(v>0)){show("#mRes","<span class='warn'>寸法を確認してください</span>");return}
+  const g=v/1000*rho;
+  show("#mRes",`体積: ${fmt(v/1000,2)} cm³\n<span class="big">質量 ≈ ${g<1000?fmt(g,1)+" g":fmt(g/1000,3)+" kg"}</span>`);
+ };
+};
+
+function show(sel,html){const el=$(sel);el.innerHTML=html;el.classList.add("show")}
+
+/* ---- はめあい ---- */
+function fitRange(D){for(let i=0;i<FIT_RANGES.length;i++){if(D>FIT_RANGES[i][0]&&D<=FIT_RANGES[i][1])return i}return -1}
+// 単品公差を "上/下" 文字列で返す（µm→mm表記）
+function fitCalcOne(D,kind,letter,grade){
+ const ri=fitRange(D);if(ri<0)return "範囲外";
+ const it=IT[grade]?IT[grade][ri]:null;if(it==null)return "等級未対応";
+ let hi,lo;
+ if(kind==="shaft"){
+  const dev=SHAFT_DEV[letter];if(!dev)return "未対応";
+  if(dev.type==="js"){hi=it/2;lo=-it/2}
+  else if(dev.type==="es"){hi=dev.v[ri];lo=hi-it}
+  else{lo=dev.v[ri];hi=lo+it}
+ }else{
+  const dev=HOLE_DEV[letter];if(!dev)return "未対応";
+  if(dev.type==="js"){hi=it/2;lo=-it/2}
+  else if(dev.type==="EI"){lo=dev.v[ri];hi=lo+it}
+  else{if(grade!==7)return "7級のみ対応";hi=dev.v[ri];lo=hi-it}
+ }
+ const f=x=>(x>=0?"+":"")+fmt(x/1000,4);
+ return `${f(hi)} / ${f(lo)}`;
+}
+function fitLimits(D,kind,letter,grade){
+ const s=fitCalcOne(D,kind,letter,grade);
+ if(s.includes("/")===false)return null;
+ const [hi,lo]=s.split(" / ").map(parseFloat);
+ return {hi,lo};
+}
+RENDER.fit=()=>{
+ const holeOpts=["H6","H7","H8","H9","G7","F7","F8","E8","JS7","K7","N7","P7"];
+ const shaftOpts=["e8","f6","f7","g5","g6","h5","h6","h7","h8","h9","js5","js6","js7","k5","k6","m6","n6","p6"];
+ const presets=[["H7/g6","精密すきま(位置決め・摺動)"],["H7/h6","すきま最小(手ではめる)"],["H7/js6","中間(軽圧入)"],["H7/k6","中間(たたき込み・ベアリング軸)"],["H7/m6","中間(強め)"],["H7/p6","しまり(圧入)"],["H8/f7","すきま(回転・潤滑)"],["H8/e8","粗いすきま"]];
+ $("#main").innerHTML=`<h2 class="page-title">はめあい公差計算</h2>
+ <p class="page-sub">JIS B 0401 準拠。基準寸法 1〜120 mm、IT5〜IT11に対応。</p>
+ <div class="calc-card">
+ <div class="preset-row">${presets.map(p=>`<button class="ghost" data-fit="${p[0]}" title="${p[1]}">${p[0]}</button>`).join("")}</div>
+ <div class="form-row">
+  <label>基準寸法 mm<input type="number" id="fD" value="10" step="any" min="1" max="120"></label>
+  <label>穴<select id="fH">${holeOpts.map(o=>`<option${o==="H7"?" selected":""}>${o}</option>`).join("")}</select></label>
+  <label>軸<select id="fS">${shaftOpts.map(o=>`<option${o==="g6"?" selected":""}>${o}</option>`).join("")}</select></label>
+ </div>
+ <button class="act" id="fGo">計算</button>
+ <div class="result-box" id="fRes"></div>
+ <p class="note">プリセットの用途例 — H7/g6: リニアブッシュ・位置決めピン ／ H7/k6: ベアリング内輪と回転軸 ／ H7/p6: 圧入固定</p>
+ </div>`;
+ const go=()=>{
+  const D=parseFloat($("#fD").value);
+  const h=$("#fH").value, s=$("#fS").value;
+  const hL=h.match(/[A-Z]+/)[0], hG=parseInt(h.match(/\d+/)[0]);
+  const sL=s.match(/[a-z]+/)[0], sG=parseInt(s.match(/\d+/)[0]);
+  const H=fitLimits(D,"hole",hL,hG), S=fitLimits(D,"shaft",sL,sG);
+  if(!H||!S){show("#fRes","<span class='warn'>この組合せ・寸法は未対応です（1〜120mm、穴K/N/Pは7級のみ）</span>");return}
+  const holeMax=D+H.hi,holeMin=D+H.lo,shMax=D+S.hi,shMin=D+S.lo;
+  const cMax=holeMax-shMin, cMin=holeMin-shMax;
+  let judge, jc="";
+  if(cMin>=0)judge="すきまばめ";
+  else if(cMax<=0)judge="しまりばめ";
+  else judge="中間ばめ";
+  const f=x=>fmt(x,3);
+  show("#fRes",
+`基準寸法 φ${D}  ${h}/${s}
+────────────────────────
+穴 ${h}: ${f(holeMax)} 〜 ${f(holeMin)}  (${fitCalcOne(D,"hole",hL,hG)})
+軸 ${s}: ${f(shMax)} 〜 ${f(shMin)}  (${fitCalcOne(D,"shaft",sL,sG)})
+────────────────────────
+最大すきま: ${cMax>=0?"+":""}${f(cMax)} mm
+最小すきま: ${cMin>=0?"+":""}${f(cMin)} mm ${cMin<0?"(=しめしろ "+f(-cMin)+")":""}
+<span class="big">判定: ${judge}</span>`);
+ };
+ $("#fGo").onclick=go;
+ document.querySelectorAll("[data-fit]").forEach(b=>b.onclick=()=>{
+  const [h,s]=b.dataset.fit.split("/");$("#fH").value=h;$("#fS").value=s;go();
+ });
+ go();
+};
+
+/* ---- タップ下穴 ---- */
+RENDER.tap=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">タップ下穴計算</h2>
+ <p class="page-sub">下穴径 = 呼び径 − 1.299 × P × (ひっかかり率/100)。一般には75%前後、樹脂・アルミなど柔らかい材料は高め(80〜85%)が目安。</p>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>ねじ<select id="tSel">${THREADS.map((t,i)=>`<option value="${i}">${t[0]}${t[2]==="細目"?"×"+t[1]:""} (${t[2]})</option>`).join("")}</select></label>
+  <label>ひっかかり率 %<input type="number" id="tRate" value="75" min="50" max="100"></label>
+ </div>
+ <button class="act" id="tGo">計算</button>
+ <div class="result-box" id="tRes"></div>
+ </div>
+ <div class="calc-card"><h3>よく使う並目の早見表（75%）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>呼び</th><th>ピッチ</th><th>下穴計算値</th><th>実用キリ径の目安</th></tr></thead><tbody>
+ ${THREADS.filter(t=>t[2]==="並目").map(t=>{const d=parseFloat(t[0].slice(1));const c=d-1.299*t[1]*0.75;
+   return `<tr><td>${t[0]}</td><td>${t[1]}</td><td>${fmt(c,2)}</td><td>${fmt(Math.round(c*10)/10,1)}</td></tr>`}).join("")}
+ </tbody></table></div></div>`;
+ $("#tGo").onclick=()=>{
+  const t=THREADS[parseInt($("#tSel").value)];
+  const d=parseFloat(t[0].slice(1)),rate=parseFloat($("#tRate").value);
+  const hole=d-1.299*t[1]*rate/100;
+  show("#tRes",`${t[0]}${t[2]==="細目"?"×"+t[1]:""}  ひっかかり率 ${rate}%\n<span class="big">下穴径 ≈ φ${fmt(hole,2)} mm</span>\n参考: 谷径 d1 = ${fmt(d-1.0825*t[1],3)} mm（これより小さい下穴はNG）`);
+ };
+};
+
+/* ---- ねじ強度 ---- */
+RENDER["bolt-strength"]=()=>{
+ const coarse=THREADS.filter(t=>t[2]==="並目");
+ $("#main").innerHTML=`<h2 class="page-title">ねじ強度計算（軸方向引張）</h2>
+ <p class="page-sub">許容荷重 = 有効断面積 As × 耐力 ÷ 安全率。静荷重の目安計算です（せん断・疲労・座面陥没は別途検討）。</p>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>サイズ<select id="bSel">${coarse.map((t,i)=>`<option value="${i}"${t[0]==="M3"?" selected":""}>${t[0]}</option>`).join("")}</select></label>
+  <label>強度区分<select id="bStr">${STRENGTH.map((s,i)=>`<option value="${s[1]}"${i===3?" selected":""}>${s[0]}</option>`).join("")}</select></label>
+  <label>安全率<input type="number" id="bSf" value="3" step="any" min="1"></label>
+ </div>
+ <button class="act" id="bGo">計算</button>
+ <div class="result-box" id="bRes"></div>
+ <p class="note">安全率の目安: 静荷重3、繰返し荷重5〜8、衝撃荷重12。ロボットの駆動部など振動がある箇所は大きめに。</p>
+ </div>`;
+ $("#bGo").onclick=()=>{
+  const t=coarse[parseInt($("#bSel").value)];
+  const d=parseFloat(t[0].slice(1));
+  const As=threadCalc(d,t[1]).As;
+  const sy=parseFloat($("#bStr").value),sf=parseFloat($("#bSf").value);
+  const F=As*sy/sf;
+  show("#bRes",`${t[0]} 並目  As=${fmt(As,1)} mm²  耐力 ${sy} MPa  安全率 ${sf}
+<span class="big">許容引張荷重 ≈ ${F>=1000?fmt(F/1000,2)+" kN":fmt(F,0)+" N"}</span>（約 ${fmt(F/9.80665,0)} kgf）
+締付けトルク目安(T=0.2Fd, 軸力=許容の70%): ${fmt(0.2*F*0.7*d/1000,2)} N·m`);
+ };
+};
+
+/* ---- はり計算 ---- */
+RENDER.beam=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">はり(梁)のたわみ・応力計算</h2>
+ <p class="page-sub">集中荷重。フレームやアーム剛性のあたり付けに。</p>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>支持条件<select id="beamSup"><option value="cant">片持ち・先端荷重</option><option value="simple">両端支持・中央荷重</option><option value="fixed">両端固定・中央荷重</option></select></label>
+  <label>断面<select id="beamSec"><option value="rect">長方形 b×h</option><option value="round">丸棒 φd</option><option value="pipe">パイプ φD×φd</option></select></label>
+  <label>材料(E)<select id="beamMat">${MATERIALS.map(m=>`<option value="${m[4]}">${m[0]} (E=${m[4]}GPa)</option>`).join("")}</select></label>
+ </div>
+ <div class="form-row" id="beamDims"></div>
+ <div class="form-row">
+  <label>荷重 P [N]<input type="number" id="beamP" value="50" step="any"></label>
+  <label>長さ L [mm]<input type="number" id="beamL" value="200" step="any"></label>
+ </div>
+ <button class="act" id="beamGo">計算</button>
+ <div class="result-box" id="beamRes"></div>
+ <p class="note">たわみ式 — 片持ち: PL³/3EI ／ 両端支持: PL³/48EI ／ 両端固定: PL³/192EI。応力は最大曲げモーメント位置の表面応力。</p>
+ </div>`;
+ const dimSets={
+  rect:[["幅 b mm","sA",20],["高さ h mm","sB",5]],
+  round:[["直径 d mm","sA",10]],
+  pipe:[["外径 D mm","sA",12],["内径 d mm","sB",10]]
+ };
+ const rd=()=>{$("#beamDims").innerHTML=dimSets[$("#beamSec").value].map(d=>`<label>${d[0]}<input type="number" id="${d[1]}" value="${d[2]}" step="any"></label>`).join("")};
+ rd();$("#beamSec").onchange=rd;
+ $("#beamGo").onclick=()=>{
+  const sec=$("#beamSec").value;
+  const A=parseFloat($("#sA").value),B=$("#sB")?parseFloat($("#sB").value):0;
+  let I,Z;
+  if(sec==="rect"){I=A*Math.pow(B,3)/12;Z=A*B*B/6}
+  else if(sec==="round"){I=Math.PI*Math.pow(A,4)/64;Z=Math.PI*Math.pow(A,3)/32}
+  else{I=Math.PI*(Math.pow(A,4)-Math.pow(B,4))/64;Z=I/(A/2)}
+  const E=parseFloat($("#beamMat").value)*1000; // GPa→MPa(N/mm²)
+  const P=parseFloat($("#beamP").value),L=parseFloat($("#beamL").value);
+  const sup=$("#beamSup").value;
+  const coef=sup==="cant"?3:(sup==="simple"?48:192);
+  const delta=P*Math.pow(L,3)/(coef*E*I);
+  const M=sup==="cant"?P*L:(sup==="simple"?P*L/4:P*L/8);
+  const sig=M/Z;
+  show("#beamRes",`断面二次モーメント I = ${fmt(I,1)} mm⁴　断面係数 Z = ${fmt(Z,1)} mm³
+<span class="big">たわみ δ ≈ ${fmt(delta,3)} mm</span>
+最大曲げ応力 σ ≈ ${fmt(sig,1)} MPa${sig>100?'　<span class="warn">応力が大きめ。材料の耐力と比較を</span>':""}`);
+ };
+};
+
+/* ---- モーター ---- */
+RENDER.motor=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">モーター・減速比計算</h2>
+ <div class="calc-card"><h3>① トルク・回転数 → 出力</h3>
+ <div class="form-row">
+  <label>トルク T [N·m]<input type="number" id="mT" value="0.5" step="any"></label>
+  <label>回転数 n [rpm]<input type="number" id="mN" value="100" step="any"></label>
+ </div>
+ <button class="act" id="mGo1">計算</button><div class="result-box" id="mRes1"></div></div>
+ <div class="calc-card"><h3>② 減速機構の出力</h3>
+ <div class="form-row">
+  <label>入力トルク [N·m]<input type="number" id="gT" value="0.2" step="any"></label>
+  <label>入力回転数 [rpm]<input type="number" id="gN" value="1000" step="any"></label>
+  <label>減速比 (i:1)<input type="number" id="gR" value="10" step="any"></label>
+  <label>効率 %<input type="number" id="gE" value="85" step="any"></label>
+ </div>
+ <button class="act" id="mGo2">計算</button><div class="result-box" id="mRes2"></div>
+ <p class="note">効率目安: 平歯車1段 95〜98%、遊星1段 90〜97%、ウォーム 40〜85%、タイミングベルト 95〜98%</p></div>
+ <div class="calc-card"><h3>③ 車輪駆動のあたり計算</h3>
+ <div class="form-row">
+  <label>機体質量 [kg]<input type="number" id="wM" value="5" step="any"></label>
+  <label>車輪径 [mm]<input type="number" id="wD" value="60" step="any"></label>
+  <label>希望速度 [m/s]<input type="number" id="wV" value="0.5" step="any"></label>
+  <label>駆動輪数<input type="number" id="wN" value="2" min="1"></label>
+  <label>登坂角 [°]<input type="number" id="wA" value="0" step="any"></label>
+ </div>
+ <button class="act" id="mGo3">計算</button><div class="result-box" id="mRes3"></div></div>`;
+ $("#mGo1").onclick=()=>{const T=+$("#mT").value,n=+$("#mN").value;
+  show("#mRes1",`<span class="big">出力 P = ${fmt(2*Math.PI*n*T/60,2)} W</span>`)};
+ $("#mGo2").onclick=()=>{const T=+$("#gT").value,n=+$("#gN").value,r=+$("#gR").value,e=+$("#gE").value/100;
+  show("#mRes2",`<span class="big">出力トルク ≈ ${fmt(T*r*e,3)} N·m</span>\n出力回転数 = ${fmt(n/r,1)} rpm`)};
+ $("#mGo3").onclick=()=>{
+  const m=+$("#wM").value,D=+$("#wD").value/1000,v=+$("#wV").value,nw=+$("#wN").value,a=+$("#wA").value*Math.PI/180;
+  const g=9.80665,Crr=0.02;
+  const F=m*g*(Math.sin(a)+Crr*Math.cos(a))*1.5; // 加速余裕1.5倍
+  const Tw=F*D/2/nw, rpm=v/(Math.PI*D)*60;
+  show("#mRes3",`必要駆動力(余裕1.5倍込) ≈ ${fmt(F,1)} N
+<span class="big">1輪あたり必要トルク ≈ ${fmt(Tw,3)} N·m</span>
+車輪回転数 = ${fmt(rpm,0)} rpm　(Crr=0.02仮定。詳細は「摩擦・転がり抵抗」ページで)`)};
+};
+
+/* ---- 単位変換 ---- */
+RENDER.unit=()=>{
+ const groups=[
+  {name:"長さ",units:[["mm",1],["cm",10],["m",1000],["inch",25.4],["mil(thou)",0.0254]]},
+  {name:"力",units:[["N",1],["kgf",9.80665],["lbf",4.44822]]},
+  {name:"トルク",units:[["N·m",1],["N·mm",0.001],["kgf·cm",0.0980665],["gf·cm",0.0000980665],["oz·in",0.00706155]]},
+  {name:"圧力・応力",units:[["MPa (N/mm²)",1],["kgf/mm²",9.80665],["kgf/cm²",0.0980665],["psi",0.00689476],["GPa",1000]]},
+  {name:"角度",units:[["deg",1],["rad",57.2957795]]}
+ ];
+ let html=`<h2 class="page-title">単位変換</h2><p class="page-sub">値を入れると同じ行の全単位が同時に更新されます。</p>`;
+ groups.forEach((gr,gi)=>{
+  html+=`<div class="calc-card"><h3>${gr.name}</h3><div class="form-row">`;
+  gr.units.forEach((u,ui)=>{html+=`<label>${u[0]}<input type="number" step="any" data-g="${gi}" data-f="${u[1]}" class="uc"></label>`});
+  html+=`</div></div>`;
+ });
+ $("#main").innerHTML=html;
+ document.querySelectorAll(".uc").forEach(inp=>{
+  inp.addEventListener("input",()=>{
+   const g=inp.dataset.g, base=parseFloat(inp.value)*parseFloat(inp.dataset.f);
+   document.querySelectorAll(`.uc[data-g="${g}"]`).forEach(o=>{
+    if(o!==inp)o.value=isFinite(base)?Number((base/parseFloat(o.dataset.f)).toPrecision(7)):"";
+   });
+  });
+ });
+};
+
+/* ---- 表面粗さ・幾何公差メモ ---- */
+RENDER.surface=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">表面粗さ・幾何公差メモ</h2>
+ <div class="calc-card"><h3>表面粗さ Ra の目安</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>Ra [µm]</th><th>旧記号</th><th>目安の加工・用途</th></tr></thead><tbody>
+ <tr><td>25</td><td class="jp">▽</td><td class="jp">鋳肌・黒皮。機能面でない外面</td></tr>
+ <tr><td>6.3</td><td class="jp">▽▽</td><td class="jp">普通の切削面。一般的なフライス・旋盤仕上げ</td></tr>
+ <tr><td>1.6</td><td class="jp">▽▽▽</td><td class="jp">はめあい面・Oリング溝・軸受座面。精密切削・リーマ</td></tr>
+ <tr><td>0.4</td><td class="jp">▽▽▽▽</td><td class="jp">摺動面・シール摺動部。研削・ラップ</td></tr>
+ </tbody></table></div>
+ <p class="note">指示がなければ加工屋さんはRa6.3相当で仕上げるのが普通。必要な面にだけ細かい粗さを指定するとコストを抑えられます。</p></div>
+ <div class="calc-card"><h3>普通公差 JIS B 0405（中級 m）— 削り指示なし寸法の許容差</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>基準寸法区分 mm</th><th>許容差 ±mm</th></tr></thead><tbody>
+ <tr><td>0.5 〜 3</td><td>0.1</td></tr><tr><td>3 を超え 6</td><td>0.1</td></tr>
+ <tr><td>6 を超え 30</td><td>0.2</td></tr><tr><td>30 を超え 120</td><td>0.3</td></tr>
+ <tr><td>120 を超え 400</td><td>0.5</td></tr>
+ </tbody></table></div>
+ <p class="note">図面の表題欄に「普通公差 JIS B 0405-m」と書けば、個別に公差を書かない寸法はこの表が適用されます。</p></div>
+ <div class="calc-card"><h3>幾何公差の使い分け早見</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>記号</th><th>名称</th><th>使いどころ</th></tr></thead><tbody>
+ <tr><td>—</td><td class="jp">真直度</td><td class="jp">長い軸・ガイドレールの曲がり規制</td></tr>
+ <tr><td>▱</td><td class="jp">平面度</td><td class="jp">ベースプレートの合わせ面</td></tr>
+ <tr><td>○</td><td class="jp">真円度</td><td class="jp">軸受がはまる軸・穴</td></tr>
+ <tr><td>⊥</td><td class="jp">直角度</td><td class="jp">軸と取付面、フレームの立ち壁</td></tr>
+ <tr><td>◎</td><td class="jp">同軸度</td><td class="jp">両端軸受の軸受穴どうし</td></tr>
+ <tr><td>⌖</td><td class="jp">位置度</td><td class="jp">ボルト穴・ピン穴のパターン</td></tr>
+ <tr><td>↗</td><td class="jp">振れ</td><td class="jp">回転軸の外周振れ（プーリー座面など）</td></tr>
+ </tbody></table></div></div>`;
+};
+
+
+/* =========================================================
+   Rev.2.0 追加：小ねじ・止めねじ・伝動要素・加工支援
+   ========================================================= */
+// --- 小ねじ・頭部バリエーション ---
+// [呼び, d, dk(頭径), k(頭高), 穴/リセス]
+const PANHEAD=[["M2",2,3.5,1.3],["M2.5",2.5,4.5,1.7],["M3",3,5.5,2.0],["M4",4,7,2.6],["M5",5,9,3.3],["M6",6,10.5,3.9]];
+const TRUSS=[["M2",2,4.6,1.2],["M2.5",2.5,5.7,1.5],["M3",3,6.9,1.75],["M4",4,9.4,2.3],["M5",5,11.8,2.85],["M6",6,13.8,3.4]];
+const FLATCAP=[["M3",3,6.72,1.86,2],["M4",4,8.96,2.48,2.5],["M5",5,11.2,3.1,3],["M6",6,13.44,3.72,4],["M8",8,17.92,4.96,5]];
+const BUTTONCAP=[["M3",3,5.7,1.65,2],["M4",4,7.6,2.2,2.5],["M5",5,9.5,2.75,3],["M6",6,10.5,3.3,4],["M8",8,14,4.4,5],["M10",10,17.5,5.5,6]];
+const UNC=[["#2-56",2.18,56],["#4-40",2.85,40],["#6-32",3.51,32],["#8-32",4.17,32],["#10-24",4.83,24],['1/4"-20',6.35,20],['5/16"-18',7.94,18],['3/8"-16',9.53,16]];
+// --- 六角穴付き止めねじ JIS B 1177 ---
+const SETSCREW=[["M2",0.9],["M2.5",1.3],["M3",1.5],["M4",2],["M5",2.5],["M6",3],["M8",4],["M10",5],["M12",6]];
+// --- ミニチュアリニアガイド 参考寸法（MGN系互換, メーカー規格） ---
+// [呼び, レール幅, レール高, 組立高H, ブロック幅W]
+const LINEAR=[["7番(MGN7相当)",7,4.8,8,17],["9番(MGN9相当)",9,6.5,10,20],["12番(MGN12相当)",12,8,13,27],["15番(MGN15相当)",15,10,16,32]];
+// --- タイミングベルト ピッチ ---
+const BELTS=[["GT2(2GT)",2],["MXL",2.032],["S2M",2],["S3M",3],["S5M",5],["HTD3M",3],["HTD5M",5],["XL",5.08],["T5",5]];
+
+/* ---- 頭形状の図 ---- */
+function drawHeadScrew(type,r){
+ const nm=r[0],d=r[1],dk=r[2],k=r[3];
+ const sc=Math.min(130/dk,24);
+ const DK=dk*sc,K=Math.max(k*sc,6),D=d*sc,L=Math.min(d*3.2*sc,140);
+ const cx=190,topY=70;
+ let head="";
+ if(type==="pan"){ // なべ：上面がゆるい丸
+  head=`<path class="body" d="M ${cx-DK/2} ${topY+K} L ${cx-DK/2} ${topY+K*0.45} Q ${cx-DK/2} ${topY} ${cx-DK/2+DK*0.18} ${topY} L ${cx+DK/2-DK*0.18} ${topY} Q ${cx+DK/2} ${topY} ${cx+DK/2} ${topY+K*0.45} L ${cx+DK/2} ${topY+K} Z"/>`;
+  head+=`<line class="hatch" x1="${cx-D*0.35}" y1="${topY+K*0.35}" x2="${cx+D*0.35}" y2="${topY+K*0.35}"/><line class="hatch" x1="${cx}" y1="${topY+2}" x2="${cx}" y2="${topY+K*0.7}"/>`; // 十字穴
+ }else if(type==="truss"){ // トラス：低くて幅広いドーム
+  head=`<path class="body" d="M ${cx-DK/2} ${topY+K} Q ${cx-DK/2} ${topY+K*0.15} ${cx-DK*0.25} ${topY+K*0.02} Q ${cx} ${topY-K*0.08} ${cx+DK*0.25} ${topY+K*0.02} Q ${cx+DK/2} ${topY+K*0.15} ${cx+DK/2} ${topY+K} Z"/>`;
+  head+=`<line class="hatch" x1="${cx-D*0.35}" y1="${topY+K*0.4}" x2="${cx+D*0.35}" y2="${topY+K*0.4}"/><line class="hatch" x1="${cx}" y1="${topY+3}" x2="${cx}" y2="${topY+K*0.75}"/>`;
+ }else if(type==="button"){ // ボタン：ドーム＋六角穴
+  head=`<path class="body" d="M ${cx-DK/2} ${topY+K} Q ${cx-DK/2} ${topY} ${cx} ${topY} Q ${cx+DK/2} ${topY} ${cx+DK/2} ${topY+K} Z"/>`;
+  head+=`<rect class="hatch" x="${cx-r[4]*sc/2}" y="${topY+K*0.25}" width="${r[4]*sc}" height="${K*0.55}" fill="none" stroke-dasharray="3 2"/>`;
+ }else if(type==="flat"){ // 皿：面一に沈む
+  head=`<path class="body" d="M ${cx-DK/2} ${topY} L ${cx+DK/2} ${topY} L ${cx+D/2} ${topY+K} L ${cx-D/2} ${topY+K} Z"/>`;
+  head+=`<rect class="hatch" x="${cx-r[4]*sc/2}" y="${topY+2}" width="${r[4]*sc}" height="${K*0.6}" fill="none" stroke-dasharray="3 2"/>`;
+  head+=`<line class="hatch" x1="${cx-DK/2-30}" y1="${topY}" x2="${cx-DK/2}" y2="${topY}"/><line class="hatch" x1="${cx+DK/2}" y1="${topY}" x2="${cx+DK/2+30}" y2="${topY}"/>`; // 取付面
+ }
+ let g=head;
+ g+=`<rect class="body" x="${cx-D/2}" y="${topY+K}" width="${D}" height="${L}"/>`;
+ for(let y=topY+K+6;y<topY+K+L-2;y+=7){g+=`<line class="hatch" x1="${cx-D/2}" y1="${y+4}" x2="${cx+D/2}" y2="${y}"/>`}
+ g+=`<line class="cl" x1="${cx}" y1="${topY-14}" x2="${cx}" y2="${topY+K+L+12}"/>`;
+ g+=dimH(cx-DK/2,cx+DK/2,topY-14,`dk ${dk}`);
+ g+=dimV(cx+DK/2+18,topY,topY+K,`k ${k}`);
+ g+=dimH(cx-D/2,cx+D/2,topY+K+L+18,nm);
+ return svgWrap(g,380,topY+K+L+40);
+}
+function drawSetScrew(r){
+ const [nm,sHex]=r;const d=parseFloat(nm.slice(1));
+ const sc=Math.min(90/d,22);const D=d*sc,L=Math.min(d*2.6*sc,150),cx=190,topY=70;
+ let g=`<rect class="body" x="${cx-D/2}" y="${topY}" width="${D}" height="${L}"/>`;
+ for(let y=topY+6;y<topY+L-6;y+=7){g+=`<line class="hatch" x1="${cx-D/2}" y1="${y+4}" x2="${cx+D/2}" y2="${y}"/>`}
+ g+=`<rect class="hatch" x="${cx-sHex*sc/2}" y="${topY+2}" width="${sHex*sc}" height="${Math.min(d*0.8*sc,26)}" fill="none" stroke-dasharray="3 2"/>`;
+ g+=`<path class="body" d="M ${cx-D/2} ${topY+L} L ${cx-D*0.3} ${topY+L+D*0.12} L ${cx+D*0.3} ${topY+L+D*0.12} L ${cx+D/2} ${topY+L} " fill="none"/>`; // くぼみ先の面取り
+ g+=`<line class="cl" x1="${cx}" y1="${topY-14}" x2="${cx}" y2="${topY+L+D*0.12+12}"/>`;
+ g+=dimH(cx-D/2,cx+D/2,topY-14,nm);
+ g+=dimH(cx-sHex*sc/2,cx+sHex*sc/2,topY+L+D*0.12+22,`六角穴 s=${sHex}`);
+ return svgWrap(g,380,topY+L+70);
+}
+
+/* ---- 小ねじ・頭部形状ページ ---- */
+RENDER.screwheads=()=>{
+ const sets={
+  pan:{name:"なべ小ねじ",std:"JIS B 1111（十字穴付き）系の代表寸法。",rows:PANHEAD,type:"pan",
+   note:"いちばん汎用的な頭。座面が平らで座金と相性が良い。"},
+  truss:{name:"トラス小ねじ",std:"頭が低く径が大きい。板金の押さえ・化粧ねじ向き（参考寸法）。",rows:TRUSS,type:"truss",
+   note:"頭径が大きいので薄板・長穴の押さえに強い。頭高さを抑えたい外装にも。"},
+  flat:{name:"皿CAP（六角穴付き皿ボルト）",std:"JIS B 1194 準拠。90°皿。列の5番目は六角穴の対辺。",rows:FLATCAP,type:"flat",
+   note:"取付面と面一にできる。皿もみ加工（90°皿取り）が必要。位置決め性は低いので精度が要る所は避ける。"},
+  button:{name:"ボタンCAP（六角穴付きボタンボルト）",std:"JIS B 1174 準拠。列の5番目は六角穴の対辺。",rows:BUTTONCAP,type:"button",
+   note:"丸くて引っ掛かりにくく見た目も良い。頭が低いぶん六角穴が浅く、強トルクや繰り返し着脱には不向き。"},
+  low:{name:"ローヘッド・極低頭CAP",std:"メーカー規格品（JIS規格化されていない）。",rows:null,
+   note:""},
+  unc:{name:"ユニファイねじ（インチ・UNC並目）",std:"海外キット・海外製品でよく出会うインチねじ。",rows:UNC,type:"unc",note:""}
+ };
+ $("#main").innerHTML=`<h2 class="page-title">小ねじ・頭部形状いろいろ</h2>
+ <p class="page-sub">用途に合わせた頭の使い分け。行クリックで図面表示。</p>
+ <div class="tool-bar"><select id="shSel">${Object.keys(sets).map(k=>`<option value="${k}">${sets[k].name}</option>`).join("")}</select></div>
+ <div id="shBody"></div>`;
+ const render=()=>{
+  const key=$("#shSel").value, st=sets[key];
+  if(key==="low"){
+   $("#shBody").innerHTML=`<div class="calc-card"><h3>ローヘッド・極低頭CAP</h3>
+   <p>スペースが無い場所で頭の高さを抑えるためのキャップスクリュー。<b>JISでは規格化されておらず各メーカー規格</b>のため、正確な寸法は使うメーカーのカタログで確認してください。目安として：</p>
+   <div class="data-wrap" style="margin-top:8px"><table class="data"><thead><tr><th>種類</th><th>頭高さの目安</th><th>特徴</th></tr></thead><tbody>
+   <tr><td class="jp">標準CAP (JIS B 1176)</td><td>≈ 呼び径 d と同じ</td><td class="jp">基準。六角穴が深く強トルクOK</td></tr>
+   <tr><td class="jp">ローヘッドCAP</td><td>≈ 0.5〜0.65d</td><td class="jp">六角穴が浅くなる→締付トルク控えめに</td></tr>
+   <tr><td class="jp">極低頭CAP</td><td>≈ 0.3〜0.4d</td><td class="jp">穴がさらに浅い。緩み止め剤併用が安心</td></tr>
+   </tbody></table></div>
+   <p class="note">頭を完全に隠したいなら「皿CAP＋皿もみ」か「標準CAP＋深ざぐり」も比較検討を。深ざぐりの方が加工が楽で位置精度も出しやすいです。</p></div>`;
+   return;
+  }
+  if(key==="unc"){
+   $("#shBody").innerHTML=`<div class="data-wrap"><table class="data"><thead><tr><th>呼び</th><th>外径 mm</th><th>山数/インチ</th><th>ピッチ換算 mm</th><th>近いメートルねじ</th></tr></thead><tbody>
+   ${UNC.map(r=>{const p=25.4/r[2];const near=["M2","M3","M3.5","M4","M5","M6","M8","M10"][UNC.indexOf(r)]||"";
+   return `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${fmt(p,3)}</td><td>${near}</td></tr>`}).join("")}
+   </tbody></table></div>
+   <p class="note" style="margin-top:8px">海外キットのねじをメートルねじで代用するのはNG（山が違うのでねじ山を壊します）。「近いメートルねじ」は太さの感覚をつかむための参考です。</p>`;
+   return;
+  }
+  let cols=key==="flat"||key==="button"?["呼び","頭径 dk","頭高 k","六角穴 s"]:["呼び","頭径 dk","頭高 k"];
+  let html=`<p class="page-sub">${st.std}</p><div class="data-wrap"><table class="data"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr></thead><tbody id="shTb"></tbody></table></div>
+  <div class="detail" id="detail"><div class="detail-draw" id="ddraw"></div><div class="detail-info" id="dinfo"></div></div>`;
+  $("#shBody").innerHTML=html;
+  st.rows.forEach(r=>{
+   const tr=document.createElement("tr");tr.className="sel-row";
+   tr.innerHTML=`<td>${r[0]}</td><td>${r[2]}</td><td>${r[3]}</td>`+(r[4]?`<td>${r[4]}</td>`:"");
+   tr.onclick=()=>{
+    document.querySelectorAll("#shTb tr").forEach(x=>x.classList.remove("selected"));
+    tr.classList.add("selected");
+    $("#ddraw").innerHTML=drawHeadScrew(st.type,r);
+    $("#dinfo").innerHTML=`<h3>${st.name} ${r[0]}</h3>`+specList([["頭径 dk",r[2]+" mm"],["頭高さ k",r[3]+" mm"]].concat(r[4]?[["六角穴 s",r[4]+" mm"]]:[]))
+     +`<p class="note">${st.note}</p>`;
+    $("#detail").classList.add("open");
+   };
+   document.getElementById("shTb").appendChild(tr);
+  });
+ };
+ $("#shSel").onchange=render;render();
+};
+
+/* ---- 止めねじ・セットカラー ---- */
+RENDER.setscrew=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">止めねじ（イモねじ）・セットカラー</h2>
+ <p class="page-sub">JIS B 1177（六角穴付き止めねじ）。行クリックで図面表示。</p>
+ <div class="data-wrap"><table class="data"><thead><tr><th>呼び</th><th>六角穴 s</th><th>先端形状（標準）</th></tr></thead><tbody id="ssTb"></tbody></table></div>
+ <div class="detail" id="detail"><div class="detail-draw" id="ddraw"></div><div class="detail-info" id="dinfo"></div></div>
+ <div class="calc-card" style="margin-top:16px"><h3>先端形状の使い分け</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>先端</th><th>用途</th></tr></thead><tbody>
+ <tr><td class="jp">くぼみ先（標準）</td><td class="jp">最も一般的。軸への食い込みと保持力のバランス型</td></tr>
+ <tr><td class="jp">平先</td><td class="jp">相手を傷つけたくない・繰り返し位置調整する箇所</td></tr>
+ <tr><td class="jp">棒先</td><td class="jp">軸の溝や穴に先端を入れて回り止めにする</td></tr>
+ <tr><td class="jp">とがり先</td><td class="jp">強く食い込ませて固定。再調整しない箇所向け</td></tr>
+ </tbody></table></div>
+ <p class="note">回転軸への止めねじは<b>Dカット面に当てる</b>のが基本。丸軸に直接当てると滑る＆軸が傷つきます。緩み対策はねじロック剤（中強度）が定番。</p></div>
+ <div class="calc-card"><h3>セットカラー（シャフトカラー）</h3>
+ <p>軸方向の位置決め・抜け止めに使うリング。<b>JIS規格ではなくメーカー規格品</b>なので、寸法は各社カタログ確認が確実です。目安の比率：外径 ≈ 軸径×2〜2.7、幅 ≈ 軸径×0.8〜1.3。</p>
+ <div class="data-wrap" style="margin-top:8px"><table class="data"><thead><tr><th>方式</th><th>特徴</th><th>向いている用途</th></tr></thead><tbody>
+ <tr><td class="jp">止めねじ式</td><td class="jp">安価・薄い。軸に傷が付く</td><td class="jp">とりあえずの固定・軽負荷</td></tr>
+ <tr><td class="jp">スリット式（クランプ）</td><td class="jp">軸を全周で締める。傷なし・保持力大・再現性◎</td><td class="jp">精密位置決め・繰り返し脱着</td></tr>
+ <tr><td class="jp">セパレート式（2分割）</td><td class="jp">軸端まで外さず着脱できる</td><td class="jp">組立後のメンテ性重視</td></tr>
+ </tbody></table></div></div>`;
+ SETSCREW.forEach(r=>{
+  const tr=document.createElement("tr");tr.className="sel-row";
+  tr.innerHTML=`<td>${r[0]}</td><td>${r[1]}</td><td class="jp">くぼみ先</td>`;
+  tr.onclick=()=>{
+   document.querySelectorAll("#ssTb tr").forEach(x=>x.classList.remove("selected"));
+   tr.classList.add("selected");
+   $("#ddraw").innerHTML=drawSetScrew(r);
+   $("#dinfo").innerHTML=`<h3>六角穴付き止めねじ ${r[0]}</h3>`+specList([["六角穴 s",r[1]+" mm"],["標準の先端","くぼみ先"]])
+    +`<p class="note">六角レンチは止めねじ専用に短辺の短いものがあると奥まった場所で便利。</p>`;
+   $("#detail").classList.add("open");
+  };
+  document.getElementById("ssTb").appendChild(tr);
+ });
+};
+
+/* ---- ボールねじ ---- */
+RENDER.ballscrew=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">ボールねじ</h2>
+ <p class="page-sub">回転→直動の高効率変換。台形ねじより効率が高く（90%前後）、バックラッシも小さい。</p>
+ <div class="calc-card"><h3>送り・トルク・分解能計算</h3>
+ <div class="form-row">
+  <label>リード L [mm]<input type="number" id="bsL" value="5" step="any"></label>
+  <label>回転数 N [rpm]<input type="number" id="bsN" value="600" step="any"></label>
+  <label>軸方向負荷 F [N]<input type="number" id="bsF" value="100" step="any"></label>
+  <label>効率 η<input type="number" id="bsEta" value="0.9" step="any" min="0.1" max="1"></label>
+  <label>モーター分解能 [パルス/回転]<input type="number" id="bsRes" value="200"></label>
+ </div>
+ <button class="act" id="bsGo">計算</button><div class="result-box" id="bsRes2"></div>
+ </div>
+ <div class="calc-card"><h3>精度等級（JIS B 1192）の目安</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>等級</th><th>代表リード誤差 (300mmあたり)</th><th>製法・用途の目安</th></tr></thead><tbody>
+ <tr><td>C3</td><td>±8 µm</td><td class="jp">研削。精密位置決め（工作機械・計測）</td></tr>
+ <tr><td>C5</td><td>±18 µm</td><td class="jp">研削。一般の精密機器</td></tr>
+ <tr><td>C7</td><td>±50 µm</td><td class="jp">転造。一般産業機器・自作CNCの定番</td></tr>
+ <tr><td>C10</td><td>±210 µm</td><td class="jp">転造。搬送など精度が緩い用途</td></tr>
+ </tbody></table></div>
+ <p class="note">選定・使用のポイント：①両端のサポートユニット（固定側＋支持側）が基本形 ②長尺・高速回転では危険速度に注意 ③ナットは絶対にねじ軸から抜かない（ボールが脱落します）④よく見る呼びの例：φ8×リード2、φ10×4、φ12×5、φ15×10 など。</p></div>`;
+ $("#bsGo").onclick=()=>{
+  const L=+$("#bsL").value,N=+$("#bsN").value,F=+$("#bsF").value,eta=+$("#bsEta").value,res=+$("#bsRes").value;
+  const V=N*L; // mm/min
+  const T=F*L/1000/(2*Math.PI*eta); // N·m
+  show("#bsRes2",`送り速度 V = ${fmt(V,0)} mm/min（${fmt(V/60,2)} mm/s）
+<span class="big">必要トルク T ≈ ${fmt(T,4)} N·m</span>（負荷${F}N・効率${eta}）
+理論分解能 = ${fmt(L/res*1000,2)} µm/パルス`);
+ };
+};
+
+/* ---- リニアガイド ---- */
+RENDER.linear=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">リニアガイド（LMガイド）</h2>
+ <p class="page-sub">ミニチュアサイズの参考寸法。<b>メーカー規格品</b>のため採用前に必ずカタログ確認。行クリックで断面図。</p>
+ <div class="data-wrap"><table class="data"><thead><tr><th>サイズ</th><th>レール幅</th><th>レール高</th><th>組立高 H</th><th>ブロック幅 W</th></tr></thead><tbody id="lgTb"></tbody></table></div>
+ <div class="detail" id="detail"><div class="detail-draw" id="ddraw"></div><div class="detail-info" id="dinfo"></div></div>
+ <div class="calc-card" style="margin-top:16px"><h3>選定・実装のポイント</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>ポイント</th><th>内容</th></tr></thead><tbody>
+ <tr><td class="jp">モーメント荷重</td><td class="jp">1ブロックはモーメントに弱い。<b>1レール2ブロック</b>か2レール構成で受けると剛性が段違い</td></tr>
+ <tr><td class="jp">基準面</td><td class="jp">レール・ブロックには基準側面がある。突き当てて取り付けると真直度が出る</td></tr>
+ <tr><td class="jp">2本平行使い</td><td class="jp">片側を基準に固定→もう1本はブロックを滑らせながら位置決めして本締め（平行出し）</td></tr>
+ <tr><td class="jp">予圧</td><td class="jp">ガタ取り。ミニチュアは無予圧〜軽予圧が一般的</td></tr>
+ <tr><td class="jp">防塵</td><td class="jp">切粉・ホコリ環境ではシール付きを。給脂も忘れずに</td></tr>
+ </tbody></table></div></div>`;
+ LINEAR.forEach(r=>{
+  const tr=document.createElement("tr");tr.className="sel-row";
+  tr.innerHTML=`<td class="jp">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td>`;
+  tr.onclick=()=>{
+   document.querySelectorAll("#lgTb tr").forEach(x=>x.classList.remove("selected"));
+   tr.classList.add("selected");
+   const sc=Math.min(160/r[4],9);
+   const cx=190,base=210,RW=r[1]*sc,RH=r[2]*sc,H=r[3]*sc,BW=r[4]*sc;
+   let g=`<rect class="body" x="${cx-BW/2}" y="${base-H}" width="${BW}" height="${H-RH*0.55}"/>`;
+   g+=`<path class="body" d="M ${cx-RW/2} ${base} L ${cx-RW/2} ${base-RH} L ${cx+RW/2} ${base-RH} L ${cx+RW/2} ${base} Z"/>`;
+   g+=`<circle class="body" cx="${cx-RW/2}" cy="${base-RH*0.5}" r="${RH*0.18}"/><circle class="body" cx="${cx+RW/2}" cy="${base-RH*0.5}" r="${RH*0.18}"/>`;
+   g+=`<line class="hatch" x1="${cx-BW/2-20}" y1="${base}" x2="${cx+BW/2+20}" y2="${base}"/>`;
+   g+=dimH(cx-RW/2,cx+RW/2,base+16,`レール幅 ${r[1]}`,26);
+   g+=dimH(cx-BW/2,cx+BW/2,base-H-12,`W ${r[4]}`);
+   g+=dimV(cx+BW/2+18,base-H,base,`H ${r[3]}`);
+   $("#ddraw").innerHTML=svgWrap(g,380,270);
+   $("#dinfo").innerHTML=`<h3>${r[0]}</h3>`+specList([["レール幅",r[1]+" mm"],["レール高さ",r[2]+" mm"],["組立高さ H",r[3]+" mm"],["ブロック幅 W",r[4]+" mm"]])
+    +`<p class="note">レール取付ねじや定格荷重はメーカー・型式で異なるためカタログで確認を。</p>`;
+   $("#detail").classList.add("open");
+  };
+  document.getElementById("lgTb").appendChild(tr);
+ });
+};
+
+/* ---- 歯車・ベルト・慣性 ---- */
+RENDER.drive=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">歯車・タイミングベルト・慣性計算</h2>
+ <div class="calc-card"><h3>① 平歯車（モジュール計算）</h3>
+ <div class="form-row">
+  <label>モジュール m<input type="number" id="gM" value="1" step="any"></label>
+  <label>歯数 z1（駆動）<input type="number" id="gZ1" value="20"></label>
+  <label>歯数 z2（従動）<input type="number" id="gZ2" value="40"></label>
+ </div>
+ <button class="act" id="gGo">計算</button><div class="result-box" id="gRes"></div>
+ <p class="note">基準円直径(PCD)＝m×z、歯先円直径＝m×(z＋2)、標準の中心距離＝m×(z1＋z2)/2。かみ合いには少しのバックラッシ（3Dプリント歯車なら中心距離＋0.1〜0.3mm程度）を。</p></div>
+ <div class="calc-card"><h3>② タイミングベルト（長さ・中心距離）</h3>
+ <div class="form-row">
+  <label>規格<select id="tbP">${BELTS.map(b=>`<option value="${b[1]}">${b[0]} (P=${b[1]})</option>`).join("")}</select></label>
+  <label>プーリー歯数 z1<input type="number" id="tbZ1" value="20"></label>
+  <label>プーリー歯数 z2<input type="number" id="tbZ2" value="60"></label>
+  <label>中心距離 C [mm]<input type="number" id="tbC" value="80" step="any"></label>
+ </div>
+ <button class="act" id="tbGo">ベルト長さを計算</button><div class="result-box" id="tbRes"></div>
+ <div class="form-row" style="margin-top:10px">
+  <label>逆算：ベルト歯数<input type="number" id="tbBz" value="200"></label>
+ </div>
+ <button class="ghost" id="tbGo2">このベルトでの中心距離を逆算</button><div class="result-box" id="tbRes2"></div>
+ <p class="note">GT2はロボット・3Dプリンタの定番。プーリーPCD＝ピッチ×歯数÷π。減速比＝z2/z1。テンションはアイドラで調整できる設計にすると楽。</p></div>
+ <div class="calc-card"><h3>③ 慣性モーメント・加速トルク（車輪・円盤）</h3>
+ <div class="form-row">
+  <label>形状<select id="inShape"><option value="disk">円盤（中実）</option><option value="ring">リング（中空）</option></select></label>
+  <label>質量 m [g]<input type="number" id="inM" value="50" step="any"></label>
+  <label>外径 [mm]<input type="number" id="inD" value="60" step="any"></label>
+  <label>内径 [mm]（リングのみ）<input type="number" id="inDi" value="40" step="any"></label>
+  <label>0→目標回転数 [rpm]<input type="number" id="inN" value="300" step="any"></label>
+  <label>加速時間 [s]<input type="number" id="inT" value="0.2" step="any"></label>
+ </div>
+ <button class="act" id="inGo">計算</button><div class="result-box" id="inRes"></div>
+ <p class="note">I（円盤）＝½mr²、I（リング）＝½m(r₁²＋r₂²)。加速トルク T＝I×α。走行負荷トルクにこれを足したものがモーターに必要なトルク。</p></div>`;
+ $("#gGo").onclick=()=>{
+  const m=+$("#gM").value,z1=+$("#gZ1").value,z2=+$("#gZ2").value;
+  show("#gRes",`z1: PCD=${fmt(m*z1,2)} / 歯先径=${fmt(m*(z1+2),2)} mm
+z2: PCD=${fmt(m*z2,2)} / 歯先径=${fmt(m*(z2+2),2)} mm
+<span class="big">標準中心距離 = ${fmt(m*(z1+z2)/2,3)} mm</span>　減速比 = ${fmt(z2/z1,3)}`);
+ };
+ const pcd=(P,z)=>P*z/Math.PI;
+ $("#tbGo").onclick=()=>{
+  const P=+$("#tbP").value,z1=+$("#tbZ1").value,z2=+$("#tbZ2").value,C=+$("#tbC").value;
+  const D1=pcd(P,Math.min(z1,z2)),D2=pcd(P,Math.max(z1,z2));
+  const L=2*C+Math.PI*(D1+D2)/2+Math.pow(D2-D1,2)/(4*C);
+  const zb=L/P;
+  show("#tbRes",`PCD: 小プーリー ${fmt(D1,2)} / 大プーリー ${fmt(D2,2)} mm
+必要ベルト長さ ≈ ${fmt(L,1)} mm（= ${fmt(zb,1)} 歯）
+<span class="big">近い市販ベルト: ${Math.round(zb)} 歯（${fmt(Math.round(zb)*P,0)} mm）</span>　減速比 = ${fmt(Math.max(z1,z2)/Math.min(z1,z2),3)}`);
+ };
+ $("#tbGo2").onclick=()=>{
+  const P=+$("#tbP").value,z1=+$("#tbZ1").value,z2=+$("#tbZ2").value,zb=+$("#tbBz").value;
+  const D1=pcd(P,Math.min(z1,z2)),D2=pcd(P,Math.max(z1,z2));
+  const L=zb*P, K=L-Math.PI*(D1+D2)/2;
+  const disc=K*K-2*Math.pow(D2-D1,2);
+  if(disc<0||K<=0){show("#tbRes2","<span class='warn'>この組合せでは張れません（ベルトが短すぎ）</span>");return}
+  const C=(K+Math.sqrt(disc))/4;
+  show("#tbRes2",`ベルト長さ ${fmt(L,1)} mm（${zb}歯）\n<span class="big">中心距離 C ≈ ${fmt(C,2)} mm</span>`);
+ };
+ $("#inGo").onclick=()=>{
+  const shape=$("#inShape").value,m=+$("#inM").value/1000,ro=+$("#inD").value/2000,ri=+$("#inDi").value/2000;
+  const I=shape==="disk"?0.5*m*ro*ro:0.5*m*(ro*ro+ri*ri);
+  const w=+$("#inN").value*2*Math.PI/60, a=w/(+$("#inT").value);
+  show("#inRes",`慣性モーメント I = ${(I*1e6).toFixed(2)} g·m²×10⁻³（${fmt(I,6)} kg·m²）
+<span class="big">加速トルク T = ${fmt(I*a,4)} N·m</span>（角加速度 ${fmt(a,1)} rad/s²）`);
+ };
+};
+
+/* ---- 3Dプリント補正 ---- */
+RENDER.print3d=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">3Dプリント補正計算</h2>
+ <p class="page-sub">FDM(熱溶解積層)向け。収縮率はプリンタ・温度・充填率で大きく変わるので、<b>実測から補正率を出すのがいちばん確実</b>です。</p>
+ <div class="calc-card"><h3>① 実測から補正率を求める（推奨）</h3>
+ <div class="form-row">
+  <label>設計寸法 [mm]<input type="number" id="pDesign" value="20" step="any"></label>
+  <label>印刷後の実測 [mm]<input type="number" id="pMeas" value="19.92" step="any"></label>
+ </div>
+ <button class="act" id="pGo1">補正率を計算</button><div class="result-box" id="pRes1"></div>
+ <div class="form-row" style="margin-top:10px">
+  <label>この補正率で作りたい寸法 [mm]<input type="number" id="pTarget" value="35" step="any"></label>
+ </div>
+ <button class="ghost" id="pGo2">補正後のモデル寸法</button><div class="result-box" id="pRes2"></div>
+ </div>
+ <div class="calc-card"><h3>② 材料別の収縮率の目安（XY方向）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>材料</th><th>収縮率の目安</th><th>反り</th><th>メモ</th></tr></thead><tbody>
+ <tr><td>PLA</td><td>0.2〜0.4 %</td><td class="jp">小</td><td class="jp">寸法が出しやすい。試作・治具の定番</td></tr>
+ <tr><td>PETG</td><td>0.3〜0.8 %</td><td class="jp">小〜中</td><td class="jp">粘り強い。糸引きしやすい</td></tr>
+ <tr><td>ABS/ASA</td><td>0.5〜1.5 %</td><td class="jp">大</td><td class="jp">エンクロージャ（囲い）とベッド密着必須</td></tr>
+ <tr><td>ナイロン(PA)</td><td>0.7〜2 %</td><td class="jp">大</td><td class="jp">吸湿厳禁。乾燥保管・乾燥印刷</td></tr>
+ </tbody></table></div>
+ <p class="note">値はあくまで目安の範囲。①の実測校正で自分の機材＋材料の補正率を持っておくのが最強です。</p></div>
+ <div class="calc-card"><h3>③ 穴・はめあいの実務目安（FDM）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>状況</th><th>目安</th></tr></thead><tbody>
+ <tr><td class="jp">丸穴は小さく出る</td><td class="jp">設計で＋0.1〜0.3mm、精度が要る穴はドリル・リーマで仕上げ</td></tr>
+ <tr><td class="jp">圧入したい</td><td class="jp">すきま 0〜0.05mm（要テストピース）</td></tr>
+ <tr><td class="jp">きつめの固定</td><td class="jp">すきま 約0.1mm</td></tr>
+ <tr><td class="jp">普通の組立</td><td class="jp">すきま 約0.2mm</td></tr>
+ <tr><td class="jp">スライド・可動部</td><td class="jp">すきま 0.3〜0.5mm</td></tr>
+ <tr><td class="jp">M3ねじを直接切る</td><td class="jp">下穴 φ2.5で成形→タップ。強度・繰返しが必要なら熱圧入インサート（穴径はインサートの指定に従う）</td></tr>
+ </tbody></table></div></div>`;
+ let rate=null;
+ $("#pGo1").onclick=()=>{
+  const d=+$("#pDesign").value,m=+$("#pMeas").value;
+  if(!(d>0&&m>0)){show("#pRes1","<span class='warn'>寸法を確認してください</span>");return}
+  rate=d/m;
+  const shrink=(1-m/d)*100;
+  show("#pRes1",`収縮 ${shrink>=0?"":"（膨張）"}${fmt(Math.abs(shrink),3)} %
+<span class="big">スケール補正率 = ${fmt(rate*100,3)} %</span>（スライサーのスケールに ${fmt(rate*100,3)}% を入力）`);
+ };
+ $("#pGo2").onclick=()=>{
+  if(rate==null){show("#pRes2","<span class='warn'>先に①で補正率を計算してください</span>");return}
+  const t=+$("#pTarget").value;
+  show("#pRes2",`<span class="big">モデル寸法 = ${fmt(t*rate,3)} mm</span>（目標 ${t} mm）`);
+ };
+};
+
+/* ---- 切削条件 ---- */
+RENDER.milling=()=>{
+ // [材料, Vc下限, Vc上限, fz係数(fz≈係数×D), メモ]
+ const CUT=[
+  ["アルミ (A5052/2017)",100,250,0.005,"溶着注意。エアブローか切削油を"],
+  ["快削黄銅 (C3604)",100,200,0.005,"削りやすい。バリは出やすい"],
+  ["炭素鋼 (S45C)",60,120,0.003,"切削油推奨"],
+  ["ステンレス (SUS304)",40,80,0.002,"加工硬化に注意。送りを止めない"],
+  ["樹脂 (POM/ABS)",150,400,0.008,"熱で溶けるので送り速め・切込み深めが◎"]
+ ];
+ $("#main").innerHTML=`<h2 class="page-title">切削条件（フライス・エンドミル）</h2>
+ <p class="page-sub">超硬エンドミルの目安。<b>卓上機など剛性が低い機械は下限からさらに控えめに</b>始めて、音と切りくずを見ながら上げていくのが安全です。</p>
+ <div class="calc-card"><h3>回転数・送り速度計算</h3>
+ <div class="form-row">
+  <label>材料<select id="cMat">${CUT.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join("")}</select></label>
+  <label>工具径 D [mm]<input type="number" id="cD" value="3" step="any"></label>
+  <label>刃数 z<input type="number" id="cZ" value="2"></label>
+  <label>切削速度 Vc [m/min]<input type="number" id="cVc" value="" placeholder="空欄=材料の推奨中央値"></label>
+  <label>主軸上限 [rpm]<input type="number" id="cMax" value="10000"></label>
+ </div>
+ <button class="act" id="cGo">計算</button><div class="result-box" id="cRes"></div>
+ <p class="note">N＝1000×Vc÷(π×D)、送りF＝N×z×fz。回転数が主軸上限に当たる場合は上限回転にして、fzを保つよう送りも比例で下げた値を表示します。</p></div>
+ <div class="calc-card"><h3>材料別の目安一覧（超硬）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>材料</th><th>Vc [m/min]</th><th>fzの目安 [mm/刃]</th><th>メモ</th></tr></thead><tbody>
+ ${CUT.map(c=>`<tr><td class="jp">${c[0]}</td><td>${c[1]}〜${c[2]}</td><td>≈ D×${c[3]*1000}/1000（φ3で${fmt(3*c[3],3)}）</td><td class="jp">${c[4]}</td></tr>`).join("")}
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>切込み量の目安</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>加工</th><th>軸方向 ap</th><th>径方向 ae</th></tr></thead><tbody>
+ <tr><td class="jp">荒加工（側面）</td><td>〜1.0D</td><td>0.2〜0.4D</td></tr>
+ <tr><td class="jp">仕上げ（側面）</td><td>〜1.5D</td><td>0.02〜0.1D</td></tr>
+ <tr><td class="jp">溝加工（全幅）</td><td>0.3〜0.5D</td><td>1.0D（全幅）</td></tr>
+ </tbody></table></div>
+ <p class="note">D＝工具径。低剛性機はこの半分程度から。ビビリ音がしたら回転を±20%変えるか切込みを減らす。細い工具（φ1以下）は送りを欲張らず、折れる前提で予備を。</p></div>`;
+ $("#cGo").onclick=()=>{
+  const c=CUT[+$("#cMat").value];
+  const D=+$("#cD").value,z=+$("#cZ").value,max=+$("#cMax").value;
+  const Vc=$("#cVc").value?+$("#cVc").value:(c[1]+c[2])/2;
+  const fz=D*c[3];
+  let N=1000*Vc/(Math.PI*D);
+  let capped=false;
+  if(N>max){N=max;capped=true}
+  const F=N*z*fz;
+  show("#cRes",`Vc=${fmt(Vc,0)} m/min　fz目安=${fmt(fz,3)} mm/刃
+<span class="big">回転数 N ≈ ${fmt(N,0)} rpm${capped?"（主軸上限で頭打ち）":""}</span>
+<span class="big">送り速度 F ≈ ${fmt(F,0)} mm/min</span>
+${capped?"※上限回転のため実Vcは "+fmt(N*Math.PI*D/1000,0)+" m/min に低下（この条件で問題なし）":""}`);
+ };
+};
+
+/* =========================================================
+   Rev.3.0 追加：摩擦・ばね・Oリング
+   ========================================================= */
+/* ---- 摩擦・転がり抵抗 ---- */
+RENDER.friction=()=>{
+ // [組合せ, 静摩擦μs, 動摩擦μk] 代表値レンジ
+ const FRIC=[
+  ["ゴム — 乾燥コンクリート/アスファルト","0.7〜1.0","0.6〜0.85"],
+  ["ゴム・ウレタン車輪 — 木質床(競技アリーナ)","0.5〜0.8","0.4〜0.7"],
+  ["鋼 — 鋼（乾燥）","0.5〜0.8","0.4〜0.6"],
+  ["鋼 — 鋼（潤滑あり）","0.1〜0.16","0.05〜0.1"],
+  ["アルミ — 鋼","0.45〜0.6","0.4〜0.5"],
+  ["POM — 鋼","0.2〜0.35","0.15〜0.3"],
+  ["PTFE(フッ素樹脂) — 鋼","0.04〜0.1","0.04〜0.1"]
+ ];
+ // [転がり条件, 係数]
+ const ROLL=[
+  ["鉄輪 — レール","0.001〜0.002"],
+  ["ボールベアリング（要素として）","0.001〜0.0015"],
+  ["硬質ゴム/ウレタン車輪 — 硬い床","0.01〜0.03"],
+  ["自転車タイヤ — 舗装","0.004〜0.008"],
+  ["自動車タイヤ — 舗装","0.010〜0.015"],
+  ["空気タイヤ — 芝・土","0.05〜0.1"]
+ ];
+ $("#main").innerHTML=`<h2 class="page-title">摩擦係数・転がり抵抗</h2>
+ <p class="page-sub">代表値の<b>範囲</b>です。表面状態・荷重・温度で大きく変わるため、勝負どころは実測を。</p>
+ <div class="calc-card"><h3>すべり摩擦係数（乾燥時の代表値）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>組合せ</th><th>静摩擦 μs</th><th>動摩擦 μk</th></tr></thead><tbody>
+ ${FRIC.map(f=>`<tr><td class="jp">${f[0]}</td><td>${f[1]}</td><td>${f[2]}</td></tr>`).join("")}
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>転がり抵抗係数 Crr</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>条件</th><th>Crr</th></tr></thead><tbody>
+ ${ROLL.map(r=>`<tr><td class="jp">${r[0]}</td><td>${r[1]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <p class="note">転がり抵抗力 F＝Crr×垂直荷重。車輪が小さい・柔らかい・床が柔らかいほどCrrは大きくなる。</p></div>
+ <div class="calc-card"><h3>走行に必要な牽引力・グリップ限界チェック</h3>
+ <div class="form-row">
+  <label>機体質量 [kg]<input type="number" id="frM" value="5" step="any"></label>
+  <label>転がり抵抗係数 Crr<input type="number" id="frCrr" value="0.02" step="any"></label>
+  <label>登坂角 [°]<input type="number" id="frA" value="0" step="any"></label>
+  <label>目標加速度 [m/s²]<input type="number" id="frAcc" value="1.0" step="any"></label>
+ </div>
+ <div class="form-row">
+  <label>タイヤの静摩擦係数 μs<input type="number" id="frMu" value="0.6" step="any"></label>
+  <label>駆動輪にかかる荷重割合 [%]<input type="number" id="frWr" value="60" step="any"></label>
+  <label>車輪径 [mm]<input type="number" id="frD" value="60" step="any"></label>
+  <label>駆動輪数<input type="number" id="frN" value="2" min="1"></label>
+ </div>
+ <button class="act" id="frGo">計算</button><div class="result-box" id="frRes"></div>
+ <p class="note">必要牽引力 F＝m×(g(sinθ＋Crr·cosθ)＋a)。これがグリップ限界（μs×駆動輪荷重）を超えるとホイールスピンして加速できません → タイヤ変更・荷重配分・加速度を見直す。</p></div>`;
+ $("#frGo").onclick=()=>{
+  const m=+$("#frM").value,crr=+$("#frCrr").value,a=+$("#frA").value*Math.PI/180,acc=+$("#frAcc").value;
+  const mu=+$("#frMu").value,wr=+$("#frWr").value/100,D=+$("#frD").value/1000,nw=+$("#frN").value;
+  const g=9.80665;
+  const F=m*(g*(Math.sin(a)+crr*Math.cos(a))+acc);
+  const Fgrip=mu*m*g*Math.cos(a)*wr;
+  const T=F*D/2/nw;
+  const slip=F>Fgrip;
+  show("#frRes",`必要牽引力 F = ${fmt(F,1)} N（走行抵抗 ${fmt(m*g*(Math.sin(a)+crr*Math.cos(a)),1)} N ＋ 加速分 ${fmt(m*acc,1)} N）
+グリップ限界 = ${fmt(Fgrip,1)} N（μs=${mu}, 駆動輪荷重${$("#frWr").value}%）
+<span class="big">${slip?'<span class="warn">⚠ グリップ不足 → ホイールスピンします</span>':"✓ グリップOK"}</span>
+1輪あたり必要トルク = ${fmt(T,3)} N·m（モーター選定は余裕1.5〜2倍を推奨）`);
+ };
+};
+
+/* ---- ばね計算 ---- */
+RENDER.spring=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">圧縮コイルばね計算</h2>
+ <p class="page-sub">k＝G·d⁴/(8·D³·Na)。D＝コイル中心径（外径−線径）、Na＝有効巻数（総巻数−2が目安）。</p>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>材料<select id="spMat"><option value="78500">ピアノ線・硬鋼線 (G=78.5kN/mm²)</option><option value="68500">ステンレス SUS304 (G=68.5kN/mm²)</option></select></label>
+  <label>線径 d [mm]<input type="number" id="spD" value="1.0" step="any"></label>
+  <label>コイル外径 [mm]<input type="number" id="spOD" value="10" step="any"></label>
+  <label>有効巻数 Na<input type="number" id="spN" value="8" step="any"></label>
+ </div>
+ <div class="form-row">
+  <label>荷重 F [N]（たわみ・応力の確認用）<input type="number" id="spF" value="5" step="any"></label>
+ </div>
+ <button class="act" id="spGo">計算</button><div class="result-box" id="spRes"></div>
+ <p class="note">ばね指数 c＝D/d は4〜15が製作しやすい範囲（小さすぎると応力集中、大きすぎると座屈・絡み）。密着（線が全部くっつく）まで縮めて使うのはNG、最大たわみはストロークの8割程度までに。</p>
+ </div>
+ <div class="calc-card"><h3>引張・ねじりばねのメモ</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>種類</th><th>ポイント</th></tr></thead><tbody>
+ <tr><td class="jp">引張ばね</td><td class="jp">初張力（縮んだ状態から伸び始める力）がある。フックの形状と根本の応力集中に注意</td></tr>
+ <tr><td class="jp">ねじりばね</td><td class="jp">巻きが締まる方向に使うのが原則。アーム長で必要トルクが変わる</td></tr>
+ <tr><td class="jp">ロボットでの代替</td><td class="jp">輪ゴム・シリコンチューブ・ガススプリング・定荷重ばね（コンスタントフォース）も選択肢。特に重力補償は定荷重ばねが優秀</td></tr>
+ </tbody></table></div></div>`;
+ $("#spGo").onclick=()=>{
+  const G=+$("#spMat").value,d=+$("#spD").value,OD=+$("#spOD").value,Na=+$("#spN").value,F=+$("#spF").value;
+  const D=OD-d;
+  if(D<=0){show("#spRes","<span class='warn'>外径＞線径にしてください</span>");return}
+  const c=D/d;
+  const k=G*Math.pow(d,4)/(8*Math.pow(D,3)*Na); // N/mm
+  const defl=F/k;
+  const K=(4*c-1)/(4*c-4)+0.615/c; // ワール応力修正係数
+  const tau=K*8*F*D/(Math.PI*Math.pow(d,3));
+  show("#spRes",`コイル中心径 D = ${fmt(D,2)} mm　ばね指数 c = ${fmt(c,2)}${c<4||c>15?'　<span class="warn">(4〜15推奨)</span>':""}
+<span class="big">ばね定数 k = ${fmt(k,3)} N/mm</span>
+荷重 ${F} N でのたわみ = ${fmt(defl,2)} mm
+せん断応力 τ ≈ ${fmt(tau,0)} MPa（ワール係数${fmt(K,3)}込み）${tau>500?'　<span class="warn">高め。線径UPかD縮小を検討</span>':""}`);
+ };
+};
+
+/* ---- Oリング ---- */
+RENDER.oring=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">Oリング溝計算</h2>
+ <p class="page-sub">JIS B 2401系。溝深さ＝線径×(1−つぶし率)、溝幅≈線径×1.25〜1.4 が基本の考え方。</p>
+ <div class="calc-card"><h3>溝寸法計算</h3>
+ <div class="form-row">
+  <label>線径 [mm]<select id="orD"><option value="1.9">1.9（P3〜P10）</option><option value="2.4" selected>2.4（P10A〜P22）</option><option value="3.1">3.1（G25〜G145）</option><option value="3.5">3.5（P22A〜P50）</option><option value="5.7">5.7（P48A〜P150）</option></select></label>
+  <label>用途<select id="orUse"><option value="20">平面固定（つぶし率 15〜25%）</option><option value="15">円筒面固定（10〜20%）</option><option value="12">運動用（8〜15%）</option></select></label>
+  <label>つぶし率 [%]<input type="number" id="orSq" value="20" step="any" min="5" max="30"></label>
+ </div>
+ <button class="act" id="orGo">計算</button><div class="result-box" id="orRes"></div>
+ <p class="note">用途を切り替えると推奨つぶし率の中央値が入ります。溝の角はシャープにせずC0.1〜0.2、表面はRa1.6以下（運動用はRa0.4）が目安。溝容積はOリング断面積より15〜25%大きく取り、リングを完全に潰し切らないこと。</p></div>
+ <div class="calc-card"><h3>呼び記号の読み方（JIS B 2401）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>記号</th><th>意味</th><th>線径</th></tr></thead><tbody>
+ <tr><td>P3〜P10</td><td class="jp">運動用・固定用（Pシリーズ、数字≈適用軸径）</td><td>1.9 mm</td></tr>
+ <tr><td>P10A〜P22</td><td class="jp">同上</td><td>2.4 mm</td></tr>
+ <tr><td>P22A〜P50</td><td class="jp">同上</td><td>3.5 mm</td></tr>
+ <tr><td>P48A〜P150</td><td class="jp">同上</td><td>5.7 mm</td></tr>
+ <tr><td>G25〜G145</td><td class="jp">固定用（Gシリーズ）</td><td>3.1 mm</td></tr>
+ </tbody></table></div>
+ <p class="note">材質はニトリル(NBR)が標準。油・グリスと相性の悪い材質（シリコン×鉱物油など）があるのでシール対象で選ぶ。組付け時はグリス少量塗布＋ねじ山を通すときの傷に注意。</p></div>`;
+ $("#orUse").addEventListener("change",()=>{$("#orSq").value=$("#orUse").value});
+ $("#orGo").onclick=()=>{
+  const d=+$("#orD").value,sq=+$("#orSq").value/100;
+  const depth=d*(1-sq);
+  const wMin=d*1.25,wMax=d*1.4;
+  show("#orRes",`線径 ${d} mm・つぶし率 ${fmt(sq*100,0)}%
+<span class="big">溝深さ ≈ ${fmt(depth,2)} mm</span>
+溝幅 ≈ ${fmt(wMin,2)}〜${fmt(wMax,2)} mm
+溝断面積余裕: リング断面 ${fmt(Math.PI*d*d/4,2)} mm² に対し 溝 ${fmt(depth*wMin,2)}〜${fmt(depth*wMax,2)} mm²${depth*wMin<Math.PI*d*d/4?'　<span class="warn">→ 幅は広め側を推奨</span>':""}`);
+ };
+};
+
+/* =========================================================
+   Rev.4.0 追加：リンク機構・歯車・チェーン
+   ========================================================= */
+/* ---- リンク機構 ---- */
+let fbAnim=null;
+RENDER.linkage=()=>{
+ if(fbAnim){cancelAnimationFrame(fbAnim);fbAnim=null}
+ $("#main").innerHTML=`<h2 class="page-title">リンク機構（自由度・四節リンク）</h2>
+ <div class="calc-card"><h3>① 自由度計算（グルーブラーの式・平面機構）</h3>
+ <p style="font-family:var(--mono);text-align:center;padding:4px">F = 3(N − 1) − 2J₁ − J₂</p>
+ <div class="form-row">
+  <label>リンク数 N（固定リンク＝地面も1本と数える）<input type="number" id="dfN" value="4" min="2"></label>
+  <label>低次対偶 J₁（回転ピン・スライダ）<input type="number" id="dfJ1" value="4" min="0"></label>
+  <label>高次対偶 J₂（カム接触・転がり等）<input type="number" id="dfJ2" value="0" min="0"></label>
+ </div>
+ <button class="act" id="dfGo">計算</button><div class="result-box" id="dfRes"></div>
+ <p class="note">F=1で「モーター1個で動きが決まる」機構。F=0は構造物（トラス）、F≧2はアクチュエータが複数必要。四節リンクは N=4, J₁=4 → F=1。平行リンク2組のアーム等、例外的に式より動く「過拘束機構」もある点は頭の片隅に。</p></div>
+ <div class="calc-card"><h3>② 四節リンク 2Dシミュレーション</h3>
+ <div class="form-row">
+  <label>固定リンク g [mm]<input type="number" id="fbG" value="100" step="any"></label>
+  <label>クランク a（入力）[mm]<input type="number" id="fbA" value="35" step="any"></label>
+  <label>カプラ b [mm]<input type="number" id="fbB" value="90" step="any"></label>
+  <label>ロッカー c [mm]<input type="number" id="fbC" value="70" step="any"></label>
+  <label>カプラ点の高さ h [mm]<input type="number" id="fbH" value="35" step="any"></label>
+ </div>
+ <div class="form-row" style="align-items:center">
+  <button class="act" id="fbPlay">▶ 再生 / ⏸ 停止</button>
+  <label style="flex-direction:row;align-items:center;gap:8px">クランク角 <input type="range" id="fbTh" min="0" max="360" value="0" style="width:180px"> <span id="fbThV" style="font-family:var(--mono)">0°</span></label>
+  <button class="ghost" id="fbClr">軌跡クリア</button>
+ </div>
+ <div class="result-box show" id="fbJudge"></div>
+ <div style="text-align:center;background:#FCFDFB;border:1px dashed var(--line);margin-top:10px">
+  <svg id="fbSvg" viewBox="0 0 460 320" width="100%" style="max-width:560px"></svg>
+ </div>
+ <p class="note">青の点線＝カプラ点（bの中点から高さhの位置）の軌跡。h・各リンク長をいじると軌跡の形が大きく変わります。ロボットの脚機構・すくい上げ機構の当たり付けにどうぞ。グレー領域はロッカーの届く範囲です。</p></div>`;
+ // ---- グラスホフ判定＋描画 ----
+ const getL=()=>({g:+$("#fbG").value,a:+$("#fbA").value,b:+$("#fbB").value,c:+$("#fbC").value,h:+$("#fbH").value});
+ const grashof=L=>{
+  const arr=[["固定リンク",L.g],["クランク",L.a],["カプラ",L.b],["ロッカー",L.c]];
+  const sorted=[...arr].sort((x,y)=>x[1]-y[1]);
+  const s=sorted[0],l=sorted[3];
+  const sum1=s[1]+l[1],sum2=sorted[1][1]+sorted[2][1];
+  if(sum1>sum2)return {ok:false,type:"トリプルロッカー（どのリンクも1回転できない）",crank:false};
+  const cls=s[0]==="クランク"?"クランク・ロッカー（入力が1回転可能 ← 一番使いやすい形）":
+   s[0]==="固定リンク"?"ダブルクランク（両側とも1回転する）":
+   s[0]==="カプラ"?"ダブルロッカー（グラスホフ型）":"ロッカー・クランク（出力側が1回転）";
+  return {ok:true,type:cls+(sum1===sum2?"／変化点あり（一直線で不定になる）":""),crank:s[0]==="クランク"||s[0]==="固定リンク"};
+ };
+ const pos=(L,th)=>{
+  const Bx=L.a*Math.cos(th),By=L.a*Math.sin(th);
+  const dx=L.g-Bx,dy=-By,d=Math.hypot(dx,dy);
+  if(d>L.b+L.c||d<Math.abs(L.b-L.c))return null;
+  const al=Math.acos((L.b*L.b+d*d-L.c*L.c)/(2*L.b*d));
+  const phi=Math.atan2(dy,dx);
+  const t=phi-al;
+  const Cx=Bx+L.b*Math.cos(t),Cy=By+L.b*Math.sin(t);
+  // カプラ点: BC中点から左法線方向へh
+  const mx=(Bx+Cx)/2,my=(By+Cy)/2;
+  const ux=(Cx-Bx)/L.b,uy=(Cy-By)/L.b;
+  const Px=mx-uy*L.h,Py=my+ux*L.h;
+  return {Bx,By,Cx,Cy,Px,Py};
+ };
+ let trace=[],playing=false,th=0;
+ const S=1.6,OX=110,OY=200; // スケール&原点(SVG座標: y反転)
+ const tx=x=>OX+x*S, ty=y=>OY-y*S;
+ const judge=()=>{
+  const L=getL(),gr=grashof(L);
+  $("#fbJudge").innerHTML=`グラスホフ判定: <b>${gr.type}</b>${!gr.ok?'<br><span class="warn">クランクを回し続けると途中で組み立て不能になります（シミュレーションでは該当角をスキップ表示）</span>':""}`;
+  return gr;
+ };
+ const draw=()=>{
+  const L=getL();
+  const p=pos(L,th*Math.PI/180);
+  let g="";
+  // 地面
+  g+=`<line class="body" x1="${tx(-20)}" y1="${ty(0)}" x2="${tx(L.g+20)}" y2="${ty(0)}" stroke-dasharray="6 4" stroke-width="1"/>`;
+  // ロッカー可動範囲
+  g+=`<path d="M ${tx(L.g-L.c)} ${ty(0)} A ${L.c*S} ${L.c*S} 0 0 1 ${tx(L.g+L.c)} ${ty(0)}" fill="rgba(32,38,46,.05)" stroke="none"/>`;
+  // 軌跡
+  if(trace.length>1){
+   g+=`<polyline points="${trace.map(q=>tx(q[0])+","+ty(q[1])).join(" ")}" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-dasharray="4 3"/>`;
+  }
+  if(p){
+   trace.push([p.Px,p.Py]);if(trace.length>720)trace.shift();
+   g+=`<line class="body" x1="${tx(0)}" y1="${ty(0)}" x2="${tx(p.Bx)}" y2="${ty(p.By)}" stroke-width="3" stroke="#B23A2E"/>`;
+   g+=`<polygon points="${tx(p.Bx)},${ty(p.By)} ${tx(p.Cx)},${ty(p.Cy)} ${tx(p.Px)},${ty(p.Py)}" fill="rgba(36,86,166,.12)" stroke="var(--ink)" stroke-width="1.4"/>`;
+   g+=`<line class="body" x1="${tx(L.g)}" y1="${ty(0)}" x2="${tx(p.Cx)}" y2="${ty(p.Cy)}" stroke-width="3"/>`;
+   [[0,0],[L.g,0],[p.Bx,p.By],[p.Cx,p.Cy]].forEach(q=>{g+=`<circle cx="${tx(q[0])}" cy="${ty(q[1])}" r="4" fill="#fff" stroke="var(--ink)" stroke-width="1.6"/>`});
+   g+=`<circle cx="${tx(p.Px)}" cy="${ty(p.Py)}" r="4.5" fill="var(--blue)"/>`;
+  }else{
+   g+=`<text x="230" y="60" text-anchor="middle" fill="var(--red)">この角度では組み立てできません（リンク長の組合せを見直し）</text>`;
+  }
+  g+=`<text x="${tx(0)}" y="${ty(0)+18}" text-anchor="middle">A(固定)</text><text x="${tx(L.g)}" y="${ty(0)+18}" text-anchor="middle">D(固定)</text>`;
+  const svg=document.getElementById("fbSvg");
+  if(svg)svg.innerHTML=g;
+ };
+ const loop=()=>{
+  if(!document.getElementById("fbSvg")){fbAnim=null;return}
+  if(playing){th=(th+1.2)%360;$("#fbTh").value=Math.round(th);$("#fbThV").textContent=Math.round(th)+"°";draw()}
+  fbAnim=requestAnimationFrame(loop);
+ };
+ $("#dfGo").onclick=()=>{
+  const N=+$("#dfN").value,J1=+$("#dfJ1").value,J2=+$("#dfJ2").value;
+  const F=3*(N-1)-2*J1-J2;
+  show("#dfRes",`<span class="big">自由度 F = ${F}</span>　${F===1?"→ アクチュエータ1つで運動が決まる機構":F===0?"→ 動かない（構造物）":F<0?"→ 過拘束（理論上は組めない/精度で吸収）":"→ アクチュエータが"+F+"個必要"}`);
+ };
+ ["fbG","fbA","fbB","fbC","fbH"].forEach(id=>$("#"+id).addEventListener("input",()=>{trace=[];judge();draw()}));
+ $("#fbTh").addEventListener("input",e=>{th=+e.target.value;$("#fbThV").textContent=Math.round(th)+"°";draw()});
+ $("#fbPlay").onclick=()=>{playing=!playing};
+ $("#fbClr").onclick=()=>{trace=[];draw()};
+ judge();draw();playing=true;loop();
+};
+
+/* ---- 歯車の種類 ---- */
+RENDER.geartypes=()=>{
+ const GT=[
+  ["平歯車","平行軸","◎ 安い・作りやすい・効率98%","音が出やすい。まずこれ"],
+  ["はすば歯車","平行軸","静か・強い（かみ合い率大）","スラスト力が出る→軸受で受ける"],
+  ["かさ歯車","交差軸(90°)","軸の向きを変えられる","マイタ歯車＝同歯数1:1のかさ歯車"],
+  ["ウォームギヤ","食い違い軸","1段で大減速(1/10〜1/60)。<b>セルフロック</b>気味で逆駆動しにくい","効率40〜85%と低め・発熱。アーム保持に便利"],
+  ["ラック＆ピニオン","回転→直動","シンプルな直動化。ストローク自由","バックラッシ管理・ラックの固定精度が肝"],
+  ["内歯車","平行軸","省スペース・遊星の外輪","製作は外注向き"],
+  ["遊星歯車","同軸","小型で大トルク・同軸入出力","部品数多。市販ギヤヘッド活用が現実的"]
+ ];
+ $("#main").innerHTML=`<h2 class="page-title">歯車の種類と計算</h2>
+ <div class="data-wrap"><table class="data"><thead><tr><th>種類</th><th>軸関係</th><th>長所</th><th>注意</th></tr></thead><tbody>
+ ${GT.map(g=>`<tr><td class="jp"><b>${g[0]}</b></td><td class="jp">${g[1]}</td><td class="jp" style="white-space:normal;min-width:180px">${g[2]}</td><td class="jp" style="white-space:normal;min-width:180px">${g[3]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <div class="calc-card" style="margin-top:16px"><h3>遊星歯車の減速比</h3>
+ <div class="form-row">
+  <label>太陽歯車 Zs<input type="number" id="plS" value="12" min="6"></label>
+  <label>内歯車（リング）Zr<input type="number" id="plR" value="48" min="12"></label>
+  <label>遊星の個数<input type="number" id="plN" value="3" min="2" max="6"></label>
+ </div>
+ <button class="act" id="plGo">計算</button><div class="result-box" id="plRes"></div>
+ <p class="note">遊星歯数 Zp＝(Zr−Zs)/2（整数になる必要あり）。等配組立には (Zs＋Zr) が遊星個数で割り切れることが条件。3Dプリント遊星ギヤの設計チェックにどうぞ。</p></div>
+ <div class="calc-card"><h3>ラック＆ピニオン</h3>
+ <div class="form-row">
+  <label>モジュール m<input type="number" id="rpM" value="1" step="any"></label>
+  <label>ピニオン歯数 z<input type="number" id="rpZ" value="20"></label>
+  <label>ピニオン回転数 [rpm]<input type="number" id="rpN" value="60" step="any"></label>
+ </div>
+ <button class="act" id="rpGo">計算</button><div class="result-box" id="rpRes"></div>
+ </div>
+ <div class="calc-card"><h3>バックラッシの目安</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>用途</th><th>目安（中心距離の追い込み）</th></tr></thead><tbody>
+ <tr><td class="jp">金属切削歯車（一般動力）</td><td class="jp">標準中心距離＋0.02〜0.05mm程度（モジュール1前後）</td></tr>
+ <tr><td class="jp">3Dプリント歯車</td><td class="jp">標準中心距離＋0.1〜0.3mm。歯厚を数%痩せさせるのも有効</td></tr>
+ <tr><td class="jp">往復・位置決め系</td><td class="jp">バックラッシが誤差に直結→アンチバックラッシギヤ・ばね与圧・ベルト化を検討</td></tr>
+ </tbody></table></div></div>`;
+ $("#plGo").onclick=()=>{
+  const Zs=+$("#plS").value,Zr=+$("#plR").value,n=+$("#plN").value;
+  const Zp=(Zr-Zs)/2;
+  const ok1=Number.isInteger(Zp),ok2=(Zs+Zr)%n===0;
+  show("#plRes",`遊星歯数 Zp = ${fmt(Zp,1)} ${ok1?"✓":'<span class="warn">← 整数でないため成立しません</span>'}
+等配組立条件 (Zs＋Zr)/${n} = ${fmt((Zs+Zr)/n,2)} ${ok2?"✓":'<span class="warn">← 割り切れないため等間隔配置不可</span>'}
+<span class="big">リング固定・太陽入力・キャリア出力: 1/${fmt(1+Zr/Zs,3)} 減速</span>
+キャリア固定・太陽入力・リング出力: 1/${fmt(Zr/Zs,3)}（回転方向は逆転）
+太陽固定・リング入力・キャリア出力: 1/${fmt(1+Zs/Zr,3)}`);
+ };
+ $("#rpGo").onclick=()=>{
+  const m=+$("#rpM").value,z=+$("#rpZ").value,N=+$("#rpN").value;
+  const perRev=Math.PI*m*z;
+  show("#rpRes",`ピニオンPCD = ${fmt(m*z,2)} mm
+<span class="big">1回転あたりの移動量 = ${fmt(perRev,2)} mm</span>
+送り速度 = ${fmt(perRev*N,0)} mm/min（${fmt(perRev*N/60,1)} mm/s）`);
+ };
+};
+
+/* ---- チェーン ---- */
+RENDER.chain=()=>{
+ // [呼び, ピッチ, ローラ径, 内リンク内幅, 参考最小引張強さkN]
+ const CH=[
+  ["#25 (RS25)",6.35,3.30,3.18,3.5],
+  ["#35 (RS35)",9.525,5.08,4.78,7.8],
+  ["#40 (RS40)",12.70,7.92,7.95,13.9],
+  ["#50 (RS50)",15.875,10.16,9.53,21.7],
+  ["#60 (RS60)",19.05,11.91,12.70,31.3]
+ ];
+ $("#main").innerHTML=`<h2 class="page-title">ローラーチェーン・スプロケット</h2>
+ <p class="page-sub">ANSI系呼び番号。RS25はロボット・自転車系、RS40は産業機械の定番。引張強さは参考値（実用は1/7〜1/10で）。</p>
+ <div class="data-wrap"><table class="data"><thead><tr><th>呼び</th><th>ピッチ p</th><th>ローラ径</th><th>内リンク内幅</th><th>参考最小引張強さ kN</th></tr></thead><tbody>
+ ${CH.map(c=>`<tr><td>${c[0]}</td><td>${c[1]}</td><td>${c[2]}</td><td>${c[3]}</td><td>${c[4]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <div class="calc-card" style="margin-top:16px"><h3>スプロケットPCD・チェーン長計算</h3>
+ <div class="form-row">
+  <label>チェーン<select id="chSel">${CH.map((c,i)=>`<option value="${c[1]}"${i===0?" selected":""}>${c[0]}</option>`).join("")}</select></label>
+  <label>小スプロケット歯数 z1<input type="number" id="chZ1" value="15" min="9"></label>
+  <label>大スプロケット歯数 z2<input type="number" id="chZ2" value="30" min="9"></label>
+  <label>中心距離 C [mm]<input type="number" id="chC" value="150" step="any"></label>
+ </div>
+ <button class="act" id="chGo">計算</button><div class="result-box" id="chRes"></div>
+ <p class="note">PCD＝p/sin(180°/z)。リンク数は偶数に丸めるのが原則（奇数はオフセットリンクが必要になり強度が落ちる）。中心距離はピッチの30〜50倍あたりが扱いやすい。</p></div>
+ <div class="calc-card"><h3>実装のコツ</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>コツ</th><th>内容</th></tr></thead><tbody>
+ <tr><td class="jp">たるみは張り側でなく緩み側に</td><td class="jp">スパン中央で1〜2%程度のたるみが適正。張りすぎは軸受と効率を痛める</td></tr>
+ <tr><td class="jp">テンショナー（アイドラ）</td><td class="jp">中心距離を固定したいときの調整代。緩み側の外側から押すのが基本</td></tr>
+ <tr><td class="jp">最小歯数</td><td class="jp">高速なら17枚以上推奨、低速でも11枚以上が無難（少ないと多角形運動で振動）</td></tr>
+ <tr><td class="jp">給油</td><td class="jp">チェーンは要給油。無給油ならベルト駆動の方が向く</td></tr>
+ <tr><td class="jp">ベルトとの使い分け</td><td class="jp">大トルク・耐熱・伸び小→チェーン／静音・無給油・軽量・高速→タイミングベルト</td></tr>
+ </tbody></table></div></div>`;
+ $("#chGo").onclick=()=>{
+  const p=+$("#chSel").value,z1=+$("#chZ1").value,z2=+$("#chZ2").value,C=+$("#chC").value;
+  const pcd=z=>p/Math.sin(Math.PI/z);
+  const Lp=2*C/p+(z1+z2)/2+Math.pow((z2-z1)/(2*Math.PI),2)*p/C;
+  let Le=Math.ceil(Lp);if(Le%2)Le++;
+  const K=Le-(z1+z2)/2;
+  const Cact=p/4*(K+Math.sqrt(K*K-8*Math.pow((z2-z1)/(2*Math.PI),2)));
+  show("#chRes",`PCD: 小 ${fmt(pcd(z1),2)} mm ／ 大 ${fmt(pcd(z2),2)} mm　減速比 = ${fmt(z2/z1,3)}
+計算リンク数 = ${fmt(Lp,2)} → <span class="big">採用リンク数 ${Le}（偶数丸め）</span>
+このときの実中心距離 ≈ ${fmt(Cact,2)} mm（指定${C}mmとの差 ${fmt(Cact-C,2)} mm はテンショナーで吸収）
+チェーン全長 ≈ ${fmt(Le*p,1)} mm`);
+ };
+};
+
+/* =========================================================
+   Rev.5.0 追加：アーム・クローラ・機構・仕上げ
+   ========================================================= */
+/* ---- ロボットアーム FK/IK ---- */
+RENDER.arm=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">ロボットアーム（2リンク FK／IK シミュレータ）</h2>
+ <div class="calc-card"><h3>アーム形式の使い分け</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>形式</th><th>構造</th><th>得意</th><th>注意</th></tr></thead><tbody>
+ <tr><td class="jp"><b>直交（ガントリー）</b></td><td class="jp">X/Y/Z直動の組合せ</td><td class="jp">制御が簡単・精度・剛性</td><td class="jp">可動域のわりに場所を食う</td></tr>
+ <tr><td class="jp"><b>スカラ（水平多関節）</b></td><td class="jp">水平2関節＋Z直動</td><td class="jp">水平面の高速ピック＆プレース。関節が重力と直交→モーターが楽</td><td class="jp">上下は別軸が必要</td></tr>
+ <tr><td class="jp"><b>垂直多関節</b></td><td class="jp">垂直面に多関節</td><td class="jp">可動域が広い・人の腕と同じ感覚</td><td class="jp">重力トルクとの戦い。減速比・ブレーキ・ばね補償が要る</td></tr>
+ <tr><td class="jp"><b>パラレル（デルタ）</b></td><td class="jp">3本のリンクで並列支持</td><td class="jp">超高速・モーターが根本に集中して腕が軽い</td><td class="jp">可動域が狭い・IKが独特</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>2リンクシミュレータ（スカラの水平面／垂直多関節の垂直面 共通）</h3>
+ <div class="form-row">
+  <label>L1 [mm]<input type="number" id="arL1" value="120" step="any"></label>
+  <label>L2 [mm]<input type="number" id="arL2" value="100" step="any"></label>
+  <label>モード<select id="arMode"><option value="h">スカラ（上から見た水平面）</option><option value="v">垂直多関節（横から見た垂直面）</option></select></label>
+  <label>肘の向き<select id="arElbow"><option value="1">肘上（外）</option><option value="-1">肘下（内）</option></select></label>
+ </div>
+ <div class="form-row">
+  <label style="flex-direction:row;align-items:center;gap:8px">θ1 <input type="range" id="arT1" min="-180" max="180" value="40" style="width:150px"> <span id="arT1v" style="font-family:var(--mono)">40°</span></label>
+  <label style="flex-direction:row;align-items:center;gap:8px">θ2 <input type="range" id="arT2" min="-160" max="160" value="60" style="width:150px"> <span id="arT2v" style="font-family:var(--mono)">60°</span></label>
+ </div>
+ <div class="form-row">
+  <label>目標 X [mm]<input type="number" id="arX" value="150" step="any"></label>
+  <label>目標 Y [mm]<input type="number" id="arY" value="80" step="any"></label>
+  <button class="act" id="arIK" style="align-self:flex-end">IK（目標へ）</button>
+ </div>
+ <div class="result-box show" id="arRes"></div>
+ <div style="text-align:center;background:#FCFDFB;border:1px dashed var(--line);margin-top:10px">
+  <svg id="arSvg" viewBox="0 0 460 340" width="100%" style="max-width:560px" style="cursor:crosshair"></svg>
+ </div>
+ <p class="note">図の中を<b>クリックすると目標を置いてIK</b>が走ります。グレーのドーナツが到達可能範囲（外径L1＋L2、内径|L1−L2|）。スライダーで関節を直接動かすとFK（順運動学）です。</p></div>
+ <div class="calc-card"><h3>関節トルクの見積り（垂直多関節・最悪姿勢＝水平に伸ばした時）</h3>
+ <div class="form-row">
+  <label>ペイロード（手先荷重）[g]<input type="number" id="arW" value="200" step="any"></label>
+  <label>アーム1質量 [g]<input type="number" id="arM1" value="150" step="any"></label>
+  <label>アーム2質量 [g]<input type="number" id="arM2" value="100" step="any"></label>
+  <label>安全率<input type="number" id="arSf" value="2" step="any"></label>
+ </div>
+ <button class="act" id="arTGo">計算</button><div class="result-box" id="arTRes"></div>
+ <p class="note">T1＝g×[W(L1＋L2)＋m1·L1/2＋m2(L1＋L2/2)]、T2＝g×[W·L2＋m2·L2/2]。静的保持トルクなので、動かす分＋余裕で安全率をかけてサーボ・モーターを選定。スカラ（水平）ならこの重力トルクはほぼゼロになるのが強み。</p></div>`;
+ const S=1.3,OX=230,OY=190,VW=460,VH=340;
+ const txp=x=>OX+x*S, typ=y=>OY-y*S;
+ const get=()=>({L1:+$("#arL1").value,L2:+$("#arL2").value,t1:+$("#arT1").value*Math.PI/180,t2:+$("#arT2").value*Math.PI/180});
+ let target=null;
+ const draw=()=>{
+  const {L1,L2,t1,t2}=get();
+  const x1=L1*Math.cos(t1),y1=L1*Math.sin(t1);
+  const x2=x1+L2*Math.cos(t1+t2),y2=y1+L2*Math.sin(t1+t2);
+  const mode=$("#arMode").value;
+  let g="";
+  g+=`<circle cx="${txp(0)}" cy="${typ(0)}" r="${(L1+L2)*S}" fill="rgba(32,38,46,.06)"/>`;
+  if(Math.abs(L1-L2)>0)g+=`<circle cx="${txp(0)}" cy="${typ(0)}" r="${Math.abs(L1-L2)*S}" fill="#FCFDFB"/>`;
+  if(mode==="v"){g+=`<line class="hatch" x1="10" y1="${typ(0)}" x2="${VW-10}" y2="${typ(0)}"/><text x="${VW-14}" y="${typ(0)+16}" text-anchor="end">地面方向 ↓重力</text>`}
+  else{g+=`<text x="${VW-14}" y="20" text-anchor="end">上から見た図（重力は紙面奥）</text>`}
+  g+=`<line x1="${txp(0)}" y1="${typ(0)}" x2="${txp(x1)}" y2="${typ(y1)}" stroke="var(--red)" stroke-width="5" stroke-linecap="round"/>`;
+  g+=`<line x1="${txp(x1)}" y1="${typ(y1)}" x2="${txp(x2)}" y2="${typ(y2)}" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/>`;
+  [[0,0],[x1,y1]].forEach(q=>{g+=`<circle cx="${txp(q[0])}" cy="${typ(q[1])}" r="6" fill="#fff" stroke="var(--ink)" stroke-width="1.8"/>`});
+  g+=`<circle cx="${txp(x2)}" cy="${typ(y2)}" r="5" fill="var(--blue)"/>`;
+  if(target)g+=`<line class="dim" x1="${txp(target[0])-8}" y1="${typ(target[1])-8}" x2="${txp(target[0])+8}" y2="${typ(target[1])+8}"/><line class="dim" x1="${txp(target[0])-8}" y1="${typ(target[1])+8}" x2="${txp(target[0])+8}" y2="${typ(target[1])-8}"/>`;
+  const svg=document.getElementById("arSvg");if(svg)svg.innerHTML=g;
+  $("#arRes").innerHTML=`手先位置: X = <b>${fmt(x2,1)}</b> mm, Y = <b>${fmt(y2,1)}</b> mm　（θ1=${fmt(t1*180/Math.PI,1)}°, θ2=${fmt(t2*180/Math.PI,1)}°）`;
+ };
+ const ik=(x,y)=>{
+  const {L1,L2}=get();
+  const d2=x*x+y*y,d=Math.sqrt(d2);
+  if(d>L1+L2||d<Math.abs(L1-L2)){$("#arRes").innerHTML=`<span class="warn">目標(${fmt(x,0)}, ${fmt(y,0)})は到達範囲外です（届く距離: ${fmt(Math.abs(L1-L2),0)}〜${fmt(L1+L2,0)}mm）</span>`;return}
+  const e=+$("#arElbow").value;
+  const c2=(d2-L1*L1-L2*L2)/(2*L1*L2);
+  const t2=e*Math.acos(Math.max(-1,Math.min(1,c2)));
+  const t1=Math.atan2(y,x)-Math.atan2(L2*Math.sin(t2),L1+L2*Math.cos(t2));
+  $("#arT1").value=Math.round(t1*180/Math.PI);$("#arT2").value=Math.round(t2*180/Math.PI);
+  $("#arT1v").textContent=Math.round(t1*180/Math.PI)+"°";$("#arT2v").textContent=Math.round(t2*180/Math.PI)+"°";
+  target=[x,y];draw();
+ };
+ ["arL1","arL2","arMode","arElbow"].forEach(id=>$("#"+id).addEventListener("input",draw));
+ $("#arT1").addEventListener("input",e=>{$("#arT1v").textContent=e.target.value+"°";target=null;draw()});
+ $("#arT2").addEventListener("input",e=>{$("#arT2v").textContent=e.target.value+"°";target=null;draw()});
+ $("#arIK").onclick=()=>ik(+$("#arX").value,+$("#arY").value);
+ document.getElementById("arSvg").addEventListener("click",e=>{
+  const svg=document.getElementById("arSvg"),r=svg.getBoundingClientRect();
+  const vx=(e.clientX-r.left)/r.width*VW, vy=(e.clientY-r.top)/r.height*VH;
+  const x=(vx-OX)/S, y=(OY-vy)/S;
+  $("#arX").value=fmt(x,0);$("#arY").value=fmt(y,0);ik(x,y);
+ });
+ $("#arTGo").onclick=()=>{
+  const L1=+$("#arL1").value/1000,L2=+$("#arL2").value/1000;
+  const W=+$("#arW").value/1000,m1=+$("#arM1").value/1000,m2=+$("#arM2").value/1000,sf=+$("#arSf").value;
+  const g=9.80665;
+  const T1=g*(W*(L1+L2)+m1*L1/2+m2*(L1+L2/2));
+  const T2=g*(W*L2+m2*L2/2);
+  show("#arTRes",`肩関節 T1 ≈ ${fmt(T1,3)} N·m → <span class="big">選定目安 ${fmt(T1*sf,3)} N·m（${fmt(T1*sf/9.80665*100,0)} kgf·cm）</span>
+肘関節 T2 ≈ ${fmt(T2,3)} N·m → 選定目安 ${fmt(T2*sf,3)} N·m（${fmt(T2*sf/9.80665*100,0)} kgf·cm）
+※RCサーボのカタログ表記はkgf·cm。減速機やばね補償（重力キャンセル）でT1は大きく減らせます。`);
+ };
+ draw();
+};
+
+/* ---- クローラ（履帯） ---- */
+RENDER.crawler=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">クローラ（履帯・無限軌道）</h2>
+ <p class="page-sub">豆知識：「キャタピラー」は米Caterpillar社の商標。一般名は<b>クローラ・履帯・無限軌道</b>です（公開資料ではこちらを使うのが安全）。</p>
+ <div class="calc-card"><h3>特徴と種類</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>項目</th><th>内容</th></tr></thead><tbody>
+ <tr><td class="jp">長所</td><td class="jp">接地圧が低い（沈まない）・段差/不整地/瓦礫に強い・登坂力大</td></tr>
+ <tr><td class="jp">短所</td><td class="jp">旋回抵抗が大きい（エネルギー食い）・効率が車輪より低い・重い・床を傷めやすい</td></tr>
+ <tr><td class="jp">ゴムクローラ（一体）</td><td class="jp">静か・床にやさしい。農機/建機系。サイズが合えば既製品が楽</td></tr>
+ <tr><td class="jp">樹脂リンク式</td><td class="jp">ホビー定番。長さを自由に組めるがピンの摩耗・伸びに注意</td></tr>
+ <tr><td class="jp">ベルト転用</td><td class="jp">タイミングベルトを裏返して使う自作定番。歯がスプロケットと噛むので滑らない</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>速度・接地圧・旋回の計算</h3>
+ <div class="form-row">
+  <label>駆動スプロケットPCD [mm]<input type="number" id="crD" value="60" step="any"></label>
+  <label>回転数 [rpm]<input type="number" id="crN" value="120" step="any"></label>
+  <label>機体質量 [kg]<input type="number" id="crM" value="8" step="any"></label>
+  <label>接地長 L [mm]<input type="number" id="crL" value="250" step="any"></label>
+  <label>クローラ幅 b [mm]<input type="number" id="crB" value="40" step="any"></label>
+  <label>左右中心間 B [mm]<input type="number" id="crW" value="220" step="any"></label>
+  <label>旋回抵抗係数 μt<input type="number" id="crMu" value="0.6" step="any"></label>
+ </div>
+ <button class="act" id="crGo">計算</button><div class="result-box" id="crRes"></div>
+ <p class="note">接地圧＝重量÷(2×L×b)。超信地旋回（その場旋回）の片側必要推進力 F≈μt·m·g·L/(4B) の概算式を使用。μtはゴム×硬い床で0.5〜0.7目安（滑りやすい床ほど小）。<b>L/Bが大きいほど旋回が重くなる</b>ので、その場旋回するロボットはL≦Bあたりが快適圏。</p></div>
+ <div class="calc-card"><h3>設計ポイント</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>ポイント</th><th>内容</th></tr></thead><tbody>
+ <tr><td class="jp">テンショナー必須</td><td class="jp">アイドラ位置をばねかネジで調整可能に。張りすぎは抵抗・緩すぎは脱輪</td></tr>
+ <tr><td class="jp">脱輪（外れ）対策</td><td class="jp">ガイド（センターリブ/フランジ付き転輪）を入れる。旋回時に外れやすい</td></tr>
+ <tr><td class="jp">転輪の数</td><td class="jp">多いほど接地圧が均一に。最低でも前後＋中間1〜2個</td></tr>
+ <tr><td class="jp">スプロケットとピッチ</td><td class="jp">歯ピッチとクローラピッチは完全一致が絶対条件</td></tr>
+ <tr><td class="jp">駆動は後ろ側が基本</td><td class="jp">牽引側（張り側）を下側の接地部に直結でき、緩み側が上に来る</td></tr>
+ </tbody></table></div></div>`;
+ $("#crGo").onclick=()=>{
+  const D=+$("#crD").value/1000,N=+$("#crN").value,m=+$("#crM").value;
+  const L=+$("#crL").value/1000,b=+$("#crB").value/1000,B=+$("#crW").value/1000,mu=+$("#crMu").value;
+  const g=9.80665;
+  const v=Math.PI*D*N/60;
+  const p=m*g/(2*L*b)/1000; // kPa
+  const F=mu*m*g*L/(4*B);
+  const T=F*D/2;
+  show("#crRes",`走行速度 = ${fmt(v,2)} m/s（${fmt(v*3600/1000,1)} km/h）
+<span class="big">接地圧 ≈ ${fmt(p,1)} kPa</span>（人が立つと約30〜80kPa。それより低ければ雪・砂でも沈みにくい）
+超信地旋回の片側必要推進力 ≈ ${fmt(F,1)} N → 片側スプロケット必要トルク ≈ ${fmt(T,2)} N·m
+L/B = ${fmt(L/B,2)}${L/B>1.2?'　<span class="warn">→ 旋回が重い比率。Lを短くするかBを広げると楽に</span>':"（旋回しやすい比率）"}`);
+ };
+};
+
+/* ---- 滑車・ワイヤ ---- */
+RENDER.pulley=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">滑車・ワイヤ</h2>
+ <div class="calc-card"><h3>滑車の基本</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>種類</th><th>力</th><th>引く距離</th><th>役割</th></tr></thead><tbody>
+ <tr><td class="jp"><b>定滑車</b></td><td>W×1（変わらない）</td><td>×1</td><td class="jp">力の向きを変える</td></tr>
+ <tr><td class="jp"><b>動滑車1個</b></td><td>W/2</td><td>×2</td><td class="jp">力を半分に（荷物と一緒に動く滑車）</td></tr>
+ <tr><td class="jp"><b>組合せ（n本掛け）</b></td><td>W/n</td><td>×n</td><td class="jp">荷を支えるロープの本数nで軽くなる</td></tr>
+ </tbody></table></div>
+ <div class="form-row" style="margin-top:10px">
+  <label>荷重 W [N]（kgなら×9.8）<input type="number" id="puW" value="100" step="any"></label>
+  <label>荷を支えるロープ本数 n<input type="number" id="puN" value="4" min="1"></label>
+  <label>滑車1個あたり効率<input type="number" id="puE" value="0.95" step="any" min="0.5" max="1"></label>
+  <label>持ち上げ量 [mm]<input type="number" id="puH" value="300" step="any"></label>
+ </div>
+ <button class="act" id="puGo">計算</button><div class="result-box" id="puRes"></div>
+ <p class="note">理想は F＝W/n だが、実際は滑車の摩擦で1個通るごとに数%ロスする。ロボットの巻き上げ機構（ウインチ）では、力がn分の1になる代わりに<b>巻き取り量と時間がn倍</b>になる点を忘れずに。</p></div>
+ <div class="calc-card"><h3>ワイヤ・ロープの実務</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>項目</th><th>目安・内容</th></tr></thead><tbody>
+ <tr><td class="jp">使用荷重</td><td class="jp">破断荷重の<b>1/6以下</b>で使う（吊り・巻き上げの安全常識）</td></tr>
+ <tr><td class="jp">プーリー径</td><td class="jp">ワイヤロープ径の16倍以上が目安（小さいと素線が疲労で切れる）。樹脂ロープはもっと小さくても可</td></tr>
+ <tr><td class="jp">釣り糸・超高分子量PE(UHMWPE)編み糸</td><td class="jp">軽量ロボットの腱駆動・巻き上げの定番。強く伸びにくいが<b>結び目で強度半減</b>→8の字結び・接着併用</td></tr>
+ <tr><td class="jp">端末処理</td><td class="jp">ワイヤはスリーブかしめ（アルミクランプ）＋シンブルで折り返す。直角に曲げない</td></tr>
+ <tr><td class="jp">巻き取りドラム</td><td class="jp">整列巻きガイドか、幅の狭い深溝で乱巻き防止。乱巻き＝食い込み＝突然の張力変動</td></tr>
+ </tbody></table></div></div>`;
+ $("#puGo").onclick=()=>{
+  const W=+$("#puW").value,n=+$("#puN").value,e=+$("#puE").value,h=+$("#puH").value;
+  const F=W/(n*Math.pow(e,n));
+  show("#puRes",`理想の必要力 = ${fmt(W/n,1)} N
+<span class="big">実際の必要力 ≈ ${fmt(F,1)} N</span>（効率${e}を${n}回通過で考慮）
+ロープを引く量 = ${fmt(h*n,0)} mm（持ち上げ${h}mmのため）`);
+ };
+};
+
+/* ---- 戸車・スライド機構 ---- */
+RENDER.slidedoor=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">戸車・スライド機構</h2>
+ <div class="calc-card"><h3>戸車とレールの種類</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>種類</th><th>特徴</th><th>向き</th></tr></thead><tbody>
+ <tr><td class="jp"><b>V型戸車＋V溝レール</b></td><td class="jp">溝に食い込んで直進性◎・脱線しにくい</td><td class="jp">精度が欲しい引き戸・自作直動</td></tr>
+ <tr><td class="jp"><b>丸型戸車＋丸棒レール</b></td><td class="jp">ゴミに強い（点接触で異物を弾く）</td><td class="jp">屋外・粉塵環境</td></tr>
+ <tr><td class="jp"><b>平型戸車（フラット）</b></td><td class="jp">レール不要で床を転がる。横ズレは別ガイドが必要</td><td class="jp">簡易な引き戸</td></tr>
+ <tr><td class="jp"><b>上吊り式（ハンガーローラー）</b></td><td class="jp">床にレール無し＝段差ゼロ・ゴミ噛みなし。上部に荷重</td><td class="jp">自動ドア・室内引き戸の主流</td></tr>
+ <tr><td class="jp"><b>調整戸車</b></td><td class="jp">取付後に高さ調整ネジで建て付け調整できる</td><td class="jp">木製建具の定番</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>自動ドアの基本構成（＝ベルト直動機構の教科書）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>要素</th><th>内容</th></tr></thead><tbody>
+ <tr><td class="jp">案内</td><td class="jp">上吊りハンガーローラー（＋下部は振れ止めガイドのみ）</td></tr>
+ <tr><td class="jp">駆動</td><td class="jp">DCモーター＋タイミングベルト。ベルトのキャリッジに扉を固定</td></tr>
+ <tr><td class="jp">検出</td><td class="jp">人感（赤外・レーダー）＋安全（補助光電センサ）＋端点（リミット or 電流検知）</td></tr>
+ <tr><td class="jp">制御</td><td class="jp">開閉速度台形制御・障害物で反転（挟み込み防止）・全開保持タイマ</td></tr>
+ </tbody></table></div>
+ <p class="note">ロボットへの応用：3Dプリンタと同じ「ベルト両端をキャリッジに固定してモーター側プーリーで駆動」する形が作りやすい。挟み込み反転（電流監視で反転）は競技ロボの機構にもそのまま使える安全設計。</p></div>
+ <div class="calc-card"><h3>直動方式の比較（安→高）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>方式</th><th>精度</th><th>速度</th><th>コスト</th><th>メモ</th></tr></thead><tbody>
+ <tr><td class="jp">戸車＋アングルレール</td><td class="jp">低</td><td class="jp">中</td><td class="jp">◎安い</td><td class="jp">大ストロークを安く。ガタは構造で吸収</td></tr>
+ <tr><td class="jp">引き出しスライドレール</td><td class="jp">低〜中</td><td class="jp">中</td><td class="jp">◎</td><td class="jp">伸縮式で全開ストロークが取れる。ガタ・たわみあり</td></tr>
+ <tr><td class="jp">シャフト＋リニアブッシュ</td><td class="jp">中</td><td class="jp">中</td><td class="jp">○</td><td class="jp">2本平行で使う。自作の定番</td></tr>
+ <tr><td class="jp">リニアガイド＋ベルト</td><td class="jp">中〜高</td><td class="jp">◎速い</td><td class="jp">△</td><td class="jp">長ストローク高速。位置決めはエンコーダ頼み</td></tr>
+ <tr><td class="jp">リニアガイド＋ボールねじ</td><td class="jp">◎</td><td class="jp">中</td><td class="jp">×</td><td class="jp">精密位置決め・大推力の本命</td></tr>
+ </tbody></table></div></div>`;
+};
+
+/* ---- サスペンション・衝撃吸収 ---- */
+RENDER.suspension=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">サスペンション・衝撃吸収材</h2>
+ <div class="calc-card"><h3>サスペンション方式（ロボット向け）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>方式</th><th>仕組み</th><th>向き</th></tr></thead><tbody>
+ <tr><td class="jp"><b>リジッド（サス無し）</b></td><td class="jp">車軸固定。平坦な競技フィールドなら十分</td><td class="jp">まずこれで良いか検討</td></tr>
+ <tr><td class="jp"><b>スイングアーム独立懸架</b></td><td class="jp">車輪ごとに腕＋ばね。段差でも全輪接地→トラクション維持</td><td class="jp">不整地・段差のある競技</td></tr>
+ <tr><td class="jp"><b>ロッカーボギー</b></td><td class="jp">リンクだけで4〜6輪を接地させる（<b>ばね無し</b>）。火星探査車で有名</td><td class="jp">低速・大きな段差乗り越え</td></tr>
+ <tr><td class="jp"><b>シーソー（センターピボット）</b></td><td class="jp">左右または前後の車軸を中央1点で振らせる。部品最少で3点支持化</td><td class="jp">4輪ロボの手軽な全輪接地化</td></tr>
+ <tr><td class="jp"><b>板ばね・トーションバー</b></td><td class="jp">構造部材がばねを兼ねる。省スペース</td><td class="jp">薄型機・簡易サス</td></tr>
+ </tbody></table></div>
+ <p class="note">サスの本当の目的は乗り心地でなく<b>「全輪を接地させて駆動力とセンサの姿勢を安定させる」</b>こと。ばねだけだと跳ねが収まらないので、速い機体はダンパ（またはゴムの内部減衰）を併用。</p></div>
+ <div class="calc-card"><h3>衝撃吸収材の使い分け</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>材料</th><th>硬さ目安（ショアA）</th><th>得意</th><th>メモ</th></tr></thead><tbody>
+ <tr><td class="jp">防振ゴム（NBR/CR）</td><td>40〜70</td><td class="jp">モーター・ポンプの振動絶縁</td><td class="jp">市販の防振マウント（ネジ付き円柱）が便利</td></tr>
+ <tr><td class="jp">EPDMスポンジ</td><td class="jp">発泡・柔</td><td class="jp">パッキン・軽い緩衝・すき間埋め</td><td class="jp">屋外耐候性◎</td></tr>
+ <tr><td class="jp">低反発ウレタン・衝撃吸収ゲル</td><td>0〜20（超軟質）</td><td class="jp">落下衝撃の吸収（エネルギーを熱に）</td><td class="jp">精密部品・バッテリーの保護に。粘着タイプが貼りやすい</td></tr>
+ <tr><td class="jp">EVAフォーム</td><td class="jp">発泡・中</td><td class="jp">バンパー・外装保護</td><td class="jp">軽い・加工が楽（カッターでOK）</td></tr>
+ <tr><td class="jp">シリコンゴム</td><td>20〜70</td><td class="jp">耐熱・耐候の緩衝</td><td class="jp">足裏の滑り止めにも</td></tr>
+ <tr><td class="jp">金属ばね＋ダンパ</td><td>—</td><td class="jp">大ストローク・繰り返し</td><td class="jp">RCカー用オイルダンパの流用が手軽で高性能</td></tr>
+ </tbody></table></div>
+ <p class="note">ショアAは押し込み硬さ（輪ゴム≈A20〜30、タイヤ≈A60〜70、靴底≈A80）。<b>振動対策は「柔らかいほど良い」ではなく</b>、固有振動数を励振周波数の1/√2以下にするのが原理。迷ったら防振ゴムマウントの荷重適合表に従うのが早い。</p></div>
+ <div class="calc-card"><h3>落下・衝突対策の設計順序</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>順</th><th>対策</th></tr></thead><tbody>
+ <tr><td>1</td><td class="jp">重いもの（バッテリー）を低く・中央に→そもそも倒れにくく</td></tr>
+ <tr><td>2</td><td class="jp">外周にバンパー（EVA/ゴム）→一次衝撃を外で受ける</td></tr>
+ <tr><td>3</td><td class="jp">精密部品（カメラ・IMU）はゲル/ゴムでフローティングマウント</td></tr>
+ <tr><td>4</td><td class="jp">コネクタ・配線はたるみ＋固定（衝撃での抜け・断線が実は最多）</td></tr>
+ <tr><td>5</td><td class="jp">壊れる場所を決めておく（安い犠牲部品＝ヒューズ的設計）</td></tr>
+ </tbody></table></div></div>`;
+};
+
+/* ---- 表面処理・めっき ---- */
+RENDER.plating=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">表面処理・めっき</h2>
+ <div class="calc-card"><h3>鉄鋼向け</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>処理</th><th>外観</th><th>特徴</th></tr></thead><tbody>
+ <tr><td class="jp"><b>亜鉛めっき＋三価クロメート（光沢）</b></td><td class="jp">銀白色</td><td class="jp">市販ねじの標準防錆。通称「ユニクロ」で流通する見た目の現行版</td></tr>
+ <tr><td class="jp"><b>亜鉛めっき＋三価黒クロメート</b></td><td class="jp">黒</td><td class="jp">黒い防錆ねじ。見た目重視の機体に</td></tr>
+ <tr><td class="jp"><b>黒染め（四三酸化鉄）</b></td><td class="jp">黒</td><td class="jp">膜厚ほぼゼロ→<b>寸法が変わらない</b>。精密部品向き。防錆力は弱く防錆油前提</td></tr>
+ <tr><td class="jp"><b>無電解ニッケル</b></td><td class="jp">薄い金色がかった銀</td><td class="jp">膜厚が均一→はめあい部品もOK。硬く耐食性良</td></tr>
+ <tr><td class="jp"><b>硬質クロム</b></td><td class="jp">鏡面銀</td><td class="jp">耐摩耗の王様。シリンダロッド・摺動軸</td></tr>
+ <tr><td class="jp"><b>溶融亜鉛（ドブづけ）</b></td><td class="jp">灰色梨地</td><td class="jp">屋外構造物の長期防錆。厚膜なのでねじには不向き</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>アルミ・ステンレス向け</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>処理</th><th>特徴</th></tr></thead><tbody>
+ <tr><td class="jp"><b>アルマイト（白・カラー）</b></td><td class="jp">アルミの標準。硬く耐食。染色で色付け可。<b>皮膜は絶縁</b>→アース面はマスキング指定を忘れずに</td></tr>
+ <tr><td class="jp"><b>硬質アルマイト</b></td><td class="jp">厚く硬い（HV400前後）。摺動面・摩耗部。寸法が皮膜の約半分外に成長する点に注意</td></tr>
+ <tr><td class="jp"><b>ステンレスの不動態化処理</b></td><td class="jp">加工後の耐食性回復。溶接焼け取り（電解研磨・酸洗）とセットで</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>状況別おすすめ</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>状況</th><th>おすすめ</th></tr></thead><tbody>
+ <tr><td class="jp">屋内試作・すぐ使う鉄部品</td><td class="jp">黒染め＋防錆油、または無処理＋油。安く早い</td></tr>
+ <tr><td class="jp">寸法公差のある部品</td><td class="jp">黒染め or 無電解ニッケル（膜厚が読める）。電気亜鉛は膜厚ムラに注意</td></tr>
+ <tr><td class="jp">屋外で使う</td><td class="jp">溶融亜鉛 or 亜鉛めっき＋塗装。SUS化も検討</td></tr>
+ <tr><td class="jp">アルミの外観部品</td><td class="jp">アルマイト（黒が締まって見える定番）</td></tr>
+ <tr><td class="jp">摺動・摩耗する軸/面</td><td class="jp">硬質クロム・硬質アルマイト・無電解ニッケル</td></tr>
+ <tr><td class="jp">電気を流したい接触面</td><td class="jp">ニッケル/金めっき、またはアルマイトのマスキング指定</td></tr>
+ <tr><td class="jp">異種金属の組合せ（アルミ×鉄など）</td><td class="jp">電食に注意→絶縁ワッシャ・同種化・塗装で直接接触を避ける</td></tr>
+ </tbody></table></div>
+ <p class="note">めっき屋さんへの指示は「処理名＋膜厚＋マスキング箇所」の3点セットで。ねじ穴はめっき後に通しタップ（さらい）を頼むと組立が楽。</p></div>`;
+};
+
+/* ---- 塗装・やすり ---- */
+RENDER.finishing=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">塗装・やすり（仕上げ）</h2>
+ <div class="calc-card"><h3>塗料の種類と使い分け</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>種類</th><th>乾燥</th><th>特徴</th><th>向き</th></tr></thead><tbody>
+ <tr><td class="jp"><b>水性アクリル</b></td><td class="jp">遅め</td><td class="jp">低臭・道具は水洗い・室内作業OK。耐久は中</td><td class="jp">入門・室内小物・学校での作業</td></tr>
+ <tr><td class="jp"><b>油性ラッカー（溶剤アクリル）</b></td><td class="jp">速い</td><td class="jp">缶スプレーの主流。重ね塗りしやすい</td><td class="jp">機体外装の定番</td></tr>
+ <tr><td class="jp"><b>油性エナメル（合成樹脂調合）</b></td><td class="jp">遅い</td><td class="jp">筆塗りでも刷毛目が消えやすい・肉厚</td><td class="jp">部分塗り・鉄部の防錆塗装</td></tr>
+ <tr><td class="jp"><b>2液ウレタン</b></td><td class="jp">化学硬化</td><td class="jp">耐久・耐溶剤・ツヤ最強。混合後は使い切り</td><td class="jp">本気の外装・屋外</td></tr>
+ </tbody></table></div>
+ <p class="note">重ね塗りの相性：<b>ラッカーの上にエナメル・水性はOK、エナメルや水性の上にラッカーはNG</b>（強い溶剤が下を溶かして縮れる）。迷ったら同銘柄で統一＋目立たない所でテスト。</p></div>
+ <div class="calc-card"><h3>下地処理（ここで9割決まる）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>素材</th><th>手順</th></tr></thead><tbody>
+ <tr><td class="jp">金属（鉄・アルミ）</td><td class="jp">脱脂（パーツクリーナー）→#240前後で足付け→<b>金属用プライマー</b>→本塗り</td></tr>
+ <tr><td class="jp">3Dプリント（PLA/ABS/PETG）</td><td class="jp">#240で積層段差を落とす→サーフェイサー厚吹き→#400水研ぎ→（繰り返し）→本塗り</td></tr>
+ <tr><td class="jp">アクリル板・PC</td><td class="jp">脱脂→軽く#400足付け→プラ用プライマー→本塗り（溶剤強い塗料はクラック注意）</td></tr>
+ <tr><td class="jp">PP・PE（塗れない代表）</td><td class="jp">通常塗料は密着しない→PP用プライマー必須。それでも剥がれやすい前提で</td></tr>
+ <tr><td class="jp">木材</td><td class="jp">#120→#240→との粉/ウッドシーラー→塗装→#400→上塗り</td></tr>
+ </tbody></table></div>
+ <p class="note">スプレーのコツ：対象から20〜30cm・一定速度で動かしながら・<b>1回で覆わず薄く3〜4回</b>（各回10〜15分あけ）・気温10℃以上/湿度低めの日に。垂れたら乾燥後に研いでやり直しが最速。</p></div>
+ <div class="calc-card"><h3>やすり番手 早見表</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>番手</th><th>用途</th></tr></thead><tbody>
+ <tr><td>#40〜80</td><td class="jp">荒削り・形状出し・バリ大の除去</td></tr>
+ <tr><td>#120〜180</td><td class="jp">形を整える・木材の基本仕上げ</td></tr>
+ <tr><td>#240</td><td class="jp">塗装前の足付け・3Dプリント積層落としの起点</td></tr>
+ <tr><td>#320〜400</td><td class="jp">サーフェイサー研ぎ（水研ぎ推奨）</td></tr>
+ <tr><td>#600〜800</td><td class="jp">塗装の間研ぎ・上塗り前</td></tr>
+ <tr><td>#1000〜1500</td><td class="jp">仕上げ研ぎ・クリア前</td></tr>
+ <tr><td>#2000〜＋コンパウンド</td><td class="jp">鏡面仕上げ（粗→細→仕上げの3段）</td></tr>
+ </tbody></table></div>
+ <p class="note">飛ばせるのは1.5〜2倍まで（#240→#400はOK、#240→#800は傷が残る）。<b>耐水ペーパー＋水研ぎ</b>は目詰まりせず仕上がりが安定。金属のバリ取りは番手より「面取り工具（カウンターシンク・バリ取りナイフ）」の方が速いことも多い。</p></div>`;
+};
+
+/* =========================================================
+   ナビゲーション
+   ========================================================= */
+function buildNav(){
+ const nav=$("#nav");
+ PAGES.forEach(p=>{
+  if(p.group){const g=document.createElement("div");g.className="nav-group";g.textContent=p.group;nav.appendChild(g);return}
+  const b=document.createElement("button");b.className="nav-item";b.textContent=p.label;b.dataset.id=p.id;
+  b.onclick=()=>{
+   document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));
+   b.classList.add("active");
+   RENDER[p.id]();
+   window.scrollTo({top:0});
+  };
+  nav.appendChild(b);
+ });
+ nav.querySelector(".nav-item").click();
+}
+
+/* =========================================================
+   関数電卓
+   ========================================================= */
+let calcExpr="", degMode=true;
+const KEYS_LAYOUT=[
+ ["sin","cos","tan","π","C"],
+ ["asin","acos","atan","e","⌫"],
+ ["log","ln","√","^","("],
+ ["7","8","9","/",")"],
+ ["4","5","6","*","%"],
+ ["1","2","3","-","Ans"],
+ ["0",".","±","+","="]
+];
+let lastAns=0;
+function calcInit(){
+ const keys=$("#calcKeys");
+ KEYS_LAYOUT.flat().forEach(k=>{
+  const b=document.createElement("button");
+  b.textContent=k;
+  if("+-*/^%()".includes(k)||["sin","cos","tan","asin","acos","atan","log","ln","√","π","e","±","Ans"].includes(k))b.className="op";
+  if(k==="=")b.className="eq";
+  b.onclick=()=>keyPress(k);
+  keys.appendChild(b);
+ });
+ $("#calcFab").onclick=()=>{$("#calcWin").classList.toggle("open")};
+ $("#calcClose").onclick=()=>$("#calcWin").classList.remove("open");
+ $("#calcClearHist").onclick=()=>$("#calcHist").innerHTML="";
+ $("#degToggle").onclick=()=>{degMode=!degMode;$("#degToggle").textContent=degMode?"DEG":"RAD";update()};
+ // ドラッグ移動
+ const win=$("#calcWin"),head=$("#calcHead");
+ let drag=null;
+ const start=(x,y)=>{const r=win.getBoundingClientRect();drag={dx:x-r.left,dy:y-r.top};win.style.right="auto"};
+ const move=(x,y)=>{if(!drag)return;win.style.left=Math.max(0,Math.min(x-drag.dx,innerWidth-80))+"px";win.style.top=Math.max(0,Math.min(y-drag.dy,innerHeight-60))+"px"};
+ head.addEventListener("mousedown",e=>{if(e.target.tagName!=="BUTTON"&&!e.target.classList.contains("deg-toggle")){start(e.clientX,e.clientY);e.preventDefault()}});
+ addEventListener("mousemove",e=>move(e.clientX,e.clientY));
+ addEventListener("mouseup",()=>drag=null);
+ head.addEventListener("touchstart",e=>{if(e.target.tagName!=="BUTTON"&&!e.target.classList.contains("deg-toggle")){const t=e.touches[0];start(t.clientX,t.clientY)}},{passive:true});
+ addEventListener("touchmove",e=>{if(drag){const t=e.touches[0];move(t.clientX,t.clientY)}},{passive:true});
+ addEventListener("touchend",()=>drag=null);
+ // キーボード入力
+ addEventListener("keydown",e=>{
+  if(!$("#calcWin").classList.contains("open"))return;
+  if(document.activeElement&&["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;
+  if(/^[0-9+\-*/().^%]$/.test(e.key)){keyPress(e.key)}
+  else if(e.key==="Enter"){keyPress("=");e.preventDefault()}
+  else if(e.key==="Backspace")keyPress("⌫");
+  else if(e.key==="Escape")$("#calcWin").classList.remove("open");
+ });
+}
+function keyPress(k){
+ if(k==="C"){calcExpr="";update();return}
+ if(k==="⌫"){
+  const m=calcExpr.match(/(asin|acos|atan|sin|cos|tan|log|ln|√|Ans)$/);
+  calcExpr=m?calcExpr.slice(0,-m[0].length):calcExpr.slice(0,-1);
+  update();return}
+ if(k==="="){evaluate();return}
+ if(k==="±"){
+  // 最後の数値の符号反転
+  const m=calcExpr.match(/(\d+\.?\d*)$/);
+  if(m){calcExpr=calcExpr.slice(0,-m[0].length)+"(-"+m[0]+")"}
+  update();return}
+ if(k==="√"){calcExpr+="sqrt(";update();return}
+ if(["sin","cos","tan","asin","acos","atan","log","ln"].includes(k)){calcExpr+=k+"(";update();return}
+ calcExpr+=k;update();
+}
+function update(){
+ $("#calcDisp").textContent=calcExpr||"\u00a0";
+ // ライブプレビュー
+ const v=tryEval(calcExpr);
+ $("#calcRes").textContent=(v==null)?(calcExpr?"…":"0"):fmtCalc(v);
+}
+function fmtCalc(v){
+ if(!isFinite(v))return "エラー";
+ if(Math.abs(v)>=1e10||(Math.abs(v)<1e-7&&v!==0))return v.toExponential(6);
+ return Number(v.toPrecision(10)).toString();
+}
+function tryEval(expr){
+ if(!expr)return null;
+ try{return calcEval(expr)}catch(e){return null}
+}
+function calcEval(expr){
+ // トークン検証
+ const ok=/^(\s|\d|\.|\+|\-|\*|\/|\(|\)|\^|%|π|e|Ans|sin|cos|tan|asin|acos|atan|log|ln|sqrt)+$/;
+ if(!ok.test(expr))throw new Error("invalid");
+ let s=expr
+  .replace(/Ans/g,`(${lastAns})`)
+  .replace(/π/g,"(F.PI)")
+  .replace(/\^/g,"**")
+  .replace(/%/g,"*0.01")
+  .replace(/(asin|acos|atan|sin|cos|tan|log|ln|sqrt)/g,"F.$1")
+  .replace(/(?<![a-zA-Z.])e(?![a-zA-Z0-9])/g,"(F.E)");
+ const rad=x=>degMode?x*Math.PI/180:x;
+ const inv=x=>degMode?x*180/Math.PI:x;
+ const F={
+  PI:Math.PI,E:Math.E,
+  sin:x=>Math.sin(rad(x)),cos:x=>Math.cos(rad(x)),tan:x=>Math.tan(rad(x)),
+  asin:x=>inv(Math.asin(x)),acos:x=>inv(Math.acos(x)),atan:x=>inv(Math.atan(x)),
+  log:Math.log10,ln:Math.log,sqrt:Math.sqrt
+ };
+ // 置換後の安全確認
+ if(/[a-zA-Z]/.test(s.replace(/F\.(PI|E|sin|cos|tan|asin|acos|atan|log|ln|sqrt)/g,"")))throw new Error("invalid");
+ const v=Function("F",`"use strict";return (${s})`)(F);
+ if(typeof v!=="number")throw new Error("invalid");
+ return v;
+}
+function evaluate(){
+ const v=tryEval(calcExpr);
+ if(v==null||!isFinite(v)){$("#calcRes").textContent="エラー";return}
+ lastAns=v;
+ const h=document.createElement("div");
+ h.textContent=`${calcExpr} = ${fmtCalc(v)}`;
+ h.onclick=()=>{calcExpr=String(fmtCalc(v));update()};
+ $("#calcHist").prepend(h);
+ calcExpr=fmtCalc(v);
+ update();
+}
+
+buildNav();
+calcInit();
+</script>
+</body>
+</html>

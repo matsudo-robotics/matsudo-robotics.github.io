@@ -178,3 +178,18 @@ html.js .reveal.shown{opacity:1;transform:none}
 .extnav .lbl{color:var(--muted);font-size:.72rem;letter-spacing:.04em}
 .extnav a{text-decoration:none;color:var(--pcb-dark)}
 .extnav a:hover{color:var(--pcb)}
+
+/* ===== モバイルメニュー ===== */
+.menubtn{display:none;border:1px solid var(--line);background:#fff;font-size:.85rem;padding:7px 16px;border-radius:2px;cursor:pointer;font-family:inherit}
+.menubtn::before{content:"☰ ";color:var(--pcb-dark)}
+@media(max-width:760px){
+  .hd{align-items:center}
+  .menubtn{display:block;margin-left:auto}
+  .hd nav{display:none;width:100%;padding-top:12px;border-top:1px solid var(--line);margin-top:12px;align-items:stretch}
+  .hd nav.open{display:flex}
+  .hd nav ul{flex-direction:column;gap:0;justify-content:flex-start}
+  .hd nav ul li a{display:block;padding:11px 4px;border-bottom:1px solid var(--line);font-size:1rem}
+  .extnav{margin-top:10px}
+  .extnav li a{border-bottom:none !important;padding:8px 4px !important;font-size:.9rem !important}
+  .extnav .lbl{padding:8px 4px 0}
+}

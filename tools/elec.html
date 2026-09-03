@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M-TIC エレキ支援ツール</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F7F8F5;
+  --panel:#FFFFFF;
+  --ink:#20262E;
+  --ink2:#5A636E;
+  --grid:#E2E6DF;
+  --line:#C9CFC6;
+  --blue:#0E7A5F;
+  --blue-soft:#E4F2ED;
+  --red:#B23A2E;
+  --mono:'IBM Plex Mono',Consolas,monospace;
+  --sans:'IBM Plex Sans JP','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--sans);color:var(--ink);background:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  font-size:14px;line-height:1.6;
+}
+/* ===== 表題欄風ヘッダー ===== */
+header{
+  background:var(--panel);border-bottom:2px solid var(--ink);
+  display:flex;align-items:stretch;flex-wrap:wrap;
+}
+.tb-cell{border-right:1px solid var(--ink);padding:8px 16px;display:flex;flex-direction:column;justify-content:center}
+.tb-label{font-size:10px;color:var(--ink2);letter-spacing:.08em}
+.tb-value{font-size:16px;font-weight:700}
+.tb-title{flex:1;min-width:220px}
+.tb-title .tb-value{font-size:20px;letter-spacing:.04em}
+.tb-title .tb-value span{color:var(--blue)}
+.tb-stamp{
+  align-self:center;margin:6px 14px;width:44px;height:44px;border:2px solid var(--red);
+  border-radius:50%;color:var(--red);display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;transform:rotate(-8deg);flex-shrink:0;
+}
+/* ===== レイアウト ===== */
+.app{display:flex;min-height:calc(100vh - 62px)}
+nav{
+  width:216px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--ink);
+  padding:12px 0 80px;
+}
+.nav-group{padding:10px 14px 4px;font-size:11px;color:var(--ink2);letter-spacing:.1em;border-top:1px dashed var(--line);margin-top:8px}
+.nav-group:first-child{border-top:none;margin-top:0}
+.nav-item{
+  display:block;width:100%;text-align:left;padding:7px 14px 7px 22px;border:none;background:none;
+  font-family:var(--sans);font-size:13.5px;color:var(--ink);cursor:pointer;position:relative;
+}
+.nav-item:hover{background:var(--blue-soft)}
+.nav-item.active{background:var(--blue-soft);color:var(--blue);font-weight:700}
+.nav-item.active::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--blue)}
+main{flex:1;padding:20px 24px 120px;min-width:0}
+h2.page-title{font-size:19px;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:4px}
+.page-sub{color:var(--ink2);font-size:12.5px;margin-bottom:14px}
+.page-sub code{font-family:var(--mono)}
+/* ===== テーブル ===== */
+.tool-bar{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+input[type=text],input[type=number],select{
+  font-family:var(--mono);font-size:13.5px;padding:6px 9px;border:1px solid var(--ink);
+  border-radius:0;background:#fff;color:var(--ink);
+}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.data-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--ink)}
+table.data{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+table.data th{
+  background:var(--ink);color:#fff;font-weight:500;padding:6px 10px;text-align:left;
+  font-size:12px;white-space:nowrap;position:sticky;top:0;
+}
+table.data td{padding:5px 10px;border-bottom:1px solid var(--grid);font-family:var(--mono);white-space:nowrap}
+table.data td.jp{font-family:var(--sans)}
+table.data tr.sel-row{cursor:pointer}
+table.data tr.sel-row:hover{background:var(--blue-soft)}
+table.data tr.selected{background:var(--blue-soft);box-shadow:inset 3px 0 0 var(--blue)}
+/* ===== 詳細パネル ===== */
+.detail{
+  display:none;margin-top:16px;background:var(--panel);border:1px solid var(--ink);
+}
+.detail.open{display:grid;grid-template-columns:minmax(300px,420px) 1fr}
+.detail-draw{border-right:1px dashed var(--line);padding:14px;display:flex;align-items:center;justify-content:center;background:
+  linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:16px 16px;background-color:#FCFDFB}
+.detail-info{padding:14px 18px}
+.detail-info h3{font-size:16px;margin-bottom:8px;color:var(--blue)}
+.spec-grid{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;font-size:13.5px}
+.spec-grid dt{color:var(--ink2)}
+.spec-grid dd{font-family:var(--mono);font-weight:500}
+.note{margin-top:10px;font-size:12px;color:var(--ink2);border-left:3px solid var(--line);padding-left:8px}
+/* ===== 計算フォーム ===== */
+.calc-card{background:var(--panel);border:1px solid var(--ink);padding:16px 18px;margin-bottom:16px;max-width:760px}
+.calc-card h3{font-size:15px;margin-bottom:10px}
+.form-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.form-row label{display:flex;flex-direction:column;font-size:12px;color:var(--ink2);gap:3px}
+.result-box{
+  margin-top:10px;border:1px solid var(--blue);background:var(--blue-soft);padding:10px 14px;
+  font-family:var(--mono);font-size:14px;white-space:pre-wrap;display:none;
+}
+.result-box.show{display:block}
+.result-box .big{font-size:19px;font-weight:600;color:var(--blue)}
+.result-box .warn{color:var(--red);font-weight:600}
+button.act{
+  font-family:var(--sans);font-size:13.5px;font-weight:700;padding:7px 18px;cursor:pointer;
+  background:var(--blue);color:#fff;border:1px solid var(--blue);
+}
+button.act:hover{background:#0a5c47}
+button.ghost{
+  font-family:var(--sans);font-size:12.5px;padding:5px 12px;cursor:pointer;
+  background:#fff;color:var(--ink);border:1px solid var(--ink);
+}
+button.ghost:hover{background:var(--blue-soft)}
+.preset-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+/* ===== SVG図面 ===== */
+svg text{font-family:var(--mono);font-size:11px;fill:var(--ink)}
+svg .dim{stroke:var(--blue);stroke-width:1;fill:none}
+svg .dimtxt{fill:var(--blue);font-size:11px}
+svg .body{stroke:var(--ink);stroke-width:1.6;fill:#fff}
+svg .hatch{stroke:var(--ink2);stroke-width:.7}
+svg .cl{stroke:var(--red);stroke-width:.7;stroke-dasharray:8 3 2 3}
+/* ===== 電卓 ===== */
+#calcFab{
+  position:fixed;right:22px;bottom:22px;z-index:900;width:58px;height:58px;border-radius:50%;
+  background:var(--ink);color:#fff;border:none;font-size:22px;cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.25);font-family:var(--mono);
+}
+#calcFab:hover{background:var(--blue)}
+#calcWin{
+  position:fixed;z-index:950;width:300px;background:var(--panel);border:2px solid var(--ink);
+  box-shadow:6px 6px 0 rgba(32,38,46,.18);display:none;top:90px;right:30px;
+}
+#calcWin.open{display:block}
+#calcHead{
+  background:var(--ink);color:#fff;padding:6px 10px;font-size:12.5px;cursor:move;
+  display:flex;justify-content:space-between;align-items:center;user-select:none;touch-action:none;
+}
+#calcHead button{background:none;border:none;color:#fff;font-size:15px;cursor:pointer;padding:0 4px}
+#calcDisp{
+  font-family:var(--mono);padding:8px 10px 2px;text-align:right;min-height:26px;font-size:13px;
+  color:var(--ink2);word-break:break-all;
+}
+#calcRes{font-family:var(--mono);padding:0 10px 8px;text-align:right;font-size:22px;font-weight:600;min-height:32px}
+#calcKeys{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border-top:1px solid var(--line)}
+#calcKeys button{
+  font-family:var(--mono);font-size:14px;padding:10px 0;border:none;background:var(--panel);cursor:pointer;
+}
+#calcKeys button:hover{background:var(--blue-soft)}
+#calcKeys button.op{background:#F0F2ED}
+#calcKeys button.eq{background:var(--blue);color:#fff}
+#calcKeys button.eq:hover{background:#0a5c47}
+#calcHist{max-height:90px;overflow-y:auto;border-top:1px dashed var(--line);font-family:var(--mono);font-size:11.5px;padding:4px 10px;color:var(--ink2)}
+#calcHist div{cursor:pointer;padding:1px 0}
+#calcHist div:hover{color:var(--blue)}
+.deg-toggle{font-family:var(--mono);font-size:11px;background:var(--red);padding:1px 6px;border-radius:2px;cursor:pointer}
+/* footer note */
+.foot-note{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--ink);
+  font-size:11px;color:var(--ink2);padding:4px 14px;z-index:800}
+@media(max-width:860px){
+  .app{flex-direction:column}
+  nav{width:100%;display:flex;overflow-x:auto;padding:0}
+  .nav-group{display:none}
+  .nav-item{white-space:nowrap;padding:10px 12px}
+  .nav-item.active::before{left:0;right:0;top:auto;bottom:0;width:auto;height:3px}
+  .detail.open{grid-template-columns:1fr}
+  .detail-draw{border-right:none;border-bottom:1px dashed var(--line)}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tb-cell tb-title">
+    <span class="tb-label">名称 TITLE</span>
+    <span class="tb-value">M-TIC <span>エレキ支援ツール</span></span>
+  </div>
+  <div class="tb-cell">
+    <span class="tb-label">所属</span>
+    <span class="tb-value" style="font-size:13px">NPO法人 松戸技術革新センター</span>
+  </div>
+  <div class="tb-cell">
+    <span class="tb-label">版</span>
+    <span class="tb-value" style="font-size:13px;font-family:var(--mono)">Rev.5.0</span>
+  </div>
+</header>
+
+<div class="app">
+<nav id="nav"></nav>
+<main id="main"></main>
+</div>
+
+<button id="calcFab" title="関数電卓を開く">∑</button>
+
+<div id="calcWin" role="dialog" aria-label="関数電卓">
+  <div id="calcHead">
+    <span>関数電卓 <span class="deg-toggle" id="degToggle">DEG</span></span>
+    <span>
+      <button id="calcClearHist" title="履歴クリア">⌫</button>
+      <button id="calcClose" title="閉じる">×</button>
+    </span>
+  </div>
+  <div id="calcDisp">&nbsp;</div>
+  <div id="calcRes">0</div>
+  <div id="calcKeys"></div>
+  <div id="calcHist"></div>
+</div>
+
+<div class="foot-note">※ 定格・許容値は<b>目安</b>です。実機ではデータシートを確認し、余裕を持った設計をしてください。文中の製品型番・規格名称は各社・各団体の商標または登録商標です。</div>
+
+<script>
+
+const $=s=>document.querySelector(s);
+const fmt=(x,n=3)=>Number(x.toFixed(n)).toString();
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function show(sel,html){const el=$(sel);el.innerHTML=html;el.classList.add("show")}
+function specList(pairs){return `<dl class="spec-grid">${pairs.map(p=>`<dt>${p[0]}</dt><dd>${p[1]}</dd>`).join("")}</dl>`}
+
+/* =========================================================
+   エレキ支援ツール データ
+   ========================================================= */
+// 抵抗カラーコード
+const RCOLORS=[
+ ["黒","#1a1a1a",0],["茶","#7b4a12",1],["赤","#c0392b",2],["橙","#e67e22",3],["黄","#f1c40f",4],
+ ["緑","#27ae60",5],["青","#2980b9",6],["紫","#8e44ad",7],["灰","#95a5a6",8],["白","#f4f6f7",9]
+];
+const RMULT=[["黒 ×1","#1a1a1a",1],["茶 ×10","#7b4a12",10],["赤 ×100","#c0392b",100],["橙 ×1k","#e67e22",1e3],["黄 ×10k","#f1c40f",1e4],["緑 ×100k","#27ae60",1e5],["青 ×1M","#2980b9",1e6],["金 ×0.1","#d4af37",0.1],["銀 ×0.01","#bdc3c7",0.01]];
+const RTOL=[["金 ±5%","#d4af37",5],["茶 ±1%","#7b4a12",1],["赤 ±2%","#c0392b",2],["緑 ±0.5%","#27ae60",0.5],["銀 ±10%","#bdc3c7",10]];
+const E12=[10,12,15,18,22,27,33,39,47,56,68,82];
+const E24=[10,11,12,13,15,16,18,20,22,24,27,30,33,36,39,43,47,51,56,62,68,75,82,91];
+// AWG [番手, 直径mm, 断面積mm2, 機器内許容電流の目安A]
+const AWG=[
+ [10,2.59,5.26,55],[12,2.05,3.31,41],[14,1.63,2.08,32],[16,1.29,1.31,22],
+ [18,1.02,0.823,16],[20,0.81,0.518,11],[22,0.64,0.326,7],[24,0.51,0.205,3.5],
+ [26,0.40,0.129,2.2],[28,0.32,0.081,1.4],[30,0.25,0.0507,0.86]
+];
+// コネクタ [名称, ピッチmm, 定格目安A, 用途メモ]
+const CONNECTORS=[
+ ["JST SH","1.0","1","超小型。センサ・カメラ。手圧着はほぼ無理(完成ケーブル推奨)"],
+ ["JST GH","1.25","1","小型。ロック付き。ドローン系でも定番"],
+ ["JST ZH","1.5","1","小型センサ・基板間"],
+ ["JST PH","2.0","2","小型の定番。バッテリー(1S)・モジュール間"],
+ ["JST XH","2.5","3","ホビー・ロボットの大定番。LiPoバランス端子もこれ"],
+ ["JST EH","2.5","3","XHに似るが互換なし。要注意"],
+ ["JST VH","3.96","10","電源・モーター系"],
+ ["デュポン/QI (2550)","2.54","1","ジャンパ線・ピンヘッダ。接触が緩みやすいので振動部は注意"],
+ ["XT30","—","15","小型パワー。ロボットのバッテリー・ESC"],
+ ["XT60","—","30","中型パワー。LiPoの定番"],
+ ["タミヤコネクタ","—","15","ホビー用。大電流では接触抵抗の発熱に注意"]
+];
+// LiPo
+const LIPO=[["1S",3.7,4.2],["2S",7.4,8.4],["3S",11.1,12.6],["4S",14.8,16.8],["6S",22.2,25.2]];
+
+/* =========================================================
+   ページ定義
+   ========================================================= */
+const PAGES=[
+ {group:"部品を読む・選ぶ"},
+ {id:"rescolor",label:"抵抗カラーコード"},
+ {id:"eseries",label:"E系列・近い抵抗値検索"},
+ {id:"capcode",label:"コンデンサ表記変換"},
+ {id:"ics",label:"定番IC・素子早見"},
+ {id:"logicgate",label:"論理回路"},
+ {id:"pkg",label:"チップ部品・パッケージ寸法"},
+ {group:"つなぐ（コネクタ・配線）"},
+ {id:"connector",label:"コネクタ早見表"},
+ {id:"terminal",label:"圧着端子・平型端子"},
+ {id:"termblock",label:"端子台・産業系端子"},
+ {id:"wire",label:"電線(AWG)・電圧降下"},
+ {id:"switch",label:"スイッチの種類と記号"},
+ {id:"pinout",label:"マイコン ピン配置早見"},
+ {group:"電源"},
+ {id:"battery",label:"バッテリー計算"},
+ {id:"dcdc",label:"DCDCコンバータ"},
+ {id:"reg",label:"レギュレータ発熱計算"},
+ {group:"設計計算"},
+ {id:"ohm",label:"オームの法則・電力"},
+ {id:"led",label:"LED電流制限抵抗"},
+ {id:"divider",label:"分圧・ADC計算"},
+ {id:"rc",label:"RC時定数・フィルタ"},
+ {group:"センサ・駆動"},
+ {id:"sensorsw",label:"コンパレータ・センサースイッチ"},
+ {id:"motordrv",label:"モータードライバ配線"},
+ {group:"基板・実装ノウハウ"},
+ {id:"pcb",label:"PCB設計支援"},
+ {id:"logic",label:"ロジックレベル・プルアップ"},
+ {id:"servo",label:"RCサーボ・PWM"},
+ {id:"wiring",label:"配線の作法・ノイズ対策"}
+];
+const RENDER={};
+
+/* ---- 抵抗カラーコード ---- */
+function drawResistor(c1,c2,c3,c4){
+ const bx=70,bw=240,by=60,bh=70;
+ let g=`<line class="body" x1="10" y1="${by+bh/2}" x2="370" y2="${by+bh/2}"/>
+ <rect class="body" x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="26" fill="#EDE3CF"/>`;
+ const bands=[c1,c2,c3,c4], xs=[bx+38,bx+78,bx+118,bx+190];
+ bands.forEach((c,i)=>{if(c)g+=`<rect x="${xs[i]}" y="${by+2}" width="16" height="${bh-4}" fill="${c}" stroke="#20262E" stroke-width="0.6"/>`});
+ return `<svg viewBox="0 0 380 190" width="100%" style="max-width:380px" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;
+}
+function resValStr(v){
+ if(v>=1e6)return fmt(v/1e6,3)+" MΩ";
+ if(v>=1e3)return fmt(v/1e3,3)+" kΩ";
+ return fmt(v,3)+" Ω";
+}
+RENDER.rescolor=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">抵抗カラーコード（4本帯）</h2>
+ <p class="page-sub">帯を選ぶと抵抗値と絵が更新されます。1本目は端に近い側から。</p>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>1本目（十の位）<select id="rc1">${RCOLORS.slice(1).map((c,i)=>`<option value="${c[2]}"${c[2]===1?" selected":""}>${c[0]} (${c[2]})</option>`).join("")}</select></label>
+  <label>2本目（一の位）<select id="rc2">${RCOLORS.map(c=>`<option value="${c[2]}"${c[2]===0?" selected":""}>${c[0]} (${c[2]})</option>`).join("")}</select></label>
+  <label>3本目（倍率）<select id="rc3">${RMULT.map((c,i)=>`<option value="${i}"${i===2?" selected":""}>${c[0]}</option>`).join("")}</select></label>
+  <label>4本目（許容差）<select id="rc4">${RTOL.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join("")}</select></label>
+ </div>
+ <div id="rcDraw" style="text-align:center"></div>
+ <div class="result-box show" id="rcRes"></div>
+ </div>
+ <div class="calc-card"><h3>逆引き：抵抗値 → カラーコード</h3>
+ <div class="form-row"><label>抵抗値 [Ω]（例: 4700 または 4.7k）<input type="text" id="rvIn" value="10k"></label></div>
+ <button class="act" id="rvGo">カラーを表示</button>
+ <div class="result-box" id="rvRes"></div>
+ </div>`;
+ const upd=()=>{
+  const d1=+$("#rc1").value,d2=+$("#rc2").value,m=RMULT[+$("#rc3").value],t=RTOL[+$("#rc4").value];
+  const v=(d1*10+d2)*m[2];
+  const col=n=>RCOLORS.find(c=>c[2]===n)[1];
+  $("#rcDraw").innerHTML=drawResistor(col(d1),col(d2),m[1],t[1]);
+  $("#rcRes").innerHTML=`<span class="big">${resValStr(v)}</span>　許容差 ±${t[2]}%`;
+ };
+ ["rc1","rc2","rc3","rc4"].forEach(id=>$("#"+id).onchange=upd);upd();
+ $("#rvGo").onclick=()=>{
+  let s=$("#rvIn").value.trim().toLowerCase().replace(/Ω|ohm/g,"");
+  let v=s.includes("m")?parseFloat(s)*1e6:s.includes("k")?parseFloat(s)*1e3:parseFloat(s);
+  if(!(v>0)){show("#rvRes","<span class='warn'>値を確認してください</span>");return}
+  // 上位2桁と倍率へ分解
+  let exp=0,x=v;
+  while(x>=100){x/=10;exp++}
+  while(x<10){x*=10;exp--}
+  const d1=Math.floor(x/10),d2=Math.round(x%10);
+  const mult=RMULT.find(m=>m[2]===Math.pow(10,exp));
+  if(!mult||d1===0){show("#rvRes","<span class='warn'>この値は標準の4本帯で表現できません（有効数字2桁に丸めてください）</span>");return}
+  const n1=RCOLORS.find(c=>c[2]===d1),n2=RCOLORS.find(c=>c[2]===d2);
+  show("#rvRes",`${resValStr((d1*10+d2)*mult[2])} → <span class="big">${n1[0]}・${n2[0]}・${mult[0].split(" ")[0]}</span>（＋許容差帯）`);
+  $("#rvRes").innerHTML+=drawResistor(n1[1],n2[1],mult[1],RTOL[0][1]);
+ };
+};
+
+/* ---- E系列 ---- */
+RENDER.eseries=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">E系列・近い抵抗値検索</h2>
+ <p class="page-sub">市販の抵抗はE系列の値しかありません。計算値に近い実在の値を探せます。</p>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>欲しい抵抗値 [Ω]（4.7k などもOK）<input type="text" id="eIn" value="330"></label>
+  <label>系列<select id="eSer"><option value="24">E24（±5%品の標準）</option><option value="12">E12</option></select></label>
+ </div>
+ <button class="act" id="eGo">検索</button><div class="result-box" id="eRes"></div>
+ <p class="note">どうしても中間値が欲しいときは2本の並列・直列で作れます（下の検索へ）。</p>
+ </div>
+ <div class="calc-card"><h3>並列2本で目標値をつくる（E24から探索）</h3>
+ <div class="form-row"><label>目標値 [Ω]<input type="text" id="pIn" value="2500"></label></div>
+ <button class="act" id="pGo">ベストな組合せを検索</button><div class="result-box" id="pRes"></div>
+ </div>
+ <div class="calc-card"><h3>E24系列 一覧（×10ⁿ で展開して使う）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr>${E24.slice(0,12).map(v=>`<th>${v}</th>`).join("")}</tr></thead><tbody><tr>${E24.slice(12).map(v=>`<td>${v}</td>`).join("")}</tr></tbody></table></div></div>`;
+ const parse=s=>{s=s.trim().toLowerCase().replace(/Ω|ohm/g,"");return s.includes("m")?parseFloat(s)*1e6:s.includes("k")?parseFloat(s)*1e3:parseFloat(s)};
+ $("#eGo").onclick=()=>{
+  const v=parse($("#eIn").value);if(!(v>0)){show("#eRes","<span class='warn'>値を確認してください</span>");return}
+  const ser=$("#eSer").value==="24"?E24:E12;
+  const exp=Math.floor(Math.log10(v))-1;
+  let best=null;
+  for(let e=exp-1;e<=exp+1;e++){ser.forEach(b=>{const cand=b*Math.pow(10,e);
+   if(!best||Math.abs(cand-v)<Math.abs(best-v))best=cand})}
+  const err=(best-v)/v*100;
+  show("#eRes",`<span class="big">最近値: ${resValStr(best)}</span>（誤差 ${err>=0?"+":""}${fmt(err,2)}%）`);
+ };
+ $("#pGo").onclick=()=>{
+  const v=parse($("#pIn").value);if(!(v>0)){show("#pRes","<span class='warn'>値を確認してください</span>");return}
+  const exp=Math.floor(Math.log10(v));
+  const cands=[];
+  for(let e=exp-1;e<=exp+2;e++)E24.forEach(b=>cands.push(b*Math.pow(10,e)));
+  let best=null;
+  for(const a of cands)for(const b of cands){
+   if(b<a)continue;
+   const r=a*b/(a+b);
+   if(!best||Math.abs(r-v)<Math.abs(best.r-v))best={a,b,r};
+  }
+  const err=(best.r-v)/v*100;
+  show("#pRes",`<span class="big">${resValStr(best.a)} ∥ ${resValStr(best.b)} = ${resValStr(best.r)}</span>（誤差 ${err>=0?"+":""}${fmt(err,3)}%）`);
+ };
+};
+
+/* ---- コンデンサ表記 ---- */
+RENDER.capcode=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">コンデンサ表記変換</h2>
+ <p class="page-sub">セラコンの「104」表記 ⇔ 容量値。3桁表記＝上位2桁×10ⁿ [pF]。</p>
+ <div class="calc-card"><h3>3桁コード → 容量</h3>
+ <div class="form-row"><label>表記（例: 104）<input type="text" id="ccIn" value="104" maxlength="4"></label></div>
+ <button class="act" id="ccGo">変換</button><div class="result-box" id="ccRes"></div></div>
+ <div class="calc-card"><h3>容量 → 3桁コード</h3>
+ <div class="form-row"><label>容量（例: 0.1u / 100n / 22p）<input type="text" id="cvIn" value="0.1u"></label></div>
+ <button class="act" id="cvGo">変換</button><div class="result-box" id="cvRes"></div></div>
+ <div class="calc-card"><h3>よく使う値の早見</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>表記</th><th>容量</th><th>定番の用途</th></tr></thead><tbody>
+ <tr><td>104</td><td>0.1 µF (100nF)</td><td class="jp">IC電源のパスコン。ICの電源ピン直近に1個が鉄則</td></tr>
+ <tr><td>103</td><td>0.01 µF</td><td class="jp">ノイズ対策・スナバ</td></tr>
+ <tr><td>105</td><td>1 µF</td><td class="jp">レギュレータまわり</td></tr>
+ <tr><td>224</td><td>0.22 µF</td><td class="jp">フィルタ</td></tr>
+ <tr><td>22p〜33p</td><td>22〜33 pF</td><td class="jp">水晶振動子の負荷容量</td></tr>
+ </tbody></table></div></div>`;
+ const capStr=pf=>{
+  if(pf>=1e6)return fmt(pf/1e6,3)+" µF";
+  if(pf>=1e3)return fmt(pf/1e3,3)+" nF";
+  return fmt(pf,2)+" pF";
+ };
+ $("#ccGo").onclick=()=>{
+  const s=$("#ccIn").value.trim();
+  if(!/^\d{3}$/.test(s)){show("#ccRes","<span class='warn'>3桁の数字を入れてください（例: 104）</span>");return}
+  const pf=parseInt(s.slice(0,2))*Math.pow(10,parseInt(s[2]));
+  show("#ccRes",`<span class="big">${s} = ${capStr(pf)}</span>（${fmt(pf,0)} pF）`);
+ };
+ $("#cvGo").onclick=()=>{
+  let s=$("#cvIn").value.trim().toLowerCase().replace(/f/g,"");
+  let pf=s.includes("u")||s.includes("µ")?parseFloat(s)*1e6:s.includes("n")?parseFloat(s)*1e3:parseFloat(s);
+  if(!(pf>0)){show("#cvRes","<span class='warn'>値を確認してください</span>");return}
+  let exp=0,x=pf;
+  while(x>=100){x/=10;exp++}
+  const code=String(Math.round(x)).padStart(2,"0")+exp;
+  show("#cvRes",`${capStr(pf)} → <span class="big">表記 ${code}</span>`);
+ };
+};
+
+/* ---- コネクタ ---- */
+RENDER.connector=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">コネクタ早見表</h2>
+ <p class="page-sub">ロボット・電子工作でよく使うコネクタ。定格は<b>目安</b>（メーカー・使用環境で変わります）。</p>
+ <div class="data-wrap"><table class="data"><thead><tr><th>名称</th><th>ピッチ mm</th><th>定格目安 A</th><th>用途メモ</th></tr></thead><tbody>
+ ${CONNECTORS.map(c=>`<tr><td class="jp"><b>${c[0]}</b></td><td>${c[1]}</td><td>${c[2]}</td><td class="jp" style="white-space:normal;min-width:260px">${c[3]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <div class="calc-card" style="margin-top:16px"><h3>選び方・運用のコツ</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>コツ</th><th>理由</th></tr></thead><tbody>
+ <tr><td class="jp">流す電流の2倍以上の定格を選ぶ</td><td class="jp">接触抵抗の発熱・経年劣化への余裕</td></tr>
+ <tr><td class="jp">XHとEHを混ぜない</td><td class="jp">見た目が似ていて刺さりそうで刺さらない・破損の元</td></tr>
+ <tr><td class="jp">電源系は逆挿しできない形状に</td><td class="jp">XT30/60は極性ミスを物理的に防げる</td></tr>
+ <tr><td class="jp">圧着は専用工具＋引張テスト</td><td class="jp">ハンダ盛り圧着は振動で断線しやすい</td></tr>
+ <tr><td class="jp">大会用ロボットは配線に名札</td><td class="jp">現地トラブル時の復旧速度が段違い</td></tr>
+ </tbody></table></div></div>`;
+};
+
+/* ---- 電線・電圧降下 ---- */
+RENDER.wire=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">電線（AWG）・電圧降下</h2>
+ <p class="page-sub">許容電流は機器内・単線・短距離での<b>目安</b>。束ねる・長い・高温では下げてください。</p>
+ <div class="data-wrap"><table class="data"><thead><tr><th>AWG</th><th>導体径 mm</th><th>断面積 mm²</th><th>許容電流目安 A</th></tr></thead><tbody>
+ ${AWG.map(a=>`<tr><td>${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td><td>${a[3]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <div class="calc-card" style="margin-top:16px"><h3>電圧降下計算（銅線・往復）</h3>
+ <div class="form-row">
+  <label>AWG<select id="wAwg">${AWG.map((a,i)=>`<option value="${a[2]}"${a[0]===18?" selected":""}>AWG${a[0]}</option>`).join("")}</select></label>
+  <label>片道長さ [m]<input type="number" id="wL" value="1" step="any"></label>
+  <label>電流 [A]<input type="number" id="wI" value="5" step="any"></label>
+  <label>電源電圧 [V]<input type="number" id="wV" value="12" step="any"></label>
+ </div>
+ <button class="act" id="wGo">計算</button><div class="result-box" id="wRes"></div>
+ <p class="note">R＝ρ×2L÷A（ρ銅＝0.0172 Ω·mm²/m、往復分で2L）。モーター系は降下5%以内、ロジック電源は1〜2%以内が目安。</p></div>`;
+ $("#wGo").onclick=()=>{
+  const A=+$("#wAwg").value,L=+$("#wL").value,I=+$("#wI").value,V=+$("#wV").value;
+  const R=0.0172*2*L/A;
+  const dv=R*I,pct=dv/V*100;
+  show("#wRes",`配線抵抗（往復）= ${fmt(R*1000,1)} mΩ
+<span class="big">電圧降下 ≈ ${fmt(dv,3)} V（${fmt(pct,2)}%）</span>
+損失 = ${fmt(dv*I,2)} W ${pct>5?'<span class="warn">→ 降下大。太い線か短い配線を検討</span>':""}`);
+ };
+};
+
+/* ---- オームの法則 ---- */
+RENDER.ohm=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">オームの法則・電力</h2>
+ <p class="page-sub">V・I・R・P のうち<b>2つ</b>を入力して計算（残りは空欄に）。</p>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>電圧 V [V]<input type="number" id="oV" step="any" value="5"></label>
+  <label>電流 I [A]<input type="number" id="oI" step="any" value="0.02"></label>
+  <label>抵抗 R [Ω]<input type="number" id="oR" step="any"></label>
+  <label>電力 P [W]<input type="number" id="oP" step="any"></label>
+ </div>
+ <button class="act" id="oGo">計算</button>
+ <button class="ghost" id="oClr">クリア</button>
+ <div class="result-box" id="oRes"></div>
+ </div>`;
+ $("#oClr").onclick=()=>["oV","oI","oR","oP"].forEach(id=>$("#"+id).value="");
+ $("#oGo").onclick=()=>{
+  let V=parseFloat($("#oV").value),I=parseFloat($("#oI").value),R=parseFloat($("#oR").value),P=parseFloat($("#oP").value);
+  const has=x=>isFinite(x);
+  const n=[V,I,R,P].filter(has).length;
+  if(n<2){show("#oRes","<span class='warn'>2つ入力してください</span>");return}
+  try{
+   if(has(V)&&has(I)){R=V/I;P=V*I}
+   else if(has(V)&&has(R)){I=V/R;P=V*I}
+   else if(has(V)&&has(P)){I=P/V;R=V/I}
+   else if(has(I)&&has(R)){V=I*R;P=V*I}
+   else if(has(I)&&has(P)){V=P/I;R=V/I}
+   else if(has(R)&&has(P)){V=Math.sqrt(P*R);I=V/R}
+   show("#oRes",`<span class="big">V=${fmt(V,4)} V　I=${fmt(I,5)} A　R=${fmt(R,3)} Ω　P=${fmt(P,4)} W</span>
+（I=${fmt(I*1000,2)} mA　P=${fmt(P*1000,1)} mW）`);
+  }catch(e){show("#oRes","<span class='warn'>計算できませんでした</span>")}
+ };
+};
+
+/* ---- LED ---- */
+RENDER.led=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">LED電流制限抵抗</h2>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>電源電圧 Vs [V]<input type="number" id="lVs" value="5" step="any"></label>
+  <label>LED順方向電圧 Vf [V]<input type="number" id="lVf" value="2.0" step="any"></label>
+  <label>直列LED数<input type="number" id="lN" value="1" min="1"></label>
+  <label>流したい電流 [mA]<input type="number" id="lIf" value="10" step="any"></label>
+ </div>
+ <button class="act" id="lGo">計算</button><div class="result-box" id="lRes"></div>
+ <p class="note">Vfの目安：赤 1.8〜2.2V ／ 黄・緑 2.0〜2.4V ／ 青・白 2.8〜3.4V。表示用なら5〜10mAで十分明るいことが多いです。</p>
+ </div>`;
+ $("#lGo").onclick=()=>{
+  const Vs=+$("#lVs").value,Vf=+$("#lVf").value,n=+$("#lN").value,If=+$("#lIf").value/1000;
+  const drop=Vs-Vf*n;
+  if(drop<=0){show("#lRes","<span class='warn'>電源電圧がLEDのVf合計より低いので点灯できません</span>");return}
+  const R=drop/If,P=drop*If;
+  // E24最近値
+  const exp=Math.floor(Math.log10(R))-1;
+  let best=null;
+  for(let e=exp-1;e<=exp+1;e++)E24.forEach(b=>{const c=b*Math.pow(10,e);if(c>=R&&(!best||c<best))best=c});
+  show("#lRes",`計算値 R = ${fmt(R,1)} Ω　抵抗の消費電力 = ${fmt(P*1000,1)} mW
+<span class="big">推奨: E24の ${resValStr(best)}（計算値以上で最も近い値）</span>
+このとき電流 ≈ ${fmt(drop/best*1000,1)} mA　／　抵抗は ${P<0.1?"1/8W以上":P<0.2?"1/4W以上":"1/2W以上"} を選択`);
+ };
+};
+
+/* ---- 分圧 ---- */
+RENDER.divider=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">分圧・ADC計算</h2>
+ <div class="calc-card"><h3>抵抗分圧</h3>
+ <div class="form-row">
+  <label>入力電圧 Vin [V]<input type="number" id="dVin" value="12" step="any"></label>
+  <label>R1（上側）[Ω]<input type="number" id="dR1" value="10000" step="any"></label>
+  <label>R2（下側）[Ω]<input type="number" id="dR2" value="3300" step="any"></label>
+ </div>
+ <button class="act" id="dGo">計算</button><div class="result-box" id="dRes"></div>
+ <p class="note">バッテリー電圧監視の定番回路。Vout＝Vin×R2/(R1＋R2)。ADCの最大電圧を超えないようにR1/R2を選ぶ。合計抵抗は10k〜100kΩ程度が消費と精度のバランス良。</p></div>
+ <div class="calc-card"><h3>ADC読み値換算</h3>
+ <div class="form-row">
+  <label>ADC分解能<select id="dBit"><option value="10">10bit (0〜1023) Arduino UNO等</option><option value="12" selected>12bit (0〜4095) ESP32/Pico等</option><option value="16">16bit (0〜65535)</option></select></label>
+  <label>基準電圧 Vref [V]<input type="number" id="dVref" value="3.3" step="any"></label>
+  <label>測定電圧 [V]<input type="number" id="dVm" value="1.65" step="any"></label>
+ </div>
+ <button class="act" id="dGo2">計算</button><div class="result-box" id="dRes2"></div></div>`;
+ $("#dGo").onclick=()=>{
+  const Vin=+$("#dVin").value,R1=+$("#dR1").value,R2=+$("#dR2").value;
+  const Vout=Vin*R2/(R1+R2),Id=Vin/(R1+R2);
+  show("#dRes",`<span class="big">Vout = ${fmt(Vout,4)} V</span>（分圧比 ${fmt(R2/(R1+R2),4)}）
+分圧抵抗に流れる電流 = ${fmt(Id*1000,3)} mA　消費 = ${fmt(Vin*Id*1000,2)} mW`);
+ };
+ $("#dGo2").onclick=()=>{
+  const bit=+$("#dBit").value,Vref=+$("#dVref").value,Vm=+$("#dVm").value;
+  const full=Math.pow(2,bit)-1;
+  const reading=Math.round(Vm/Vref*full);
+  show("#dRes2",`<span class="big">読み値 ≈ ${reading} / ${full}</span>
+1LSB = ${fmt(Vref/full*1000,3)} mV`);
+ };
+};
+
+/* ---- レギュレータ ---- */
+RENDER.reg=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">レギュレータ発熱計算（リニア）</h2>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>入力電圧 Vin [V]<input type="number" id="rVin" value="12" step="any"></label>
+  <label>出力電圧 Vout [V]<input type="number" id="rVout" value="5" step="any"></label>
+  <label>出力電流 [A]<input type="number" id="rI" value="0.5" step="any"></label>
+  <label>熱抵抗 θja [°C/W]<select id="rTh"><option value="62">TO-220 放熱器なし (≈62)</option><option value="30">TO-220 小型放熱器 (≈30)</option><option value="10">TO-220 大型放熱器 (≈10)</option><option value="90">SOT-223 基板放熱 (≈90)</option><option value="160">TO-92 (≈160)</option></select></label>
+  <label>周囲温度 [°C]<input type="number" id="rTa" value="30" step="any"></label>
+ </div>
+ <button class="act" id="rGo">計算</button><div class="result-box" id="rRes"></div>
+ <p class="note">リニアレギュレータは差分電圧×電流がぜんぶ熱になります。損失が1Wを超えるあたりからDCDCコンバータ（効率85〜95%）への置き換えを検討すると幸せです。ジャンクション温度の目安上限は125°C（余裕を見て100°C以下推奨）。</p>
+ </div>`;
+ $("#rGo").onclick=()=>{
+  const Vin=+$("#rVin").value,Vout=+$("#rVout").value,I=+$("#rI").value,th=+$("#rTh").value,Ta=+$("#rTa").value;
+  if(Vin<=Vout){show("#rRes","<span class='warn'>Vin > Vout にしてください（ドロップアウト分の余裕も必要）</span>");return}
+  const P=(Vin-Vout)*I, Tj=Ta+P*th;
+  show("#rRes",`損失 P = ${fmt(P,2)} W　効率 ≈ ${fmt(Vout/Vin*100,1)}%
+<span class="big">ジャンクション温度 ≈ ${fmt(Tj,0)} °C</span> ${Tj>100?'<span class="warn">→ 高すぎ。放熱強化かDCDC化を</span>':Tj>80?"（やや高め。放熱に注意）":"（余裕あり）"}`);
+ };
+};
+
+/* ---- RC時定数 ---- */
+RENDER.rc=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">RC時定数・フィルタ</h2>
+ <div class="calc-card">
+ <div class="form-row">
+  <label>抵抗 R [Ω]<input type="number" id="rcR" value="10000" step="any"></label>
+  <label>容量 C [µF]<input type="number" id="rcC" value="0.1" step="any"></label>
+ </div>
+ <button class="act" id="rcGo">計算</button><div class="result-box" id="rcRes"></div>
+ <p class="note">τ＝RC（63%到達時間）、カットオフ周波数 fc＝1/(2πRC)。スイッチのチャタリング対策なら τ＝1〜10ms程度、センサのノイズ取りならノイズ周波数より十分低いfcに。</p>
+ </div>`;
+ $("#rcGo").onclick=()=>{
+  const R=+$("#rcR").value,C=+$("#rcC").value*1e-6;
+  const tau=R*C,fc=1/(2*Math.PI*R*C);
+  show("#rcRes",`<span class="big">τ = ${tau>=1?fmt(tau,3)+" s":tau>=1e-3?fmt(tau*1000,3)+" ms":fmt(tau*1e6,2)+" µs"}</span>
+カットオフ fc = ${fc>=1000?fmt(fc/1000,3)+" kHz":fmt(fc,2)+" Hz"}
+95%到達（3τ）= ${fmt(tau*3*1000,3)} ms`);
+ };
+};
+
+/* ---- バッテリー ---- */
+RENDER.battery=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">バッテリー計算</h2>
+ <div class="calc-card"><h3>稼働時間の見積り</h3>
+ <div class="form-row">
+  <label>容量 [mAh]<input type="number" id="bCap" value="2200" step="any"></label>
+  <label>平均消費電流 [mA]<input type="number" id="bI" value="800" step="any"></label>
+  <label>使用可能率 %<input type="number" id="bUse" value="80" step="any"></label>
+ </div>
+ <button class="act" id="bGo">計算</button><div class="result-box" id="bRes"></div>
+ <p class="note">LiPoは残量20%くらいで切り上げるのが電池寿命的に安全（過放電は即死します）。</p></div>
+ <div class="calc-card"><h3>Cレート → 最大放電電流</h3>
+ <div class="form-row">
+  <label>容量 [mAh]<input type="number" id="cCap" value="2200" step="any"></label>
+  <label>Cレート<input type="number" id="cRate" value="25" step="any"></label>
+ </div>
+ <button class="act" id="cGo">計算</button><div class="result-box" id="cRes"></div></div>
+ <div class="calc-card"><h3>LiPo電圧早見表</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>セル数</th><th>定格 V</th><th>満充電 V</th><th>保管 V（目安）</th><th>使用下限 V（目安）</th></tr></thead><tbody>
+ ${LIPO.map(l=>`<tr><td>${l[0]}</td><td>${l[1]}</td><td>${l[2]}</td><td>${fmt(3.8*parseInt(l[0]),1)}</td><td>${fmt(3.5*parseInt(l[0]),1)}</td></tr>`).join("")}
+ </tbody></table></div>
+ <p class="note">保管はセルあたり3.75〜3.85V。満充電・空のまま放置は劣化が早い。膨らんだLiPoは使用中止。充電は必ずバランス充電器＋不燃バッグ・監視下で。</p></div>`;
+ $("#bGo").onclick=()=>{
+  const cap=+$("#bCap").value,I=+$("#bI").value,use=+$("#bUse").value/100;
+  const h=cap*use/I;
+  show("#bRes",`<span class="big">稼働時間 ≈ ${h>=1?fmt(h,2)+" 時間":fmt(h*60,1)+" 分"}</span>（容量の${$("#bUse").value}%使用）`);
+ };
+ $("#cGo").onclick=()=>{
+  const cap=+$("#cCap").value,r=+$("#cRate").value;
+  show("#cRes",`<span class="big">最大連続放電 = ${fmt(cap*r/1000,1)} A</span>（実運用はこの5〜7割までに抑えると安心）`);
+ };
+};
+
+/* ---- ロジック ---- */
+RENDER.logic=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">ロジックレベル・プルアップ</h2>
+ <div class="calc-card"><h3>3.3V / 5V 混在の注意</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>組合せ</th><th>可否</th><th>対策</th></tr></thead><tbody>
+ <tr><td class="jp">3.3V出力 → 5V入力</td><td class="jp">だいたいOK</td><td class="jp">5V側のHIGH判定しきい値(TTL系なら2.0V)を満たせば直結可。CMOS(0.7×VDD=3.5V)系はNGの場合あり→レベル変換</td></tr>
+ <tr><td class="jp">5V出力 → 3.3V入力</td><td class="jp"><b>危険</b></td><td class="jp">5Vトレラント端子以外は直結NG。分圧(例:1k＋2k)か専用レベル変換IC・FET双方向変換を使う</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>プルアップ／プルダウンの定番値</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>用途</th><th>定番値</th><th>メモ</th></tr></thead><tbody>
+ <tr><td class="jp">スイッチ・GPIO一般</td><td>10 kΩ</td><td class="jp">迷ったらこれ。内蔵プルアップ(30〜60k程度)でも足りることが多い</td></tr>
+ <tr><td class="jp">I2C (100kHz)</td><td>4.7 kΩ</td><td class="jp">SDA/SCL両方に。バスが長い・デバイス多なら小さめへ</td></tr>
+ <tr><td class="jp">I2C (400kHz)</td><td>2.2 kΩ</td><td class="jp">波形なまり対策で強め</td></tr>
+ <tr><td class="jp">リセットライン</td><td>10 kΩ＋0.1µF</td><td class="jp">起動時の誤リセット防止</td></tr>
+ <tr><td class="jp">MOSFETゲート</td><td>ゲート直列100Ω＋GNDへ10k</td><td class="jp">直列＝リンギング抑制、10k＝起動時の不定防止</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>マイコンIOの電流の目安</h3>
+ <p>1ピンあたりの絶対最大は多くのマイコンで20〜40mA、常用は<b>10mA以下</b>が安全圏（合計にも上限あり）。モーターやソレノイドは絶対に直結せず、必ずトランジスタ・MOSFET・ドライバICを介すこと。誘導負荷には還流ダイオードを。</p></div>`;
+};
+
+/* ---- サーボ ---- */
+RENDER.servo=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">RCサーボ・PWM</h2>
+ <div class="calc-card"><h3>RCサーボ信号の基本</h3>
+ ${specList([["周期","20 ms（50 Hz）が標準"],["パルス幅","約 1000〜2000 µs（中立 1500 µs）"],["拡張範囲","機種により 500〜2500 µs まで（要データシート・少しずつ試す）"],["配線","信号（橙/白）・V+（赤）・GND（茶/黒）"]])}
+ <p class="note">サーボ電源はマイコンの5Vピンからではなく<b>別系統（BEC・UBEC等）</b>から。突入電流でマイコンがリセットする事故が定番です。GNDは共通に。</p></div>
+ <div class="calc-card"><h3>角度 → パルス幅計算</h3>
+ <div class="form-row">
+  <label>動作角範囲 [°]<input type="number" id="svRange" value="180" step="any"></label>
+  <label>最小パルス [µs]<input type="number" id="svMin" value="1000"></label>
+  <label>最大パルス [µs]<input type="number" id="svMax" value="2000"></label>
+  <label>目標角度 [°]<input type="number" id="svAng" value="90" step="any"></label>
+ </div>
+ <button class="act" id="svGo">計算</button><div class="result-box" id="svRes"></div></div>
+ <div class="calc-card"><h3>PWMデューティ計算</h3>
+ <div class="form-row">
+  <label>周波数 [Hz]<input type="number" id="pwF" value="50" step="any"></label>
+  <label>パルス幅 [µs]<input type="number" id="pwW" value="1500" step="any"></label>
+  <label>タイマ分解能<select id="pwBit"><option value="8">8bit (0-255)</option><option value="12">12bit (0-4095)</option><option value="16" selected>16bit (0-65535)</option></select></label>
+ </div>
+ <button class="act" id="pwGo">計算</button><div class="result-box" id="pwRes"></div></div>`;
+ $("#svGo").onclick=()=>{
+  const rg=+$("#svRange").value,mn=+$("#svMin").value,mx=+$("#svMax").value,a=+$("#svAng").value;
+  const w=mn+(mx-mn)*a/rg;
+  show("#svRes",`<span class="big">パルス幅 = ${fmt(w,0)} µs</span>（${a}° / ${rg}°）`);
+ };
+ $("#pwGo").onclick=()=>{
+  const f=+$("#pwF").value,w=+$("#pwW").value,bit=+$("#pwBit").value;
+  const period=1e6/f, duty=w/period;
+  const cnt=Math.round(duty*(Math.pow(2,bit)-1));
+  show("#pwRes",`周期 = ${fmt(period,1)} µs　デューティ = ${fmt(duty*100,3)}%
+<span class="big">タイマ設定値 ≈ ${cnt}</span>（${bit}bit）`);
+ };
+};
+
+/* ---- 配線の作法 ---- */
+RENDER.wiring=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">配線の作法・ノイズ対策</h2>
+ <div class="calc-card"><h3>配線色の慣例（DC機器・ロボット）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>色</th><th>用途</th></tr></thead><tbody>
+ <tr><td class="jp">赤</td><td class="jp">電源＋（メイン電圧）</td></tr>
+ <tr><td class="jp">黒</td><td class="jp">GND</td></tr>
+ <tr><td class="jp">黄・橙</td><td class="jp">信号・別系統電源（5V=赤、3.3V=橙 のように分けると事故が減る）</td></tr>
+ <tr><td class="jp">緑・青・白</td><td class="jp">信号線・通信線</td></tr>
+ </tbody></table></div>
+ <p class="note">ルールは「チーム内で統一されていること」が最重要。決めたら配線図に凡例を書いておく。</p></div>
+ <div class="calc-card"><h3>ノイズ・トラブルを減らす鉄則</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>鉄則</th><th>理由・やり方</th></tr></thead><tbody>
+ <tr><td class="jp">パワー系と信号系を分けて這わす</td><td class="jp">モーター線は最大のノイズ源。並走させるならツイスト＋距離を取る</td></tr>
+ <tr><td class="jp">GNDは一点集中（スター配線）</td><td class="jp">モーター電流がロジックGNDを通ると誤動作の元</td></tr>
+ <tr><td class="jp">モーター端子にセラコン</td><td class="jp">0.1µFを端子間（＋端子-ケースに2個の場合も）。ブラシノイズ抑制の定番</td></tr>
+ <tr><td class="jp">ICの電源ピン直近にパスコン0.1µF</td><td class="jp">1ICにつき1個。電源の瞬間的な落ち込みを吸収</td></tr>
+ <tr><td class="jp">誘導負荷には還流ダイオード</td><td class="jp">リレー・ソレノイド・モーターのOFF時逆起電力からスイッチ素子を守る</td></tr>
+ <tr><td class="jp">電源直後に電解コン＋ヒューズ</td><td class="jp">突入対策とバッテリー短絡保護。ヒューズは実測最大電流の1.5〜2倍</td></tr>
+ <tr><td class="jp">動く部分の配線はたるみ＋固定</td><td class="jp">可動部で被覆が擦れて断線・短絡するのが大会トラブルの定番</td></tr>
+ <tr><td class="jp">コネクタ根本に熱収縮チューブ</td><td class="jp">応力集中で折れる根本を保護</td></tr>
+ </tbody></table></div></div>`;
+};
+
+/* =========================================================
+   Rev.2.0 追加：寸法図・PCB・モータードライバ
+   ========================================================= */
+/* ---- SVG helpers ---- */
+function svgWrap(inner,w=380,h=300){return `<svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:${w}px" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`}
+function dimH(x1,x2,y,label,off=0){
+ return `<line class="dim" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>
+ <line class="dim" x1="${x1}" y1="${y-4}" x2="${x1}" y2="${y+4}"/>
+ <line class="dim" x1="${x2}" y1="${y-4}" x2="${x2}" y2="${y+4}"/>
+ <text class="dimtxt" x="${(x1+x2)/2}" y="${y-5+off}" text-anchor="middle">${label}</text>`;
+}
+function dimV(x,y1,y2,label){
+ return `<line class="dim" x1="${x}" y1="${y1}" x2="${x}" y2="${y2}"/>
+ <line class="dim" x1="${x-4}" y1="${y1}" x2="${x+4}" y2="${y1}"/>
+ <line class="dim" x1="${x-4}" y1="${y2}" x2="${x+4}" y2="${y2}"/>
+ <text class="dimtxt" x="${x+7}" y="${(y1+y2)/2+4}">${label}</text>`;
+}
+
+/* ---- データ ---- */
+// 平型端子（ファストン） [型, タブ幅, タブ厚, 定格目安A]
+const FASTON=[["110型",2.8,0.5,"5"],["187型",4.75,0.5,"10"],["250型",6.35,0.8,"15〜20"]];
+// 丸形圧着端子 JIS C 2805 [呼び, 適用電線mm2, AWG目安, ねじ, 被覆色]
+const RINGTERM=[
+ ["R1.25-3","0.25〜1.65","AWG22〜16","M3","赤"],
+ ["R1.25-4","0.25〜1.65","AWG22〜16","M4","赤"],
+ ["R2-4","1.04〜2.63","AWG16〜14","M4","青"],
+ ["R2-5","1.04〜2.63","AWG16〜14","M5","青"],
+ ["R5.5-5","2.63〜6.64","AWG12〜10","M5","黄"]
+];
+// チップ部品 [インチ呼び, メトリック呼び, L, W, 抵抗の定格W, 手はんだ]
+const CHIPS=[
+ ["0402","1005M",1.0,0.5,"1/16","かなり難"],
+ ["0603","1608M",1.6,0.8,"1/10","慣れれば可"],
+ ["0805","2012M",2.0,1.25,"1/8","やりやすい"],
+ ["1206","3216M",3.2,1.6,"1/4","楽"],
+ ["1210","3225M",3.2,2.5,"1/2","楽"],
+ ["2512","6432M",6.3,3.2,"1","楽（熱量必要）"]
+];
+// パッケージ [名称, ピッチ, 概要, 手はんだ]
+const PKGS=[
+ ["DIP","2.54","スルーホールIC。行間7.62mm(300mil)が標準、ワイドは15.24mm","◎ 入門に最適。ソケット使用推奨"],
+ ["ピンヘッダ","2.54","0.64mm角ピン。推奨穴径φ1.0","◎"],
+ ["SOIC (SOP)","1.27","表面実装の入門サイズ","○ フラックス＋細めのコテ先で"],
+ ["TSSOP","0.65","薄型・狭ピッチ","△ フラックス必須・ブリッジは吸取り線"],
+ ["QFP","0.4〜0.8","4辺リード","△ 位置決めが命。1辺仮止め→流しはんだ"],
+ ["QFN/DFN","0.4〜0.65","リードなし・裏面パッド","× ホットプレート/ヒートガン推奨"],
+ ["SOT-23","0.95","小型トランジスタ・IC。本体約2.9×1.3mm","○"],
+ ["TO-92","1.27×2","小信号トランジスタ(スルーホール)","◎"],
+ ["TO-220","2.54","パワー素子。取付穴φ3.6(M3)","◎ 放熱器・絶縁シート併用"]
+];
+
+/* ---- 圧着端子 ---- */
+function drawFaston(r){
+ const [nm,w,t]=r;
+ const sc=22;
+ const W=w*sc, L=Math.min(w*2.6*sc,190), cx=170, cy=110;
+ let g=`<rect class="body" x="${cx-L/2}" y="${cy-W/2}" width="${L}" height="${W}" rx="2"/>`;
+ g+=`<line class="hatch" x1="${cx-L/2+10}" y1="${cy}" x2="${cx+L/2-10}" y2="${cy}" stroke-dasharray="4 3"/>`;
+ g+=`<circle class="body" cx="${cx}" cy="${cy}" r="${Math.min(W*0.16,5)}" fill="none"/>`; // ディンプル
+ g+=dimV(cx+L/2+18,cy-W/2,cy+W/2,`幅 ${w}`);
+ g+=dimH(cx-L/2,cx+L/2,cy-W/2-12,`タブ（厚さ ${t}）`);
+ g+=`<text x="${cx}" y="${cy+W/2+26}" text-anchor="middle">平型端子 ${nm} タブ部</text>`;
+ return svgWrap(g,380,220);
+}
+RENDER.terminal=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">圧着端子・平型端子</h2>
+ <p class="page-sub">行クリックで寸法図。定格は<b>目安</b>（メーカー・電線サイズで変わります）。</p>
+ <h3 style="font-size:15px;margin:8px 0">平型端子（ファストン端子）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>型</th><th>タブ幅 mm</th><th>タブ厚 mm</th><th>定格目安 A</th></tr></thead><tbody id="ftTb"></tbody></table></div>
+ <div class="detail" id="detail"><div class="detail-draw" id="ddraw"></div><div class="detail-info" id="dinfo"></div></div>
+ <h3 style="font-size:15px;margin:16px 0 8px">丸形圧着端子（R端子・JIS C 2805）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>呼び</th><th>適用電線 mm²</th><th>AWG目安</th><th>ねじ</th><th>絶縁被覆色</th></tr></thead><tbody>
+ ${RINGTERM.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td class="jp">${r[4]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <div class="calc-card" style="margin-top:16px"><h3>圧着のコツ</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>コツ</th><th>理由</th></tr></thead><tbody>
+ <tr><td class="jp">端子と電線サイズを必ず合わせる</td><td class="jp">呼び1.25/2/5.5＝適用電線断面積。合わないと抜け・発熱の元</td></tr>
+ <tr><td class="jp">工具は端子の種類専用のものを</td><td class="jp">裸端子用・絶縁被覆端子用・オープンバレル用でダイス形状が違う</td></tr>
+ <tr><td class="jp">圧着後は引張テスト</td><td class="jp">軽く引いて抜けないか毎回確認。大会中の断線は大体ここ</td></tr>
+ <tr><td class="jp">平型のメス端子は絶縁スリーブ付きに</td><td class="jp">むき出し金属の短絡防止</td></tr>
+ <tr><td class="jp">棒端子（フェルール）</td><td class="jp">より線を端子台に入れるときの定番。サイズ＝電線断面積で選ぶ。色規格は2系統あるので色だけで判断しない</td></tr>
+ </tbody></table></div></div>`;
+ FASTON.forEach(r=>{
+  const tr=document.createElement("tr");tr.className="sel-row";
+  tr.innerHTML=`<td class="jp">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td>`;
+  tr.onclick=()=>{
+   document.querySelectorAll("#ftTb tr").forEach(x=>x.classList.remove("selected"));
+   tr.classList.add("selected");
+   $("#ddraw").innerHTML=drawFaston(r);
+   $("#dinfo").innerHTML=`<h3>平型端子 ${r[0]}</h3>`+specList([["タブ幅",r[1]+" mm"],["タブ厚さ",r[2]+" mm"],["定格目安",r[3]+" A"]])
+    +`<p class="note">${r[0]==="250型"?"車の電装・スイッチ・パワー系の定番。":r[0]==="187型"?"中電流の機器内配線でよく使う。":"マイクロスイッチや小型機器の端子でよく見るサイズ。"}オスタブ付きのスイッチ・リレーに合う型を選ぶこと（110と187は刺さりません）。</p>`;
+   $("#detail").classList.add("open");
+  };
+  document.getElementById("ftTb").appendChild(tr);
+ });
+};
+
+/* ---- チップ部品・パッケージ寸法 ---- */
+function drawChip(r){
+ const [inch,met,L,W]=r;
+ const sc=Math.min(240/L,120);
+ const Lp=L*sc,Wp=W*sc,cx=190,cy=110;
+ let g=`<rect class="body" x="${cx-Lp/2}" y="${cy-Wp/2}" width="${Lp}" height="${Wp}" fill="#3a3f46"/>`;
+ const ep=Lp*0.22;
+ g+=`<rect x="${cx-Lp/2}" y="${cy-Wp/2}" width="${ep}" height="${Wp}" fill="#c8ccd2" stroke="#20262E"/>`;
+ g+=`<rect x="${cx+Lp/2-ep}" y="${cy-Wp/2}" width="${ep}" height="${Wp}" fill="#c8ccd2" stroke="#20262E"/>`;
+ g+=dimH(cx-Lp/2,cx+Lp/2,cy-Wp/2-12,`L ${L}`);
+ g+=dimV(cx+Lp/2+18,cy-Wp/2,cy+Wp/2,`W ${W}`);
+ g+=`<text x="${cx}" y="${cy+Wp/2+26}" text-anchor="middle">${inch}（${met}）</text>`;
+ return svgWrap(g,380,220);
+}
+RENDER.pkg=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">チップ部品・パッケージ寸法</h2>
+ <p class="page-sub">PCB設計・部品選定の基礎データ。行クリックで図を表示。</p>
+ <h3 style="font-size:15px;margin:8px 0">チップ抵抗・チップコンデンサ（呼びはインチ系）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>インチ呼び</th><th>メトリック呼び</th><th>L mm</th><th>W mm</th><th>抵抗の定格 W</th><th>手はんだ</th></tr></thead><tbody id="chTb"></tbody></table></div>
+ <div class="detail" id="detail"><div class="detail-draw" id="ddraw"></div><div class="detail-info" id="dinfo"></div></div>
+ <div class="calc-card" style="margin-top:16px"><h3>ICパッケージ早見</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>パッケージ</th><th>ピッチ mm</th><th>概要</th><th>手はんだ難易度</th></tr></thead><tbody>
+ ${PKGS.map(p=>`<tr><td><b>${p[0]}</b></td><td>${p[1]}</td><td class="jp" style="white-space:normal;min-width:220px">${p[2]}</td><td class="jp">${p[3]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <p class="note">⚠ 呼びの罠：チップ部品の「0603」はインチ系とメトリック系で別サイズを指すことがある（インチ0603＝1.6×0.8mm、メトリック0603＝0.6×0.3mm）。通販で買うときは必ずmm寸法で確認。</p></div>`;
+ CHIPS.forEach(r=>{
+  const tr=document.createElement("tr");tr.className="sel-row";
+  tr.innerHTML=`<td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td class="jp">${r[5]}</td>`;
+  tr.onclick=()=>{
+   document.querySelectorAll("#chTb tr").forEach(x=>x.classList.remove("selected"));
+   tr.classList.add("selected");
+   $("#ddraw").innerHTML=drawChip(r);
+   $("#dinfo").innerHTML=`<h3>${r[0]}（${r[1]}）</h3>`+specList([["長さ L",r[2]+" mm"],["幅 W",r[3]+" mm"],["チップ抵抗の定格",r[4]+" W"],["手はんだ",r[5]]])
+    +`<p class="note">初めての表面実装基板なら0805以上で設計すると組立が楽。パッドは部品より少し長めに出すとコテを当てやすい。</p>`;
+   $("#detail").classList.add("open");
+  };
+  document.getElementById("chTb").appendChild(tr);
+ });
+};
+
+/* ---- PCB設計 ---- */
+RENDER.pcb=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">PCB設計支援</h2>
+ <div class="calc-card"><h3>トレース幅計算（IPC-2221ベース）</h3>
+ <div class="form-row">
+  <label>電流 [A]<input type="number" id="pcI" value="2" step="any"></label>
+  <label>許容温度上昇 [°C]<input type="number" id="pcT" value="10" step="any"></label>
+  <label>銅厚<select id="pcOz"><option value="1">1 oz (35µm) 標準</option><option value="2">2 oz (70µm)</option><option value="0.5">0.5 oz (18µm)</option></select></label>
+  <label>層<select id="pcLayer"><option value="0.048">外層</option><option value="0.024">内層</option></select></label>
+ </div>
+ <button class="act" id="pcGo">計算</button><div class="result-box" id="pcRes"></div>
+ <p class="note">迷ったら太く・ベタで。パワー系はポリゴン（ベタ塗り）にすれば幅の心配自体が減ります。</p></div>
+ <div class="calc-card"><h3>デザインルールの実用目安（安価PCBサービス想定）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>項目</th><th>最小（製造限界の例）</th><th>推奨（余裕を持つなら）</th></tr></thead><tbody>
+ <tr><td class="jp">トレース幅／間隔</td><td>0.127 mm (5mil)</td><td>0.2〜0.25 mm 以上</td></tr>
+ <tr><td class="jp">ビア（穴／ランド）</td><td>0.2／0.45 mm</td><td>0.3／0.6 mm</td></tr>
+ <tr><td class="jp">最小ドリル（部品穴）</td><td>0.3 mm</td><td>リード径＋0.2 mm</td></tr>
+ <tr><td class="jp">シルク文字高さ</td><td>0.8 mm</td><td>1.0 mm 以上</td></tr>
+ <tr><td class="jp">基板端〜銅箔</td><td>0.2 mm</td><td>0.3〜0.5 mm</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>電圧クリアランス（導体間隔）の目安</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>電圧</th><th>間隔の目安</th></tr></thead><tbody>
+ <tr><td>〜30 V</td><td class="jp">0.25 mm 以上（信号系はデザインルール通りでOK）</td></tr>
+ <tr><td>〜50 V</td><td>0.5 mm 以上</td></tr>
+ <tr><td>〜150 V</td><td>1.5 mm 以上</td></tr>
+ <tr><td class="jp">AC100V系</td><td class="jp">2.5 mm以上＋沿面距離・安全規格の確認必須（安易に自作しない）</td></tr>
+ </tbody></table></div>
+ <p class="note">値は無コーティング外層の保守的な目安。高電圧・商用電源を扱う基板は規格（IEC等）に沿った設計レビューを。</p></div>
+ <div class="calc-card"><h3>ロボット基板のレイアウト鉄則</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>鉄則</th><th>内容</th></tr></thead><tbody>
+ <tr><td class="jp">GNDベタを貼る</td><td class="jp">両面基板なら裏面はほぼ全面GNDに。ノイズ・配線性が劇的に改善</td></tr>
+ <tr><td class="jp">パスコンはICの電源ピン直近</td><td class="jp">0.1µFをピンから数mm以内。ビア経由を避けて最短で</td></tr>
+ <tr><td class="jp">パワーGNDと信号GNDを分けて一点接続</td><td class="jp">モーター電流のリターンをロジックの下に通さない</td></tr>
+ <tr><td class="jp">発熱部品を端に・まとめて</td><td class="jp">レギュレータ・ドライバは放熱と交換を考えて配置</td></tr>
+ <tr><td class="jp">コネクタは外周に・向きを揃える</td><td class="jp">ケーブルの取り回しが素直になる。シルクに信号名を書く</td></tr>
+ <tr><td class="jp">マウント穴はM3・十分な逃げ</td><td class="jp">穴径3.2mm、周囲は部品・銅箔を空ける</td></tr>
+ <tr><td class="jp">テストポイントを付ける</td><td class="jp">電源・重要信号にTP。デバッグ速度が全然違う</td></tr>
+ </tbody></table></div></div>`;
+ $("#pcGo").onclick=()=>{
+  const I=+$("#pcI").value,dT=+$("#pcT").value,oz=+$("#pcOz").value,k=+$("#pcLayer").value;
+  const A=Math.pow(I/(k*Math.pow(dT,0.44)),1/0.725); // mil^2
+  const wMil=A/(1.378*oz);
+  const wMm=wMil*0.0254;
+  show("#pcRes",`必要断面積 ≈ ${fmt(A,1)} mil²
+<span class="big">トレース幅 ≈ ${fmt(wMm,2)} mm（${fmt(wMil,1)} mil）</span>
+${wMm>5?'<span class="warn">→ かなり太い。ポリゴン＋銅厚2ozや、電流経路の見直しを</span>':""}`);
+ };
+};
+
+/* ---- スイッチ ---- */
+function drawSwitchSym(kind){
+ // 回路記号: SPST/SPDT/DPDT
+ const cy=100;
+ let g="";
+ const pole=(x,y,thrown)=>{
+  let s=`<circle class="body" cx="${x}" cy="${y}" r="3" fill="#20262E"/>
+  <line class="body" x1="${x-40}" y1="${y}" x2="${x}" y2="${y}"/>
+  <line class="body" x1="${x}" y1="${y}" x2="${x+38}" y2="${y-16}"/>`;
+  if(thrown===1){ // SPDT: 2接点
+   s+=`<circle class="body" cx="${x+44}" cy="${y-10}" r="3" fill="#20262E"/><line class="body" x1="${x+44}" y1="${y-10}" x2="${x+84}" y2="${y-10}"/>`;
+   s+=`<circle class="body" cx="${x+44}" cy="${y+10}" r="3" fill="#20262E"/><line class="body" x1="${x+44}" y1="${y+10}" x2="${x+84}" y2="${y+10}"/>`;
+  }else{
+   s+=`<circle class="body" cx="${x+44}" cy="${y-10}" r="3" fill="#20262E"/><line class="body" x1="${x+44}" y1="${y-10}" x2="${x+84}" y2="${y-10}"/>`;
+  }
+  return s;
+ };
+ if(kind==="SPST"){g=pole(120,cy,0);g+=`<text x="190" y="${cy+50}" text-anchor="middle">1回路1接点：ただのON/OFF</text>`}
+ if(kind==="SPDT"){g=pole(120,cy,1);g+=`<text x="190" y="${cy+50}" text-anchor="middle">1回路2接点：A/Bの切替（COM-NO-NC）</text>`}
+ if(kind==="DPDT"){g=pole(120,70,1)+pole(120,150,1);
+  g+=`<line class="hatch" x1="120" y1="78" x2="120" y2="142" stroke-dasharray="4 3"/>`;
+  g+=`<text x="190" y="205" text-anchor="middle">2回路2接点：2系統を同時切替（モーター正逆にも）</text>`}
+ return svgWrap(g,380,kind==="DPDT"?225:170);
+}
+RENDER.switch=()=>{
+ const TYPES=[
+  ["タクトスイッチ","モーメンタリ","基板用の押しボタン。操作入力の定番。チャタリング対策必須"],
+  ["押しボタン","両タイプあり","パネル用。非常停止は必ず「押すとOFF(NC)・ロック付き」の専用品"],
+  ["トグルスイッチ","オルタネート","レバー式。電源スイッチの定番。ON-OFF-ONの3ポジション品もある"],
+  ["スライドスイッチ","オルタネート","小型・薄型。モード切替に"],
+  ["ロッカースイッチ","オルタネート","シーソー型。電源用の大電流品が豊富"],
+  ["マイクロスイッチ","モーメンタリ","レバー付きの検出スイッチ。リミットスイッチ・原点検出の定番。COM/NO/NCの3端子"],
+  ["DIPスイッチ","オルタネート","基板上の設定用。アドレス設定など"],
+  ["ロータリースイッチ","オルタネート","多ポジション切替"]
+ ];
+ $("#main").innerHTML=`<h2 class="page-title">スイッチの種類と回路記号</h2>
+ <div class="calc-card"><h3>極数・接点数（回路記号）</h3>
+ <div class="preset-row">
+  <button class="ghost" data-sw="SPST">SPST</button>
+  <button class="ghost" data-sw="SPDT">SPDT</button>
+  <button class="ghost" data-sw="DPDT">DPDT</button>
+ </div>
+ <div id="swDraw" style="text-align:center"></div>
+ <p class="note">表記の読み方：P＝極（回路数）、T＝投（接点数）。SP=1回路/DP=2回路、ST=1接点/DT=2接点。マイクロスイッチの端子は COM（共通）・NO（普段OFF）・NC（普段ON）。</p></div>
+ <div class="data-wrap"><table class="data"><thead><tr><th>種類</th><th>動作</th><th>用途・メモ</th></tr></thead><tbody>
+ ${TYPES.map(t=>`<tr><td class="jp"><b>${t[0]}</b></td><td class="jp">${t[1]}</td><td class="jp" style="white-space:normal;min-width:260px">${t[2]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <div class="calc-card" style="margin-top:16px"><h3>定格の読み方の注意</h3>
+ <p>スイッチの定格は「AC125V 3A」のようにAC表記が多く、<b>DCで使うと遮断が難しいため許容電流はずっと小さくなります</b>（DC定格の記載があるものはそれに従う）。モーターなど誘導負荷はさらに突入・アークが大きいので、定格の半分以下で使うか、スイッチは信号だけにしてFET・リレーで主回路を切るのが安全です。</p></div>`;
+ document.querySelectorAll("[data-sw]").forEach(b=>b.onclick=()=>{$("#swDraw").innerHTML=drawSwitchSym(b.dataset.sw)});
+ $("#swDraw").innerHTML=drawSwitchSym("SPDT");
+};
+
+/* ---- モータードライバ配線 ---- */
+function drawStepperWiring(){
+ // ドライバ結線の模式図
+ let g="";
+ const bx=130,by=40,bw=120,bh=180;
+ g+=`<rect class="body" x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="#fff"/>`;
+ g+=`<text x="${bx+bw/2}" y="${by+22}" text-anchor="middle" font-weight="bold">ドライバ</text>`;
+ g+=`<text x="${bx+bw/2}" y="${by+36}" text-anchor="middle">(A4988等)</text>`;
+ const pinL=[["STEP",70],["DIR",95],["EN",120],["GND",150],["VDD(logic)",170]];
+ pinL.forEach(p=>{
+  g+=`<line class="body" x1="${bx-46}" y1="${p[1]}" x2="${bx}" y2="${p[1]}"/>`;
+  g+=`<text x="${bx-50}" y="${p[1]+4}" text-anchor="end">${p[0]}</text>`;
+ });
+ g+=`<text x="30" y="52" font-weight="bold">マイコン側</text>`;
+ const pinR=[["A1",64],["A2",92],["B1",120],["B2",148],["VMOT",176],["GND",198]];
+ pinR.forEach(p=>{
+  g+=`<line class="body" x1="${bx+bw}" y1="${p[1]}" x2="${bx+bw+42}" y2="${p[1]}"/>`;
+  g+=`<text x="${bx+bw+46}" y="${p[1]+4}">${p[0]}</text>`;
+ });
+ // コイル
+ g+=`<path class="dim" d="M ${bx+bw+80} 64 h 26 v 28 h -26" fill="none"/><text class="dimtxt" x="${bx+bw+114}" y="82">コイルA</text>`;
+ g+=`<path class="dim" d="M ${bx+bw+80} 120 h 26 v 28 h -26" fill="none"/><text class="dimtxt" x="${bx+bw+114}" y="138">コイルB</text>`;
+ g+=`<text x="${bx+bw+46}" y="222">VMOT: モーター電源(8〜35V等)＋近くに100µF</text>`;
+ return svgWrap(g,400,240);
+}
+function drawHBridge(){
+ let g="";
+ const cx=190,cy=120;
+ // 4 switches
+ const sw=(x,y,label)=>`<rect class="body" x="${x-14}" y="${y-14}" width="28" height="28" fill="#fff"/><text x="${x}" y="${y+4}" text-anchor="middle">${label}</text>`;
+ g+=`<line class="body" x1="100" y1="40" x2="280" y2="40"/><text x="190" y="32" text-anchor="middle">V+</text>`;
+ g+=`<line class="body" x1="100" y1="200" x2="280" y2="200"/><text x="190" y="218" text-anchor="middle">GND</text>`;
+ g+=`<line class="body" x1="120" y1="40" x2="120" y2="200"/><line class="body" x1="260" y1="40" x2="260" y2="200"/>`;
+ g+=sw(120,80,"Q1")+sw(260,80,"Q2")+sw(120,160,"Q3")+sw(260,160,"Q4");
+ g+=`<line class="body" x1="120" y1="120" x2="170" y2="120"/><line class="body" x1="210" y1="120" x2="260" y2="120"/>`;
+ g+=`<circle class="body" cx="190" cy="120" r="20" fill="#fff"/><text x="190" y="125" text-anchor="middle">M</text>`;
+ g+=`<text class="dimtxt" x="60" y="124">Q1+Q4=正転</text><text class="dimtxt" x="286" y="124">Q2+Q3=逆転</text>`;
+ return svgWrap(g,400,235);
+}
+RENDER.motordrv=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">モータードライバ配線</h2>
+ <div class="calc-card"><h3>① DCモーター：Hブリッジの基本</h3>
+ <div style="text-align:center">${drawHBridge()}</div>
+ <p class="note">Q1＋Q4をONで正転、Q2＋Q3で逆転。同じ側の上下（Q1＋Q3など）を同時ONすると<b>貫通短絡</b>で即破壊。市販ドライバICはこれを防ぐ論理が入っています。</p>
+ <div class="data-wrap" style="margin-top:8px"><table class="data"><thead><tr><th>IN1</th><th>IN2</th><th>動作（TB6612系の例）</th></tr></thead><tbody>
+ <tr><td>H</td><td>L</td><td class="jp">正転（速度はPWM端子で制御）</td></tr>
+ <tr><td>L</td><td>H</td><td class="jp">逆転</td></tr>
+ <tr><td>H</td><td>H</td><td class="jp">ショートブレーキ（急停止）</td></tr>
+ <tr><td>L</td><td>L</td><td class="jp">ストップ（惰性・フリー）</td></tr>
+ </tbody></table></div>
+ <p class="note">配線の基本：モーター電源（VM）とロジック電源（VCC）は別ピン。STBY（スタンバイ）ピンはHにしないと動きません（動かない原因の定番No.1）。GNDは共通に。</p></div>
+ <div class="calc-card"><h3>② ステッピングモーター（バイポーラ）</h3>
+ <div style="text-align:center">${drawStepperWiring()}</div>
+ <div class="data-wrap" style="margin-top:8px"><table class="data"><thead><tr><th>リード線数</th><th>見分け方・つなぎ方</th></tr></thead><tbody>
+ <tr><td>4線</td><td class="jp">バイポーラ専用。テスターで導通するペアがコイルA/B。A1-A2、B1-B2へ</td></tr>
+ <tr><td>6線</td><td class="jp">各コイルに中点タップ。バイポーラで使うなら中点2本は未接続（絶縁）に</td></tr>
+ <tr><td>8線</td><td class="jp">コイル4個。直列（高トルク・低速向き）か並列（高速向き・要電流2倍）で結線</td></tr>
+ </tbody></table></div>
+ <p class="note">回転方向が逆なら片方のコイル（A1↔A2）を入れ替え。動作中のコネクタ抜き差しはドライバ破壊の定番なので絶対NG。1.8°品＝200step/回転、0.9°品＝400step/回転。</p>
+ <h3 style="margin-top:14px">電流設定（Vref）計算</h3>
+ <div class="form-row">
+  <label>ドライバ<select id="drvSel">
+   <option value="8">A4988（I=Vref/(8×Rs)）</option>
+   <option value="5">DRV8825（I=Vref/(5×Rs)）</option>
+  </select></label>
+  <label>センス抵抗 Rs [Ω]<input type="number" id="drvRs" value="0.1" step="any"></label>
+  <label>設定したい電流 [A/相]<input type="number" id="drvI" value="1.0" step="any"></label>
+ </div>
+ <button class="act" id="drvGo">Vrefを計算</button><div class="result-box" id="drvRes"></div>
+ <p class="note">Rsは基板上のセンス抵抗（R100=0.1Ω、R050=0.05Ωのような表記）を<b>実物で確認</b>。互換ボードで値が違うのが誤設定の定番原因。TMC2209等はUART設定や別式なのでデータシート参照。定格電流の70〜85%運用が発熱と脱調のバランス良。</p>
+ <h3 style="margin-top:14px">マイクロステップ設定</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>分割</th><th>A4988 (MS1,MS2,MS3)</th><th>DRV8825 (M0,M1,M2)</th></tr></thead><tbody>
+ <tr><td>フル</td><td>L L L</td><td>L L L</td></tr>
+ <tr><td>1/2</td><td>H L L</td><td>H L L</td></tr>
+ <tr><td>1/4</td><td>L H L</td><td>L H L</td></tr>
+ <tr><td>1/8</td><td>H H L</td><td>H H L</td></tr>
+ <tr><td>1/16</td><td>H H H</td><td>L L H</td></tr>
+ <tr><td>1/32</td><td>—</td><td>H L H ほか（1/16超は全てH含む組合せ）</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>③ ブラシレスモーター（BLDC）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>線</th><th>内容</th></tr></thead><tbody>
+ <tr><td class="jp">太い3本（U/V/W）</td><td class="jp">3相の動力線。ESC/ドライバの3出力へ。<b>回転が逆なら任意の2本を入替</b></td></tr>
+ <tr><td class="jp">細い5本（センサ付きの場合）</td><td class="jp">ホールセンサ：VCC・GND・Hu・Hv・Hw。低速から滑らかに回すのに必要</td></tr>
+ <tr><td class="jp">RC用ESCの場合</td><td class="jp">制御はサーボ信号（1000〜2000µs）。起動時にアーミング（最小スロットル）が必要な製品が多い</td></tr>
+ </tbody></table></div>
+ <p class="note">センサレスESCは低速・停止からの高トルクが苦手。ロボットの車輪駆動ならセンサ付き＋FOC対応ドライバ（ODrive系・SimpleFOC等）が扱いやすい。モーターのKV値×電圧≒無負荷回転数[rpm]。</p></div>`;
+ $("#drvGo").onclick=()=>{
+  const k=+$("#drvSel").value,Rs=+$("#drvRs").value,I=+$("#drvI").value;
+  const vref=I*k*Rs;
+  show("#drvRes",`<span class="big">Vref = ${fmt(vref,3)} V</span>（Rs=${Rs}Ω、${k===8?"A4988":"DRV8825"}）
+調整はモーター電源ONの状態で、ポテンショ中央のビス電圧をテスターで測りながら少しずつ。`);
+ };
+};
+
+/* =========================================================
+   Rev.3.0 追加：定番IC・論理回路
+   ========================================================= */
+/* ---- 定番IC・素子早見 ---- */
+RENDER.ics=()=>{
+ const GROUPS=[
+  ["三端子レギュレータ",[
+   ["7805 / 7809 / 7812","固定出力5/9/12V・最大約1A。入力は出力＋2V以上。前後にコンデンサ必須"],
+   ["LM317","可変出力1.25〜37V。下の計算機で抵抗を決める"],
+   ["AMS1117-3.3","3.3V低ドロップ(LDO)。ESP32ボード等の定番。入力5V→3.3V向き"]
+  ]],
+  ["オペアンプ・コンパレータ",[
+   ["LM358 / LM324","単電源で使える定番オペアンプ(2回路/4回路)。出力は電源上限まで振れない点に注意"],
+   ["LM393","コンパレータ(2回路)。出力はオープンコレクタ→<b>プルアップ抵抗必須</b>"],
+   ["NJM4580 / NE5532","音質系の定番。センサ用途にも可"]
+  ]],
+  ["タイマ・発振",[
+   ["NE555","発振・タイマの超定番。下の計算機で定数を決める"],
+   ["74HC14","シュミットトリガインバータ。RC発振・波形整形・チャタリング除去に"]
+  ]],
+  ["トランジスタ・MOSFET",[
+   ["2SC1815 / 2N2222","小信号NPNの定番。〜150mA級のスイッチング"],
+   ["2N7000","小信号N-ch MOSFET。〜200mA"],
+   ["IRLZ44N","ロジックレベルN-ch パワーMOSFET。5V駆動でモーター・ヒーターON/OFF"],
+   ["AO3400","SOT-23の小型N-ch。基板組込みの定番"],
+   ["注意","型番に<b>L</b>が付くのがロジックレベル(5V/3.3Vで全開)。IRF540などゲート10V品を3.3Vで使うと半開きで発熱します"]
+  ]],
+  ["ダイオード",[
+   ["1N4148","小信号スイッチング。ロジック・クランプ用"],
+   ["1N4007","汎用整流1A。リレー・モーターの還流ダイオードに"],
+   ["SS34 / 1N5822","ショットキー3A。低損失・逆接保護・還流用"],
+   ["ツェナー","電圧クランプ・簡易基準に。精度が欲しければTL431"]
+  ]],
+  ["ロジック・拡張",[
+   ["74HC595","シフトレジスタ(出力拡張)。3ピンでLED・7セグを大量制御"],
+   ["74HC165","シフトレジスタ(入力拡張)。スイッチをまとめて読む"],
+   ["ULN2003","ダーリントンアレイ7ch。小型ステッピング(28BYJ-48)やリレー駆動"],
+   ["PCA9685","I2Cで16chサーボ制御(エレキ支援のI2C表参照)"]
+  ]]
+ ];
+ $("#main").innerHTML=`<h2 class="page-title">定番IC・素子早見</h2>
+ <p class="page-sub">型番は各メーカーの製品名です。互換品が多数あるので、購入時は入手性と実装（DIP/SMD）で選べばOK。詳細仕様は必ずデータシートで。</p>
+ ${GROUPS.map(g=>`<div class="calc-card"><h3>${g[0]}</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>型番・項目</th><th>内容</th></tr></thead><tbody>
+ ${g[1].map(r=>`<tr><td><b>${r[0]}</b></td><td class="jp" style="white-space:normal;min-width:280px">${r[1]}</td></tr>`).join("")}
+ </tbody></table></div></div>`).join("")}
+ <div class="calc-card"><h3>LM317 出力電圧計算</h3>
+ <div class="form-row">
+  <label>R1 [Ω]（ADJ-OUT間。240が定番）<input type="number" id="lmR1" value="240" step="any"></label>
+  <label>R2 [Ω]（ADJ-GND間）<input type="number" id="lmR2" value="720" step="any"></label>
+ </div>
+ <button class="act" id="lmGo">Voutを計算</button>
+ <div class="form-row" style="margin-top:10px">
+  <label>逆算：欲しい出力電圧 [V]<input type="number" id="lmV" value="5" step="any"></label>
+ </div>
+ <button class="ghost" id="lmGo2">R2を逆算（R1は上の値を使用）</button>
+ <div class="result-box" id="lmRes"></div>
+ <p class="note">Vout＝1.25×(1＋R2/R1)。入力は出力＋3V以上を確保。1A近く流すなら放熱器必須（発熱はレギュレータ発熱計算ページで）。</p></div>
+ <div class="calc-card"><h3>555タイマ計算（無安定＝発振モード）</h3>
+ <div class="form-row">
+  <label>R1 [kΩ]<input type="number" id="t5R1" value="1" step="any"></label>
+  <label>R2 [kΩ]<input type="number" id="t5R2" value="10" step="any"></label>
+  <label>C [µF]<input type="number" id="t5C" value="10" step="any"></label>
+ </div>
+ <button class="act" id="t5Go">周波数を計算</button>
+ <div class="form-row" style="margin-top:10px">
+  <label>単安定（ワンショット）R [kΩ]<input type="number" id="t5mR" value="100" step="any"></label>
+  <label>C [µF]<input type="number" id="t5mC" value="10" step="any"></label>
+ </div>
+ <button class="ghost" id="t5Go2">パルス幅を計算</button>
+ <div class="result-box" id="t5Res"></div>
+ <p class="note">無安定：f＝1.44/((R1＋2R2)C)、デューティ＝(R1＋R2)/(R1＋2R2)。単安定：t＝1.1RC。マイコンがあるなら555の出番は減りますが、マイコンなしで確実に動く安心感は今でも便利。</p></div>`;
+ $("#lmGo").onclick=()=>{
+  const r1=+$("#lmR1").value,r2=+$("#lmR2").value;
+  show("#lmRes",`<span class="big">Vout ≈ ${fmt(1.25*(1+r2/r1),3)} V</span>（R1=${r1}Ω, R2=${r2}Ω）`);
+ };
+ $("#lmGo2").onclick=()=>{
+  const r1=+$("#lmR1").value,v=+$("#lmV").value;
+  if(v<1.25){show("#lmRes","<span class='warn'>LM317の最低出力は1.25Vです</span>");return}
+  const r2=(v/1.25-1)*r1;
+  show("#lmRes",`Vout=${v}V にするには <span class="big">R2 ≈ ${fmt(r2,0)} Ω</span>（R1=${r1}Ω）
+E24近似は「E系列・近い抵抗値検索」ページでどうぞ。`);
+ };
+ $("#t5Go").onclick=()=>{
+  const r1=+$("#t5R1").value*1000,r2=+$("#t5R2").value*1000,c=+$("#t5C").value*1e-6;
+  const f=1.44/((r1+2*r2)*c), duty=(r1+r2)/(r1+2*r2);
+  show("#t5Res",`<span class="big">f ≈ ${f>=1000?fmt(f/1000,3)+" kHz":fmt(f,2)+" Hz"}</span>　デューティ ≈ ${fmt(duty*100,1)}%
+周期 = ${fmt(1000/f,2)} ms（H: ${fmt(1000/f*duty,2)} ms / L: ${fmt(1000/f*(1-duty),2)} ms）`);
+ };
+ $("#t5Go2").onclick=()=>{
+  const r=+$("#t5mR").value*1000,c=+$("#t5mC").value*1e-6;
+  const t=1.1*r*c;
+  show("#t5Res",`<span class="big">パルス幅 t ≈ ${t>=1?fmt(t,2)+" s":fmt(t*1000,1)+" ms"}</span>（t=1.1RC）`);
+ };
+};
+
+/* ---- 論理回路 ---- */
+function drawGate(kind){
+ const cx=150,cy=90;
+ let g="";
+ const inLines=`<line class="body" x1="${cx-70}" y1="${cy-15}" x2="${cx-30}" y2="${cy-15}"/><line class="body" x1="${cx-70}" y1="${cy+15}" x2="${cx-30}" y2="${cy+15}"/>
+ <text x="${cx-78}" y="${cy-11}" text-anchor="end">A</text><text x="${cx-78}" y="${cy+19}" text-anchor="end">B</text>`;
+ const outLine=x=>`<line class="body" x1="${x}" y1="${cy}" x2="${x+50}" y2="${cy}"/><text x="${x+58}" y="${cy+4}">Y</text>`;
+ const bubble=x=>`<circle class="body" cx="${x+6}" cy="${cy}" r="6" fill="#fff"/>`;
+ const andBody=`<path class="body" d="M ${cx-30} ${cy-28} L ${cx} ${cy-28} A 28 28 0 0 1 ${cx} ${cy+28} L ${cx-30} ${cy+28} Z" fill="#fff"/>`;
+ const orBody=`<path class="body" d="M ${cx-36} ${cy-28} Q ${cx-16} ${cy} ${cx-36} ${cy+28} Q ${cx+2} ${cy+28} ${cx+30} ${cy} Q ${cx+2} ${cy-28} ${cx-36} ${cy-28} Z" fill="#fff"/>`;
+ if(kind==="AND"){g=inLines+andBody+outLine(cx+28)}
+ if(kind==="NAND"){g=inLines+andBody+bubble(cx+28)+outLine(cx+40)}
+ if(kind==="OR"){g=inLines+orBody+outLine(cx+30)}
+ if(kind==="NOR"){g=inLines+orBody+bubble(cx+30)+outLine(cx+42)}
+ if(kind==="XOR"){g=inLines+`<path class="body" d="M ${cx-44} ${cy-28} Q ${cx-24} ${cy} ${cx-44} ${cy+28}" fill="none"/>`+orBody+outLine(cx+30)}
+ if(kind==="NOT"){
+  g=`<line class="body" x1="${cx-70}" y1="${cy}" x2="${cx-26}" y2="${cy}"/><text x="${cx-78}" y="${cy+4}" text-anchor="end">A</text>
+  <path class="body" d="M ${cx-26} ${cy-24} L ${cx+18} ${cy} L ${cx-26} ${cy+24} Z" fill="#fff"/>`+bubble(cx+18)+outLine(cx+30);
+ }
+ return svgWrap(g,330,175);
+}
+RENDER.logicgate=()=>{
+ const GATES={
+  AND:{tt:[[0,0,0],[0,1,0],[1,0,0],[1,1,1]],desc:"両方1のとき1。「条件がすべて成立」",c:"Y = A & B"},
+  OR:{tt:[[0,0,0],[0,1,1],[1,0,1],[1,1,1]],desc:"どちらか1で1。「どれかが成立」",c:"Y = A | B"},
+  NOT:{tt:[[0,1],[1,0]],desc:"反転。",c:"Y = !A"},
+  NAND:{tt:[[0,0,1],[0,1,1],[1,0,1],[1,1,0]],desc:"ANDの反転。NANDだけで全論理が作れる万能ゲート",c:"Y = !(A & B)"},
+  NOR:{tt:[[0,0,1],[0,1,0],[1,0,0],[1,1,0]],desc:"ORの反転",c:"Y = !(A | B)"},
+  XOR:{tt:[[0,0,0],[0,1,1],[1,0,1],[1,1,0]],desc:"不一致で1。加算器・パリティ・エッジ検出に",c:"Y = A ^ B"}
+ };
+ const SEVENTY4=[
+  ["74HC00","NAND ×4"],["74HC02","NOR ×4"],["74HC04","NOT ×6"],["74HC08","AND ×4"],
+  ["74HC32","OR ×4"],["74HC86","XOR ×4"],["74HC14","シュミットNOT ×6（波形整形）"],
+  ["74HC245 / HCT245","バスバッファ8ch。<b>3.3V→5V変換にはTTLしきい値のHCT245</b>（HC245@5Vは3.3V入力がしきい値ギリギリでNG）"],["74HC595 / 165","出力／入力拡張（定番IC早見参照）"]
+ ];
+ $("#main").innerHTML=`<h2 class="page-title">論理回路（ゲート・真理値表）</h2>
+ <div class="calc-card">
+ <div class="preset-row">${Object.keys(GATES).map(k=>`<button class="ghost" data-g="${k}">${k}</button>`).join("")}</div>
+ <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center">
+  <div id="gDraw"></div>
+  <div id="gTable"></div>
+ </div>
+ <div class="result-box show" id="gDesc"></div>
+ </div>
+ <div class="calc-card"><h3>74シリーズ定番（HC＝CMOS 2〜6V動作）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>型番</th><th>中身</th></tr></thead><tbody>
+ ${SEVENTY4.map(s=>`<tr><td><b>${s[0]}</b></td><td class="jp">${s[1]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <p class="note">CMOSロジックの鉄則：<b>未使用入力は必ずGNDかVCCへ</b>（浮かせると発振・誤動作・消費増）。74HC＝CMOS、74LS＝旧TTL系でしきい値が違うので混在時は注意。</p></div>
+ <div class="calc-card"><h3>ド・モルガンの法則（回路簡略化の武器）</h3>
+ <p style="font-family:var(--mono);font-size:15px;text-align:center;padding:6px">!(A &amp; B) = !A | !B　　　!(A | B) = !A &amp; !B</p>
+ <p class="note">「ANDの否定＝否定のOR」。NANDゲートだけ・NORゲートだけで任意の回路が組める根拠で、ソフトのif文の整理（複雑な否定条件をほどく）にもそのまま使えます。</p></div>`;
+ const render=k=>{
+  const gt=GATES[k];
+  $("#gDraw").innerHTML=drawGate(k);
+  const two=gt.tt[0].length===3;
+  $("#gTable").innerHTML=`<table class="data"><thead><tr>${two?"<th>A</th><th>B</th>":"<th>A</th>"}<th>Y</th></tr></thead><tbody>
+  ${gt.tt.map(r=>`<tr>${r.map(v=>`<td>${v}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  $("#gDesc").innerHTML=`<b>${k}</b>：${gt.desc}　／　C言語: <span style="font-family:var(--mono)">${gt.c}</span>`;
+ };
+ document.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>render(b.dataset.g));
+ render("AND");
+};
+
+/* =========================================================
+   Rev.4.0 追加：端子台・DCDC・センサースイッチ
+   ========================================================= */
+/* ---- 端子台・産業系端子 ---- */
+RENDER.termblock=()=>{
+ const FERRULE=[
+  ["0.25","AWG24","—※","—※"],
+  ["0.34","AWG22","—※","—※"],
+  ["0.5","AWG20","白","橙"],
+  ["0.75","AWG18","灰","白"],
+  ["1.0","AWG18〜17","赤","黄"],
+  ["1.5","AWG16","黒","赤"],
+  ["2.5","AWG14","青","灰"]
+ ];
+ $("#main").innerHTML=`<h2 class="page-title">端子台・産業系端子</h2>
+ <div class="calc-card"><h3>端子台（ターミナルブロック）の種類</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>種類</th><th>特徴</th><th>向いている用途</th></tr></thead><tbody>
+ <tr><td class="jp"><b>ねじ式（基板用）</b></td><td class="jp">ピッチ5.08/3.81mmが定番。ドライバ1本で結線</td><td class="jp">自作基板の電源・モーター入出力</td></tr>
+ <tr><td class="jp"><b>プッシュイン式</b></td><td class="jp">フェルール付き電線を差すだけ。ばねで保持、振動に強く緩まない</td><td class="jp">配線本数が多い盤・メンテ頻度が高い所</td></tr>
+ <tr><td class="jp"><b>スプリング（レバー）式</b></td><td class="jp">レバーを押して挿抜。より線もそのまま入る</td><td class="jp">現場での付け替えが多い所・試作</td></tr>
+ <tr><td class="jp"><b>DINレール端子台</b></td><td class="jp">35mmレールに連装。ジャンパで渡り配線、記名タグで管理</td><td class="jp">制御盤・中継。大会ロボットの「電源分配盤」にも◎</td></tr>
+ <tr><td class="jp"><b>ユーロ端子台（中継連結）</b></td><td class="jp">安価な樹脂の連結端子。切って使える</td><td class="jp">簡易な中継・照明系</td></tr>
+ </tbody></table></div>
+ <p class="note">ねじ式は年1回程度の増し締め点検を。振動環境ならプッシュイン式が原理的に緩まないので強い。<b>より線をねじ端子に入れるときはフェルール圧着が基本</b>（素線のはみ出し短絡・切れ防止）。ハンダ上げしてねじ端子に入れるのはNG（ハンダが冷間流動して緩む）。</p></div>
+ <div class="calc-card"><h3>フェルール（棒端子）サイズ・色</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>断面積 mm²</th><th>AWG目安</th><th>DIN色</th><th>フランス色</th></tr></thead><tbody>
+ ${FERRULE.map(f=>`<tr><td>${f[0]}</td><td>${f[1]}</td><td class="jp">${f[2]}</td><td class="jp">${f[3]}</td></tr>`).join("")}
+ </tbody></table></div>
+ <p class="note">⚠ 色規格はDIN系とフランス系の2系統が流通していて<b>同じ色でもサイズが違う</b>ことがある（例：赤はDINで1.0、フランスで1.5）。色でなく刻印の断面積で確認する癖を。圧着はフェルール専用工具（四角・六角かしめ）で。電線の被覆むき長さはフェルールの金属管長に合わせる（8〜10mmが多い）。※0.34以下の極小サイズは色の統一が特に弱いので必ず刻印で。</p></div>
+ <div class="calc-card"><h3>盤・配線管理の作法（産業の知恵をロボットに）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>作法</th><th>効果</th></tr></thead><tbody>
+ <tr><td class="jp">線番マーク（マークチューブ）を付ける</td><td class="jp">図面と実物が1:1対応。トラブル時に迷わない</td></tr>
+ <tr><td class="jp">電源系と信号系で端子台を分ける</td><td class="jp">誤結線防止・ノイズ分離</td></tr>
+ <tr><td class="jp">1端子に電線は2本まで</td><td class="jp">それ以上はジャンパバーか分岐端子台で</td></tr>
+ <tr><td class="jp">予備端子を2割確保</td><td class="jp">現場追加に対応できる</td></tr>
+ </tbody></table></div></div>`;
+};
+
+/* ---- DCDCコンバータ ---- */
+RENDER.dcdc=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">DCDCコンバータ</h2>
+ <p class="page-sub">スイッチングで電圧変換。リニアと違い差分が熱にならず効率85〜95%。ロボットの電源系の主役。</p>
+ <div class="calc-card"><h3>方式と定番モジュール</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>方式</th><th>できること</th><th>定番の例</th></tr></thead><tbody>
+ <tr><td class="jp"><b>降圧（バック）</b></td><td class="jp">Vin＞Vout。いちばん使う</td><td class="jp">LM2596モジュール（表記3A・実用2A程度）、MP1584（小型3A）、XL4015（5A）</td></tr>
+ <tr><td class="jp"><b>昇圧（ブースト）</b></td><td class="jp">Vin＜Vout</td><td class="jp">MT3608（2A・小出力向け）、XL6009</td></tr>
+ <tr><td class="jp"><b>昇降圧</b></td><td class="jp">入力が出力をまたぐ（Li-ion 1本→5V等）</td><td class="jp">SEPIC/Buck-Boost系モジュール</td></tr>
+ <tr><td class="jp"><b>絶縁型</b></td><td class="jp">入出力を電気的に分離</td><td class="jp">ノイズ分離・フローティング電源が要る時だけ</td></tr>
+ </tbody></table></div>
+ <p class="note">⚠ 安価モジュールの表記電流は「素子の最大値」で、放熱なしの連続実用はその5〜7割が目安。型番は各社製品名です（互換モジュール多数）。</p></div>
+ <div class="calc-card"><h3>効率・入力電流・発熱計算（リニアとの比較付き）</h3>
+ <div class="form-row">
+  <label>入力電圧 Vin [V]<input type="number" id="ddVin" value="12" step="any"></label>
+  <label>出力電圧 Vout [V]<input type="number" id="ddVout" value="5" step="any"></label>
+  <label>出力電流 [A]<input type="number" id="ddI" value="2" step="any"></label>
+  <label>効率 η [%]<input type="number" id="ddEta" value="90" step="any"></label>
+ </div>
+ <button class="act" id="ddGo">計算</button><div class="result-box" id="ddRes"></div>
+ <p class="note">入力電流＝Pout/(η×Vin)。バッテリー稼働時間の見積りは「入力電力」ベースで（バッテリー計算ページと併用）。</p></div>
+ <div class="calc-card"><h3>選定・実装のポイント</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>ポイント</th><th>内容</th></tr></thead><tbody>
+ <tr><td class="jp">電流は2倍の余裕</td><td class="jp">モーター突入・サーボ同時動作のピークを見込む</td></tr>
+ <tr><td class="jp">入力電圧範囲の確認</td><td class="jp">LiPo満充電電圧（3S=12.6V）が上限を超えないか</td></tr>
+ <tr><td class="jp">リップル・ノイズ</td><td class="jp">スイッチング周波数のノイズが出る。<b>アナログセンサ・無線系にはDCDC後段にLCフィルタかリニアレギュレータを重ねる</b>のが定石</td></tr>
+ <tr><td class="jp">軽負荷時の挙動</td><td class="jp">無負荷で電圧が跳ねる・間欠発振するモジュールがある。最低負荷抵抗で対策できる場合も</td></tr>
+ <tr><td class="jp">可変モジュールの半固定抵抗</td><td class="jp">振動で回って電圧が変わる事故あり→設定後にネジロック剤かホットボンドで固定し、投入前に必ず電圧確認</td></tr>
+ <tr><td class="jp">レイアウト</td><td class="jp">配線はモジュール直近で太く短く。入出力コンデンサ追加で安定度UP</td></tr>
+ </tbody></table></div></div>`;
+ $("#ddGo").onclick=()=>{
+  const Vin=+$("#ddVin").value,Vout=+$("#ddVout").value,I=+$("#ddI").value,eta=+$("#ddEta").value/100;
+  const Pout=Vout*I, Pin=Pout/eta, Iin=Pin/Vin, loss=Pin-Pout;
+  const linLoss=(Vin-Vout)*I;
+  show("#ddRes",`出力電力 = ${fmt(Pout,1)} W　入力電力 = ${fmt(Pin,1)} W
+<span class="big">入力電流 ≈ ${fmt(Iin,2)} A　損失（発熱）≈ ${fmt(loss,2)} W</span>
+参考：同条件をリニアレギュレータでやると損失 ${fmt(linLoss,1)} W（${fmt(linLoss/loss,1)}倍の発熱）${Vin<=Vout?'　<span class="warn">※Vin≦Voutなので降圧では不可→昇圧型を':""}`);
+ };
+};
+
+/* ---- コンパレータ・センサースイッチ ---- */
+function drawSensorWiring(type){
+ // NPN(シンク)/PNP(ソース) 3線式センサ配線図
+ const bx=60,by=50,bw=110,bh=130;
+ let g=`<rect class="body" x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="#fff"/>
+ <text x="${bx+bw/2}" y="${by+26}" text-anchor="middle" font-weight="bold">センサ</text>
+ <text x="${bx+bw/2}" y="${by+42}" text-anchor="middle">${type}型</text>`;
+ const pins=[["茶 (+V)",by+70],["黒 (信号)",by+95],["青 (0V)",by+120]];
+ pins.forEach(p=>{
+  g+=`<line class="body" x1="${bx+bw}" y1="${p[1]}" x2="${bx+bw+30}" y2="${p[1]}"/>`;
+  g+=`<text x="${bx+bw+34}" y="${p[1]+4}">${p[0]}</text>`;
+ });
+ const rx=310;
+ g+=`<line class="body" x1="${rx}" y1="${by+40}" x2="${rx}" y2="${by+150}" stroke-dasharray="0"/>`;
+ g+=`<text x="${rx+6}" y="${by+46}">+V</text><text x="${rx+6}" y="${by+156}">0V</text>`;
+ if(type==="NPN"){
+  // プルアップ抵抗 +V→信号, 負荷は+V側
+  g+=`<rect class="body" x="${rx-14}" y="${by+58}" width="28" height="16" fill="#fff"/><text x="${rx+20}" y="${by+70}">10kΩ</text>`;
+  g+=`<line class="body" x1="${rx}" y1="${by+40}" x2="${rx}" y2="${by+58}"/><line class="body" x1="${rx}" y1="${by+74}" x2="${rx}" y2="${by+95}"/>`;
+  g+=`<line class="dim" x1="${bx+bw+92}" y1="${by+95}" x2="${rx}" y2="${by+95}"/>`;
+  g+=`<text class="dimtxt" x="${(bx+bw+92+rx)/2}" y="${by+90}" text-anchor="middle">マイコン入力へ</text>`;
+  g+=`<text x="${bx+bw/2}" y="${by+bh+28}" text-anchor="middle">ON時に信号を0Vへ引き込む（シンク）</text>`;
+ }else{
+  g+=`<rect class="body" x="${rx-14}" y="${by+112}" width="28" height="16" fill="#fff"/><text x="${rx+20}" y="${by+126}">10kΩ</text>`;
+  g+=`<line class="body" x1="${rx}" y1="${by+95}" x2="${rx}" y2="${by+112}"/><line class="body" x1="${rx}" y1="${by+128}" x2="${rx}" y2="${by+150}"/>`;
+  g+=`<line class="dim" x1="${bx+bw+92}" y1="${by+95}" x2="${rx}" y2="${by+95}"/>`;
+  g+=`<text class="dimtxt" x="${(bx+bw+92+rx)/2}" y="${by+90}" text-anchor="middle">マイコン入力へ</text>`;
+  g+=`<text x="${bx+bw/2}" y="${by+bh+28}" text-anchor="middle">ON時に信号を+Vへ引き上げる（ソース）</text>`;
+ }
+ return svgWrap(g,420,230);
+}
+RENDER.sensorsw=()=>{
+ const SENSORS=[
+  ["フォトインタラプタ","透過型。スリットを遮って検出","原点検出・回転検出の定番。LED側は電流制限抵抗を忘れずに"],
+  ["フォトリフレクタ","反射型。近距離の有無・白黒検出","ライントレースセンサの中身。外乱光対策に変調or遮光"],
+  ["誘導型近接センサ","金属のみ非接触検出。数mm","油・粉塵に強い産業定番。非金属は検出不可"],
+  ["静電容量型近接センサ","樹脂・液体も検出","感度調整あり。誤検出しやすいので取付環境に注意"],
+  ["リードスイッチ＋磁石","磁石の接近でON。無電源","扉・簡易原点。接点なので大電流NG"],
+  ["ホールIC","磁気を電気的に検出","回転検出・BLDC内蔵。オープンコレクタ出力→プルアップ必須の品が多い"],
+  ["マイクロスイッチ","機械接触。確実","リミットの最終保全は機械式が鉄板。COM/NO/NC"]
+ ];
+ $("#main").innerHTML=`<h2 class="page-title">コンパレータ・センサースイッチ</h2>
+ <div class="calc-card"><h3>3線式センサの配線（NPN／PNP）</h3>
+ <div class="preset-row">
+  <button class="ghost" data-sn="NPN">NPN（シンク）</button>
+  <button class="ghost" data-sn="PNP">PNP（ソース）</button>
+ </div>
+ <div id="snDraw" style="text-align:center"></div>
+ <div class="data-wrap" style="margin-top:8px"><table class="data"><thead><tr><th></th><th>NPN（シンク）</th><th>PNP（ソース）</th></tr></thead><tbody>
+ <tr><td class="jp">ONのとき信号線は</td><td class="jp">0Vに落ちる</td><td class="jp">+Vに上がる</td></tr>
+ <tr><td class="jp">必要な抵抗</td><td class="jp">プルアップ（信号↔+V）</td><td class="jp">プルダウン（信号↔0V）</td></tr>
+ <tr><td class="jp">主流地域</td><td class="jp">日本・アジア</td><td class="jp">欧州</td></tr>
+ <tr><td class="jp">配線色の慣例</td><td class="jp" colspan="2">茶=+V／青=0V／黒=信号（業界標準）</td></tr>
+ </tbody></table></div>
+ <p class="note">⚠ 24V系センサの信号をそのまま5V/3.3Vマイコンに入れないこと。NPN＋「マイコン電源へのプルアップ」なら信号はマイコン電圧までしか上がらないので直結できる（この形が定石）。PNPは分圧が必要。</p></div>
+ <div class="calc-card"><h3>センサースイッチの種類</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>種類</th><th>原理・対象</th><th>メモ</th></tr></thead><tbody>
+ ${SENSORS.map(s=>`<tr><td class="jp"><b>${s[0]}</b></td><td class="jp" style="white-space:normal;min-width:170px">${s[1]}</td><td class="jp" style="white-space:normal;min-width:200px">${s[2]}</td></tr>`).join("")}
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>コンパレータのヒステリシス設計</h3>
+ <p>しきい値付近でのバタつき（チャタリング）防止に、出力から＋入力へ正帰還抵抗R2を入れてしきい値を2段にする。</p>
+ <div class="form-row">
+  <label>出力振幅 Vswing [V]（≈プルアップ電圧）<input type="number" id="hyV" value="5" step="any"></label>
+  <label>入力側抵抗 R1 [kΩ]<input type="number" id="hyR1" value="10" step="any"></label>
+  <label>正帰還抵抗 R2 [kΩ]<input type="number" id="hyR2" value="470" step="any"></label>
+  <label>基準電圧 Vref [V]<input type="number" id="hyVr" value="2.5" step="any"></label>
+ </div>
+ <button class="act" id="hyGo">計算</button><div class="result-box" id="hyRes"></div>
+ <p class="note">ヒステリシス幅 ΔV ≈ Vswing×R1/(R1＋R2)。ライントレースの白黒判定・電圧監視のバタつき止めに。LM393はオープンコレクタなので<b>出力プルアップ必須</b>（忘れると常にLowで悩むやつ）。</p></div>`;
+ document.querySelectorAll("[data-sn]").forEach(b=>b.onclick=()=>{$("#snDraw").innerHTML=drawSensorWiring(b.dataset.sn)});
+ $("#snDraw").innerHTML=drawSensorWiring("NPN");
+ $("#hyGo").onclick=()=>{
+  const V=+$("#hyV").value,R1=+$("#hyR1").value,R2=+$("#hyR2").value,Vr=+$("#hyVr").value;
+  const dv=V*R1/(R1+R2);
+  show("#hyRes",`<span class="big">ヒステリシス幅 ΔV ≈ ${fmt(dv*1000,0)} mV</span>
+上側しきい値 ≈ ${fmt(Vr+dv/2,3)} V ／ 下側しきい値 ≈ ${fmt(Vr-dv/2,3)} V（Vref中心の近似）
+ノイズ振幅より広いΔVにするのがコツ。`);
+ };
+};
+
+/* =========================================================
+   Rev.5.0 追加：マイコンピン配置早見
+   ========================================================= */
+RENDER.pinout=()=>{
+ // Raspberry Pi 40ピン (物理ピン, 名称) 奇数=左列 偶数=右列
+ const RPI=[
+  ["3V3","5V"],["GPIO2 (SDA1)","5V"],["GPIO3 (SCL1)","GND"],["GPIO4","GPIO14 (TXD)"],
+  ["GND","GPIO15 (RXD)"],["GPIO17","GPIO18 (PWM0)"],["GPIO27","GND"],["GPIO22","GPIO23"],
+  ["3V3","GPIO24"],["GPIO10 (MOSI)","GND"],["GPIO9 (MISO)","GPIO25"],["GPIO11 (SCLK)","GPIO8 (CE0)"],
+  ["GND","GPIO7 (CE1)"],["ID_SD (予約)","ID_SC (予約)"],["GPIO5","GND"],["GPIO6","GPIO12 (PWM0)"],
+  ["GPIO13 (PWM1)","GND"],["GPIO19","GPIO16"],["GPIO26","GPIO20"],["GND","GPIO21"]
+ ];
+ // Pico: 左列 pin1-20 / 右列 pin40-21（物理対面）
+ const PICO_L=["GP0 (UART0 TX)","GP1 (UART0 RX)","GND","GP2","GP3","GP4 (I2C0 SDA)","GP5 (I2C0 SCL)","GND","GP6","GP7","GP8","GP9","GND","GP10","GP11","GP12","GP13","GND","GP14","GP15"];
+ const PICO_R=["VBUS (USB 5V)","VSYS (電源入力)","GND","3V3_EN","3V3 (出力)","ADC_VREF","GP28 / ADC2","AGND","GP27 / ADC1","GP26 / ADC0","RUN (リセット)","GP22","GND","GP21","GP20","GP19 (SPI0 TX)","GP18 (SPI0 SCK)","GND","GP17 (SPI0 CSn)","GP16 (SPI0 RX)"];
+ let rpiRows="";
+ RPI.forEach((r,i)=>{rpiRows+=`<tr><td>${i*2+1}</td><td class="jp">${r[0]}</td><td class="jp">${r[1]}</td><td>${i*2+2}</td></tr>`});
+ let picoRows="";
+ for(let i=0;i<20;i++){picoRows+=`<tr><td>${i+1}</td><td class="jp">${PICO_L[i]}</td><td class="jp">${PICO_R[i]}</td><td>${40-i}</td></tr>`}
+ $("#main").innerHTML=`<h2 class="page-title">マイコン ピン配置早見</h2>
+ <p class="page-sub">配線前の確認用。型番は各社の製品名です。ボードのリビジョンで異なる場合があるため、最終確認は公式ピンアウト図で。</p>
+ <div class="calc-card"><h3>Raspberry Pi 40ピンGPIOヘッダ（全モデル共通・上から見てUSBを下）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>物理pin</th><th>左列（内側）</th><th>右列（外側）</th><th>物理pin</th></tr></thead><tbody>${rpiRows}</tbody></table></div>
+ <p class="note">GPIO番号はBCM番号（プログラムで使う番号）。<b>GPIOは3.3V・保護なし</b>——5Vを直接入れると壊れます。1ピンあたり数mA・全体でも50mA程度に抑え、モーター類は必ずドライバ経由で。I2C1（GPIO2/3）は基板上にプルアップ実装済み。</p></div>
+ <div class="calc-card"><h3>Raspberry Pi Pico（RP2040・上から見てUSBを上）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>物理pin</th><th>左列</th><th>右列</th><th>物理pin</th></tr></thead><tbody>${picoRows}</tbody></table></div>
+ <p class="note">GPIOは3.3V。ADCはGP26/27/28の3ch（12bit）。VSYSに1.8〜5.5Vを入れて駆動可（電池運用が楽）。I2C/SPI/UARTはソフト設定でかなり自由にピンを選べるのが強み（各GPが対応する機能はデータシートの表で）。</p></div>
+ <div class="calc-card"><h3>ESP32（DevKit系）— ピン選びの注意（ここが本体）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>ピン</th><th>注意・用途</th></tr></thead><tbody>
+ <tr><td>GPIO34〜39</td><td class="jp"><b>入力専用</b>。内部プルアップ/ダウンも無し（外付け必要）</td></tr>
+ <tr><td>GPIO6〜11</td><td class="jp"><b>使用禁止</b>（内蔵フラッシュ接続。触ると起動しない）</td></tr>
+ <tr><td>GPIO0 / 2 / 12 / 15</td><td class="jp">起動モード決定ピン（ストラッピング）。起動時のレベルに注意——スイッチや負荷を直結すると書込みモードに入る等の怪現象の元</td></tr>
+ <tr><td>GPIO1 / 3</td><td class="jp">UART0（USB書込み・シリアルモニタ）。他用途との共用は避ける</td></tr>
+ <tr><td class="jp">ADC2系のピン</td><td class="jp"><b>Wi-Fi使用中は読めない</b>。アナログ入力はADC1系（GPIO32〜39）に寄せる</td></tr>
+ <tr><td>GPIO21 / 22</td><td class="jp">I2Cのデフォルト（SDA=21, SCL=22）</td></tr>
+ <tr><td class="jp">安全に使いやすい汎用</td><td class="jp">GPIO4, 5, 13, 14, 16〜19, 23, 25〜27, 32, 33 あたりから使うとハマりにくい</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>STM32（F103系ボード）— 要点</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>ピン</th><th>内容</th></tr></thead><tbody>
+ <tr><td>PA9 / PA10</td><td class="jp">USART1 TX/RX（書込み・デバッグの定番）</td></tr>
+ <tr><td>PB6 / PB7</td><td class="jp">I2C1 SCL/SDA</td></tr>
+ <tr><td>PA5 / PA6 / PA7</td><td class="jp">SPI1 SCK/MISO/MOSI</td></tr>
+ <tr><td>PA11 / PA12</td><td class="jp">USB D− / D＋</td></tr>
+ <tr><td>PC13</td><td class="jp">基板LED（多くのボードで負論理＝LOWで点灯）。駆動能力が弱いピンなのでLED以外に使わない</td></tr>
+ <tr><td>BOOT0</td><td class="jp">書込みモード切替ジャンパ（シリアル書込み時は1へ）</td></tr>
+ <tr><td class="jp">5Vトレラント</td><td class="jp">一部ピンのみ5V入力可（PB系に多い）。<b>必ずデータシートのFT表記を確認</b>。ADCピンは3.3Vまで</td></tr>
+ </tbody></table></div></div>
+ <div class="calc-card"><h3>Arduino UNO（互換機含む）— 要点</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>ピン</th><th>内容</th></tr></thead><tbody>
+ <tr><td>D0 / D1</td><td class="jp">UART（USB共用）→ シリアル使用中は他用途に使わない</td></tr>
+ <tr><td>D3, 5, 6, 9, 10, 11</td><td class="jp">PWM対応（analogWrite）</td></tr>
+ <tr><td>A4 / A5</td><td class="jp">I2C（SDA/SCL）</td></tr>
+ <tr><td>D10〜13</td><td class="jp">SPI（CS/MOSI/MISO/SCK）</td></tr>
+ <tr><td>D2 / D3</td><td class="jp">外部割込み（エンコーダ読みはここ）</td></tr>
+ <tr><td class="jp">電流の目安</td><td class="jp">1ピン推奨20mA以下（絶対最大40mA）・合計にも上限。5Vピンから取れるのはUSB給電時500mAまでの残り</td></tr>
+ </tbody></table></div></div>`;
+};
+
+function buildNav(){
+ const nav=$("#nav");
+ PAGES.forEach(p=>{
+  if(p.group){const g=document.createElement("div");g.className="nav-group";g.textContent=p.group;nav.appendChild(g);return}
+  const b=document.createElement("button");b.className="nav-item";b.textContent=p.label;b.dataset.id=p.id;
+  b.onclick=()=>{
+   document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));
+   b.classList.add("active");
+   RENDER[p.id]();
+   window.scrollTo({top:0});
+  };
+  nav.appendChild(b);
+ });
+ nav.querySelector(".nav-item").click();
+}
+
+/* =========================================================
+   関数電卓
+   ========================================================= */
+let calcExpr="", degMode=true;
+const KEYS_LAYOUT=[
+ ["sin","cos","tan","π","C"],
+ ["asin","acos","atan","e","⌫"],
+ ["log","ln","√","^","("],
+ ["7","8","9","/",")"],
+ ["4","5","6","*","%"],
+ ["1","2","3","-","Ans"],
+ ["0",".","±","+","="]
+];
+let lastAns=0;
+function calcInit(){
+ const keys=$("#calcKeys");
+ KEYS_LAYOUT.flat().forEach(k=>{
+  const b=document.createElement("button");
+  b.textContent=k;
+  if("+-*/^%()".includes(k)||["sin","cos","tan","asin","acos","atan","log","ln","√","π","e","±","Ans"].includes(k))b.className="op";
+  if(k==="=")b.className="eq";
+  b.onclick=()=>keyPress(k);
+  keys.appendChild(b);
+ });
+ $("#calcFab").onclick=()=>{$("#calcWin").classList.toggle("open")};
+ $("#calcClose").onclick=()=>$("#calcWin").classList.remove("open");
+ $("#calcClearHist").onclick=()=>$("#calcHist").innerHTML="";
+ $("#degToggle").onclick=()=>{degMode=!degMode;$("#degToggle").textContent=degMode?"DEG":"RAD";update()};
+ // ドラッグ移動
+ const win=$("#calcWin"),head=$("#calcHead");
+ let drag=null;
+ const start=(x,y)=>{const r=win.getBoundingClientRect();drag={dx:x-r.left,dy:y-r.top};win.style.right="auto"};
+ const move=(x,y)=>{if(!drag)return;win.style.left=Math.max(0,Math.min(x-drag.dx,innerWidth-80))+"px";win.style.top=Math.max(0,Math.min(y-drag.dy,innerHeight-60))+"px"};
+ head.addEventListener("mousedown",e=>{if(e.target.tagName!=="BUTTON"&&!e.target.classList.contains("deg-toggle")){start(e.clientX,e.clientY);e.preventDefault()}});
+ addEventListener("mousemove",e=>move(e.clientX,e.clientY));
+ addEventListener("mouseup",()=>drag=null);
+ head.addEventListener("touchstart",e=>{if(e.target.tagName!=="BUTTON"&&!e.target.classList.contains("deg-toggle")){const t=e.touches[0];start(t.clientX,t.clientY)}},{passive:true});
+ addEventListener("touchmove",e=>{if(drag){const t=e.touches[0];move(t.clientX,t.clientY)}},{passive:true});
+ addEventListener("touchend",()=>drag=null);
+ // キーボード入力
+ addEventListener("keydown",e=>{
+  if(!$("#calcWin").classList.contains("open"))return;
+  if(document.activeElement&&["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;
+  if(/^[0-9+\-*/().^%]$/.test(e.key)){keyPress(e.key)}
+  else if(e.key==="Enter"){keyPress("=");e.preventDefault()}
+  else if(e.key==="Backspace")keyPress("⌫");
+  else if(e.key==="Escape")$("#calcWin").classList.remove("open");
+ });
+}
+function keyPress(k){
+ if(k==="C"){calcExpr="";update();return}
+ if(k==="⌫"){
+  const m=calcExpr.match(/(asin|acos|atan|sin|cos|tan|log|ln|√|Ans)$/);
+  calcExpr=m?calcExpr.slice(0,-m[0].length):calcExpr.slice(0,-1);
+  update();return}
+ if(k==="="){evaluate();return}
+ if(k==="±"){
+  // 最後の数値の符号反転
+  const m=calcExpr.match(/(\d+\.?\d*)$/);
+  if(m){calcExpr=calcExpr.slice(0,-m[0].length)+"(-"+m[0]+")"}
+  update();return}
+ if(k==="√"){calcExpr+="sqrt(";update();return}
+ if(["sin","cos","tan","asin","acos","atan","log","ln"].includes(k)){calcExpr+=k+"(";update();return}
+ calcExpr+=k;update();
+}
+function update(){
+ $("#calcDisp").textContent=calcExpr||"\u00a0";
+ // ライブプレビュー
+ const v=tryEval(calcExpr);
+ $("#calcRes").textContent=(v==null)?(calcExpr?"…":"0"):fmtCalc(v);
+}
+function fmtCalc(v){
+ if(!isFinite(v))return "エラー";
+ if(Math.abs(v)>=1e10||(Math.abs(v)<1e-7&&v!==0))return v.toExponential(6);
+ return Number(v.toPrecision(10)).toString();
+}
+function tryEval(expr){
+ if(!expr)return null;
+ try{return calcEval(expr)}catch(e){return null}
+}
+function calcEval(expr){
+ // トークン検証
+ const ok=/^(\s|\d|\.|\+|\-|\*|\/|\(|\)|\^|%|π|e|Ans|sin|cos|tan|asin|acos|atan|log|ln|sqrt)+$/;
+ if(!ok.test(expr))throw new Error("invalid");
+ let s=expr
+  .replace(/Ans/g,`(${lastAns})`)
+  .replace(/π/g,"(F.PI)")
+  .replace(/\^/g,"**")
+  .replace(/%/g,"*0.01")
+  .replace(/(asin|acos|atan|sin|cos|tan|log|ln|sqrt)/g,"F.$1")
+  .replace(/(?<![a-zA-Z.])e(?![a-zA-Z0-9])/g,"(F.E)");
+ const rad=x=>degMode?x*Math.PI/180:x;
+ const inv=x=>degMode?x*180/Math.PI:x;
+ const F={
+  PI:Math.PI,E:Math.E,
+  sin:x=>Math.sin(rad(x)),cos:x=>Math.cos(rad(x)),tan:x=>Math.tan(rad(x)),
+  asin:x=>inv(Math.asin(x)),acos:x=>inv(Math.acos(x)),atan:x=>inv(Math.atan(x)),
+  log:Math.log10,ln:Math.log,sqrt:Math.sqrt
+ };
+ // 置換後の安全確認
+ if(/[a-zA-Z]/.test(s.replace(/F\.(PI|E|sin|cos|tan|asin|acos|atan|log|ln|sqrt)/g,"")))throw new Error("invalid");
+ const v=Function("F",`"use strict";return (${s})`)(F);
+ if(typeof v!=="number")throw new Error("invalid");
+ return v;
+}
+function evaluate(){
+ const v=tryEval(calcExpr);
+ if(v==null||!isFinite(v)){$("#calcRes").textContent="エラー";return}
+ lastAns=v;
+ const h=document.createElement("div");
+ h.textContent=`${calcExpr} = ${fmtCalc(v)}`;
+ h.onclick=()=>{calcExpr=String(fmtCalc(v));update()};
+ $("#calcHist").prepend(h);
+ calcExpr=fmtCalc(v);
+ update();
+}
+
+buildNav();
+calcInit();
+</script>
+</body>
+</html>
