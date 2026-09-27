@@ -12,42 +12,47 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://matsudo-robotics.github.io/contact.html">
 <meta property="og:locale" content="ja_JP">
-<!-- ▼ OGP画像を用意したら有効化: <meta property="og:image" content="https://matsudo-robotics.github.io/images/ogp.png"> -->
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://matsudo-robotics.github.io/images/ogp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
   <div class="hd">
-    <a class="brand" href="index.html">松戸技術革新センター<small>研究事業サイト — Matsudo Technology Innovation Center</small></a>
+    <a class="brand" href="index.html"><img src="images/logo-mtic-full.png" alt="NPO法人 松戸技術革新センター M-TIC（Matsudo Technology Innovation Center）" width="750" height="150"></a>
+    <div class="hd-util">
+      <a href="https://matsudorobohome.wordpress.com/" target="_blank" rel="noopener">教育・支援サイト</a>
+      <a href="https://matsudorobohome.wordpress.com/matsudo-robot-research-association/" target="_blank" rel="noopener">研究ノート（松ロボ）</a>
+      <a href="contact.html">お問い合わせ</a>
+    </div>
     <button class="menubtn" aria-expanded="false" aria-controls="mainnav">メニュー</button>
-    <nav aria-label="主要メニュー" id="mainnav">
-      <ul>
-        <li><a href="research.html">研究</a></li>
-        <li><a href="products.html">開発製品</a></li>
-        <li><a href="reports.html">レポート</a></li>
-        <li><a href="news.html">ニュース</a></li>
-        <li><a href="tools/">便利ツール</a></li>
-        <li><a href="about.html">概要</a></li>
-        <li><a href="contact.html" aria-current="page">お問い合わせ</a></li>
-      </ul>
-      <ul class="extnav">
-        <li class="lbl">外部リンク</li>
-        <li><a href="https://matsudorobohome.wordpress.com/" target="_blank" rel="noopener">教育・支援</a></li>
-        <li><a href="https://matsudorobohome.wordpress.com/matsudo-robot-research-association/" target="_blank" rel="noopener">研究ノート（松ロボ）</a></li>
-      </ul>
-    </nav>
   </div>
+  <nav aria-label="主要メニュー" id="mainnav" class="gnav">
+    <ul>
+        <li><a href="index.html"><b>ホーム</b><small>Home</small></a></li>
+        <li><a href="research.html"><b>研究</b><small>Research</small></a></li>
+        <li><a href="products.html"><b>開発製品</b><small>Products</small></a></li>
+        <li><a href="reports.html"><b>レポート</b><small>Reports</small></a></li>
+        <li><a href="news.html"><b>ニュース</b><small>News</small></a></li>
+        <li><a href="tools/"><b>便利ツール</b><small>Web Tools</small></a></li>
+        <li><a href="about.html"><b>概要</b><small>About</small></a></li>
+        <li><a href="contact.html" aria-current="page"><b>お問い合わせ</b><small>Contact</small></a></li>
+    </ul>
+  </nav>
 </header>
 
 <main>
-<div class="pagehead"><div class="wrap">
-  <p class="crumb"><a href="index.html">ホーム</a> ＞ お問い合わせ</p>
-  <h1>お問い合わせ</h1><p>Contact</p>
-</div></div>
+<div class="pagebanner">
+  <picture><source media="(max-width:640px)" srcset="images/banner-1000.jpg"><img src="images/banner-2000.jpg" alt="" width="2000" height="400"></picture>
+  <div class="pb-title"><h1>お問い合わせ</h1><span>Contact</span></div>
+  <small class="credit">© 松戸市</small>
+</div>
+<div class="wrap"><p class="crumb"><a href="index.html">ホーム</a> ＞ お問い合わせ</p></div>
 <section class="wrap">
-  <p style="max-width:44em;margin-bottom:28px">共同研究・技術相談・ものづくり支援・取材のご依頼は、お問い合わせフォームからお願いします。</p>
+  <p style="margin-bottom:28px">共同研究・技術相談・ものづくり支援・取材のご依頼は、お問い合わせフォームからお願いします。</p>
   <p style="text-align:center;margin:32px 0">
     
     <a class="cta" href="https://docs.google.com/forms/d/e/1FAIpQLSd1z1Gec_a8TK2UDKkt0DO0kZQogsJcswmy_B9ZDqcXXhl6eQ/viewform" target="_blank" rel="noopener">お問い合わせフォームを開く</a>
@@ -60,11 +65,11 @@
 
 <footer>
   <div class="footlogos">
-    <img src="images/logo-mtic.png" alt="NPO法人松戸技術革新センター M-TIC">
+    <img src="images/logo-mtic-full.png" alt="NPO法人松戸技術革新センター M-TIC">
     <img src="images/logo-matsudorobo.png" alt="松戸ロボット研究会 Matsudo Robotics">
   </div>
   <div class="wrap">
-    <div>© 2026 NPO法人松戸技術革新センターM-TIC</div>
+    <div>© 2026 NPO法人松戸技術革新センター<span class="nw">M-TIC</span></div>
     <div>
       <a href="https://x.com/Matsudo_Robo">X</a> ／
       <a href="https://m.youtube.com/@Matsudo-Robotics">YouTube</a> ／
@@ -76,21 +81,9 @@
 </footer>
 
 <script>
-document.documentElement.classList.add('js');
-document.addEventListener('DOMContentLoaded', function(){
-  var els = document.querySelectorAll('main section');
-  els.forEach(function(el){ el.classList.add('reveal'); });
-  if(!('IntersectionObserver' in window)){ els.forEach(function(el){el.classList.add('shown');}); return; }
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('shown'); io.unobserve(e.target);} });
-  }, {threshold: 0.08});
-  els.forEach(function(el){ io.observe(el); });
-});
-</script>
-<script>
 document.addEventListener('DOMContentLoaded', function(){
   var btn = document.querySelector('.menubtn');
-  var nav = document.querySelector('.hd nav');
+  var nav = document.getElementById('mainnav');
   if(btn && nav){
     btn.addEventListener('click', function(){
       var open = nav.classList.toggle('open');

@@ -4,83 +4,115 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>研究開発・技術レポート｜松戸技術革新センター M-TIC</title>
-<meta name="description" content="M-TICが公開する研究・開発・技術レポートの一覧。走行機構、4脚移動装置、CANバス通信、モーター制御などの成果を公開しています。">
+<meta name="description" content="M-TICが公開する研究・開発・技術レポートの一覧。走行機構、輸送ロボット、カメラ認識、CANバス通信、モーター制御などの成果を番号付きで公開しています。">
 <link rel="canonical" href="https://matsudo-robotics.github.io/reports.html">
 <meta property="og:site_name" content="松戸技術革新センター M-TIC">
 <meta property="og:title" content="研究開発・技術レポート｜松戸技術革新センター M-TIC">
-<meta property="og:description" content="M-TICが公開する研究・開発・技術レポートの一覧。走行機構、4脚移動装置、CANバス通信、モーター制御などの成果を公開しています。">
+<meta property="og:description" content="M-TICが公開する研究・開発・技術レポートの一覧。走行機構、輸送ロボット、カメラ認識、CANバス通信、モーター制御などの成果を番号付きで公開しています。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://matsudo-robotics.github.io/reports.html">
 <meta property="og:locale" content="ja_JP">
-<!-- ▼ OGP画像を用意したら有効化: <meta property="og:image" content="https://matsudo-robotics.github.io/images/ogp.png"> -->
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://matsudo-robotics.github.io/images/ogp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
   <div class="hd">
-    <a class="brand" href="index.html">松戸技術革新センター<small>研究事業サイト — Matsudo Technology Innovation Center</small></a>
+    <a class="brand" href="index.html"><img src="images/logo-mtic-full.png" alt="NPO法人 松戸技術革新センター M-TIC（Matsudo Technology Innovation Center）" width="750" height="150"></a>
+    <div class="hd-util">
+      <a href="https://matsudorobohome.wordpress.com/" target="_blank" rel="noopener">教育・支援サイト</a>
+      <a href="https://matsudorobohome.wordpress.com/matsudo-robot-research-association/" target="_blank" rel="noopener">研究ノート（松ロボ）</a>
+      <a href="contact.html">お問い合わせ</a>
+    </div>
     <button class="menubtn" aria-expanded="false" aria-controls="mainnav">メニュー</button>
-    <nav aria-label="主要メニュー" id="mainnav">
-      <ul>
-        <li><a href="research.html">研究</a></li>
-        <li><a href="products.html">開発製品</a></li>
-        <li><a href="reports.html" aria-current="page">レポート</a></li>
-        <li><a href="news.html">ニュース</a></li>
-        <li><a href="tools/">便利ツール</a></li>
-        <li><a href="about.html">概要</a></li>
-        <li><a href="contact.html">お問い合わせ</a></li>
-      </ul>
-      <ul class="extnav">
-        <li class="lbl">外部リンク</li>
-        <li><a href="https://matsudorobohome.wordpress.com/" target="_blank" rel="noopener">教育・支援</a></li>
-        <li><a href="https://matsudorobohome.wordpress.com/matsudo-robot-research-association/" target="_blank" rel="noopener">研究ノート（松ロボ）</a></li>
-      </ul>
-    </nav>
   </div>
+  <nav aria-label="主要メニュー" id="mainnav" class="gnav">
+    <ul>
+        <li><a href="index.html"><b>ホーム</b><small>Home</small></a></li>
+        <li><a href="research.html"><b>研究</b><small>Research</small></a></li>
+        <li><a href="products.html"><b>開発製品</b><small>Products</small></a></li>
+        <li><a href="reports.html" aria-current="page"><b>レポート</b><small>Reports</small></a></li>
+        <li><a href="news.html"><b>ニュース</b><small>News</small></a></li>
+        <li><a href="tools/"><b>便利ツール</b><small>Web Tools</small></a></li>
+        <li><a href="about.html"><b>概要</b><small>About</small></a></li>
+        <li><a href="contact.html"><b>お問い合わせ</b><small>Contact</small></a></li>
+    </ul>
+  </nav>
 </header>
 <main>
-<div class="pagehead"><div class="wrap">
-  <p class="crumb"><a href="index.html">ホーム</a> ＞ レポート</p>
-  <h1>研究開発・技術レポート</h1><p>Technical Reports</p>
-</div></div>
+<div class="pagebanner">
+  <picture><source media="(max-width:640px)" srcset="images/banner-1000.jpg"><img src="images/banner-2000.jpg" alt="" width="2000" height="400"></picture>
+  <div class="pb-title"><h1>研究開発・技術レポート</h1><span>Technical Reports</span></div>
+  <small class="credit">© 松戸市</small>
+</div>
+<div class="wrap"><p class="crumb"><a href="index.html">ホーム</a> ＞ レポート</p></div>
 <section class="wrap">
-  <p style="max-width:44em;margin-bottom:10px">研究・開発の成果をレポートとして公開しています。</p>
-  <p style="max-width:44em;margin-bottom:30px;font-size:.85rem;color:var(--muted)">※ PDFの改変・無断転載を禁止します。共有の際はPDFの添付ではなく本ページのリンクをご利用ください。<!-- ▼ 番号体系(MTIC-TR-西暦-連番)の制定後、番号列を追加する(タスクM3-1) --></p>
 
   <h2>開発レポート</h2>
-  <p class="sec-en">Development Reports — ロボット・機構の開発成果</p>
+  <p class="sec-en">Development Reports</p>
+  <div class="tscroll">
   <table class="reports">
-    <tr><th>タイトル</th><th class="hide-sp">著者</th><th class="hide-sp">発行</th><th></th></tr>
-    <tr><td>Aldebaran（4脚移動装置試験用実験機）</td><td class="hide-sp">—</td><td class="hide-sp">—</td><td><a href="https://drive.google.com/file/d/1pr_2kOAe-enBDECTnKMEp7zZ4QHSS4uP/view?usp=drivesdk">PDF</a></td></tr>
-    <tr><td>アルミブランケットで作る簡易ソーラークッカーの開発</td><td class="hide-sp">蔭山 悠人</td><td class="hide-sp">—</td><td><a href="https://drive.google.com/file/d/1evbb2d8miF4NDMnVwbWvbV9i7qfEZB06/view?usp=drivesdk">PDF</a></td></tr>
-    <tr><td>空気を読むヘッド（Conversing Heads）</td><td class="hide-sp">HAWLEY David</td><td class="hide-sp">2026-08</td><td><a href="https://matsudorobohome.wordpress.com/wp-content/uploads/2026/08/conversing-heads-e28094-poster-ja.pdf">PDF</a></td></tr>
-    <tr><td>パイプゲーム キネティックディスプレイ</td><td class="hide-sp">HAWLEY David</td><td class="hide-sp">2026-08</td><td><a href="https://matsudorobohome.wordpress.com/wp-content/uploads/2026/08/poster_a3portrait_ja.pdf">PDF</a></td></tr>
-    <tr><td>前輪（駆動輪）がゴムタイヤで後輪（受動輪）がオムニホイールの走行機構の開発</td><td class="hide-sp">大城 公平</td><td class="hide-sp">2024-09</td><td><a href="https://matsudoroboresearch.wordpress.com/wp-content/uploads/2024/09/e9968be799bae383ace3839de383bce38388e38080e5898de8bcaae3818ce382b4e383a0e382bfe382a4e383a4e381a7e5be8ce8bcaae3818ce382aae383a0e3838be3839be382a4e383bce383abe381aee8b5b0e8a18ce6a99fe6a78b.pdf">A4版</a>･<a href="https://matsudorobohome.wordpress.com/wp-content/uploads/2026/08/a3e7b8a6e8b387e69699e383bbe5898de8bcaae9a786e58b95e8bcaae3818ce382b4e383a0e382bfe382a4e383a4e381a7e5be8ce8bcaae58f97e58b95e8bcaae3818ce382aae383a0e3838be3839be382a4e383bce383abe381aee8b5-3.pdf">A3版</a></td></tr>
+    <tr><th>番号</th><th>タイトル</th><th class="hide-sp">著者</th><th class="hide-sp">発行日</th><th>版・PDF</th></tr>
+    <tr id="MTIC-DR-2026-009"><td class="num"><span class="nw">MTIC-DR-2026-009</span></td><td>ライントレースソフト「CWM_CamLine」の開発</td><td class="hide-sp">大城 公平</td><td class="hide-sp">2026-09-26</td><td class="ver">初版　<a href="reports/MTIC-DR-2026-009.pdf">PDF</a></td></tr>
+    <tr id="MTIC-DR-2026-008"><td class="num"><span class="nw">MTIC-DR-2026-008</span></td><td>物体検知・自作学習アプリ「<span class="nw">M-TIC</span> Detect」の開発</td><td class="hide-sp">大城 公平</td><td class="hide-sp">2026-09-26</td><td class="ver">初版　<a href="reports/MTIC-DR-2026-008.pdf">PDF</a></td></tr>
+    <tr id="MTIC-DR-2026-007"><td class="num"><span class="nw">MTIC-DR-2026-007</span></td><td>カメラ認識技術検証アプリ「Vision Studio」の開発</td><td class="hide-sp">大城 公平</td><td class="hide-sp">2026-09-26</td><td class="ver">初版　<a href="reports/MTIC-DR-2026-007.pdf">PDF</a></td></tr>
+    <tr id="MTIC-DR-2026-006"><td class="num"><span class="nw">MTIC-DR-2026-006</span></td><td>カメラ自動運転ソフト「<span class="nw">M-TIC</span> AutoDrive」の開発</td><td class="hide-sp">大城 公平</td><td class="hide-sp">2026-09-26</td><td class="ver">初版　<a href="reports/MTIC-DR-2026-006.pdf">PDF</a></td></tr>
+    <tr id="MTIC-DR-2026-005"><td class="num"><span class="nw">MTIC-DR-2026-005</span></td><td>総合輸送型ロボットCTRの開発（車体・電源系・運行管理システム）</td><td class="hide-sp">大城 公平</td><td class="hide-sp">2026-09-26</td><td class="ver">初版　<a href="reports/MTIC-DR-2026-005.pdf">PDF</a></td></tr>
+    <tr id="MTIC-DR-2024-001"><td class="num"><span class="nw">MTIC-DR-2024-001</span></td><td>前輪駆動・後輪オムニホイール走行機構の開発と旋回特性</td><td class="hide-sp">大城 公平</td><td class="hide-sp">2026-09-26</td><td class="ver">第2版　<a href="reports/MTIC-DR-2024-001_Rev2.pdf">PDF</a>
+      <details><summary>過去の版</summary><ul>
+        <li>初版・A4（2024-07-28）<a href="reports/MTIC-DR-2024-001_first_A4.pdf">PDF</a></li>
+        <li>開発レポート（A3版）展示ポスター（2026-08-11）<a href="reports/MTIC-DR-2024-001_A3poster.pdf">PDF</a></li>
+      </ul></details></td></tr>
   </table>
+  </div>
 
   <h2 style="margin-top:48px">技術レポート</h2>
-  <p class="sec-en">Technical Reports — 要素技術の検証・解説</p>
+  <p class="sec-en">Technical Reports</p>
+  <div class="tscroll">
   <table class="reports">
-    <tr><th>タイトル</th><th class="hide-sp">著者</th><th class="hide-sp">発行</th><th></th></tr>
-    <tr><td>CANバスによるマイコン間通信の構築と検証</td><td class="hide-sp">大城 公平</td><td class="hide-sp">—</td><td><a href="https://drive.google.com/file/d/1nxttzpMTzxDirwtMfdXG19fR593iVC19/view?usp=drivesdk">PDF</a></td></tr>
-    <tr><td>インホイールモーターの駆動検証と低速制御の課題</td><td class="hide-sp">大城 公平</td><td class="hide-sp">—</td><td><a href="https://drive.google.com/file/d/1hgNEgf3NRuRIiFrR1YiJ96bKTc1ajRc7/view?usp=drivesdk">PDF</a></td></tr>
-    <tr><td>ステッピングモーターの仕組みとデジタル制御</td><td class="hide-sp">大城 公平</td><td class="hide-sp">—</td><td><a href="https://drive.google.com/file/d/1Nw2uUtfAPtT1QK43IFixFIuTxIHLeAbl/view?usp=drivesdk">PDF</a></td></tr>
+    <tr><th>番号</th><th>タイトル</th><th class="hide-sp">著者</th><th class="hide-sp">発行日</th><th>版・PDF</th></tr>
+    <tr id="MTIC-TR-2026-003"><td class="num"><span class="nw">MTIC-TR-2026-003</span></td><td>ステッピングモーターの仕組みとデジタル制御</td><td class="hide-sp">大城 公平</td><td class="hide-sp">2026-09-26</td><td class="ver">第2版（A4）　<a href="reports/MTIC-TR-2026-003_A4.pdf">PDF</a>
+      <details><summary>過去の版</summary><ul><li>初版・技術レポート（A3版）展示ポスター（2026-08-21）<a href="reports/MTIC-TR-2026-003_A3.pdf">PDF</a></li></ul></details></td></tr>
+    <tr id="MTIC-TR-2026-002"><td class="num"><span class="nw">MTIC-TR-2026-002</span></td><td>インホイールモーターの駆動検証と低速制御の課題</td><td class="hide-sp">大城 公平</td><td class="hide-sp">2026-09-26</td><td class="ver">第2版（A4）　<a href="reports/MTIC-TR-2026-002_A4.pdf">PDF</a>
+      <details><summary>過去の版</summary><ul><li>初版・技術レポート（A3版）展示ポスター（2026-08-21）<a href="reports/MTIC-TR-2026-002_A3.pdf">PDF</a></li></ul></details></td></tr>
+    <tr id="MTIC-TR-2026-001"><td class="num"><span class="nw">MTIC-TR-2026-001</span></td><td>CANバスによるマイコン間通信の構築と検証</td><td class="hide-sp">大城 公平</td><td class="hide-sp">2026-09-26</td><td class="ver">第2版（A4）　<a href="reports/MTIC-TR-2026-001_A4.pdf">PDF</a>
+      <details><summary>過去の版</summary><ul><li>初版・技術レポート（A3版）展示ポスター（2026-08-21）<a href="reports/MTIC-TR-2026-001_A3.pdf">PDF</a></li></ul></details></td></tr>
   </table>
+  </div>
 
+  <h2 style="margin-top:48px">開発レポート（A3版）展示ポスター</h2>
+  <p class="sec-en">Development Report Posters (A3)</p>
+  <div class="tscroll">
+  <table class="reports">
+    <tr><th>タイトル</th><th class="hide-sp">著者</th><th class="hide-sp">発行</th><th>PDF</th></tr>
+    <tr id="poster-conversing-heads"><td>空気を読むヘッド（Conversing Heads）</td><td class="hide-sp">HAWLEY David</td><td class="hide-sp">2026-08-23</td><td><a href="https://matsudorobohome.wordpress.com/wp-content/uploads/2026/08/conversing-heads-e28094-poster-ja.pdf">PDF</a></td></tr>
+    <tr id="poster-pipe-game"><td>パイプゲーム キネティックディスプレイ</td><td class="hide-sp">HAWLEY David</td><td class="hide-sp">2026-08-23</td><td><a href="https://matsudorobohome.wordpress.com/wp-content/uploads/2026/08/poster_a3portrait_ja.pdf">PDF</a></td></tr>
+    <tr id="poster-solar-cooker"><td>アルミブランケットで作る簡易ソーラークッカーの開発</td><td class="hide-sp">蔭山 悠人</td><td class="hide-sp">2026-08-21</td><td><a href="reports/poster-solar-cooker.pdf">PDF</a></td></tr>
+    <tr id="poster-aldebaran"><td>Aldebaran（4脚移動装置試験用実験機）</td><td class="hide-sp">ルビンコニアン普通トマト</td><td class="hide-sp">2026-08-22</td><td><a href="reports/poster-aldebaran.pdf">PDF</a></td></tr>
+  </table>
+  </div>
+
+  <div class="pagenote">
+<p>研究・開発の成果をレポートとして公開しています。レポートには番号を付け、改訂した場合は版を重ねて過去の版も残しています。</p>
+<p>※ PDFの改変・無断転載を禁止します。共有の際はPDFの添付ではなく本ページのリンクをご利用ください。<br>※ 番号の見方：MTIC-DR＝開発レポート、MTIC-TR＝技術レポート（MTIC-種別-発行年-連番）。</p>
+  </div>
   <p style="margin-top:24px;font-size:.9rem">技術記事・実装の解説は <a href="https://qiita.com/organizations/matsudorobo-org">Qiita</a>、ソースコードは <a href="https://github.com/matsudo-robotics">GitHub</a> でも公開しています。</p>
 </section>
+
 
 </main>
 
 <footer>
   <div class="footlogos">
-    <img src="images/logo-mtic.png" alt="NPO法人松戸技術革新センター M-TIC">
+    <img src="images/logo-mtic-full.png" alt="NPO法人松戸技術革新センター M-TIC">
     <img src="images/logo-matsudorobo.png" alt="松戸ロボット研究会 Matsudo Robotics">
   </div>
   <div class="wrap">
-    <div>© 2026 NPO法人松戸技術革新センターM-TIC</div>
+    <div>© 2026 NPO法人松戸技術革新センター<span class="nw">M-TIC</span></div>
     <div>
       <a href="https://x.com/Matsudo_Robo">X</a> ／
       <a href="https://m.youtube.com/@Matsudo-Robotics">YouTube</a> ／
@@ -91,21 +123,9 @@
   </div>
 </footer>
 <script>
-document.documentElement.classList.add('js');
-document.addEventListener('DOMContentLoaded', function(){
-  var els = document.querySelectorAll('main section');
-  els.forEach(function(el){ el.classList.add('reveal'); });
-  if(!('IntersectionObserver' in window)){ els.forEach(function(el){el.classList.add('shown');}); return; }
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('shown'); io.unobserve(e.target);} });
-  }, {threshold: 0.08});
-  els.forEach(function(el){ io.observe(el); });
-});
-</script>
-<script>
 document.addEventListener('DOMContentLoaded', function(){
   var btn = document.querySelector('.menubtn');
-  var nav = document.querySelector('.hd nav');
+  var nav = document.getElementById('mainnav');
   if(btn && nav){
     btn.addEventListener('click', function(){
       var open = nav.classList.toggle('open');
@@ -113,6 +133,19 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
 });
+</script>
+<script>
+(function(){
+  function jump(){
+    if(!location.hash) return;
+    var t=document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if(!t) return;
+    var h=document.querySelector('header'); var off=(h?h.offsetHeight:0)+20;
+    window.scrollTo(0, t.getBoundingClientRect().top + window.pageYOffset - off);
+  }
+  window.addEventListener('load', function(){ setTimeout(jump, 0); });
+  window.addEventListener('hashchange', jump);
+})();
 </script>
 </body>
 </html>
