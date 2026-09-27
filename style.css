@@ -446,3 +446,4 @@ img[src$="visionstudio.jpg"]{object-position:85% 60%}
 /* 機体・ユニットの写真は切り取らず全体を見せる */
 .pgroup[data-group="robot"] .it-ph,.pgroup[data-group="unit"] .it-ph,.pgroup[data-group="robot"] .more-ph,.pgroup[data-group="unit"] .more-ph{background:#fff}
 .pgroup[data-group="robot"] .it-ph img,.pgroup[data-group="unit"] .it-ph img,.pgroup[data-group="robot"] .more-ph img,.pgroup[data-group="unit"] .more-ph img{object-fit:contain;padding:6px}
+@media(max-width:640px){.kv img{height:min(56vh,440px);object-position:center 28%}.kv-text{padding-top:28px}.kv h1{font-size:1.75rem}}

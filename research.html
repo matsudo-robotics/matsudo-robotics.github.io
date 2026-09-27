@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>研究｜松戸技術革新センター M-TIC</title>
-<meta name="description" content="M-TICの研究テーマ。カメラ認識・自律走行、搬送ロボットシステム、走行機構・駆動制御、多脚移動機構などの目的・成果・次の段階と関連レポートを紹介しています。">
+<meta name="description" content="M-TICの研究テーマ。カメラ認識・自律走行、搬送ロボットシステム、走行機構・駆動制御、多脚移動機構などの目的・取り組み・次の段階と関連レポートを紹介しています。">
 <link rel="canonical" href="https://matsudo-robotics.github.io/research.html">
 <meta property="og:site_name" content="松戸技術革新センター M-TIC">
 <meta property="og:title" content="研究｜松戸技術革新センター M-TIC">
@@ -34,7 +34,7 @@
     <ul>
         <li><a href="index.html"><b>ホーム</b><small>Home</small></a></li>
         <li><a href="research.html" aria-current="page"><b>研究</b><small>Research</small></a></li>
-        <li><a href="products.html"><b>開発製品</b><small>Products</small></a></li>
+        <li><a href="products.html"><b>開発品</b><small>Developments</small></a></li>
         <li><a href="reports.html"><b>レポート</b><small>Reports</small></a></li>
         <li><a href="news.html"><b>ニュース</b><small>News</small></a></li>
         <li><a href="tools/"><b>便利ツール</b><small>Web Tools</small></a></li>
@@ -51,7 +51,7 @@
 </div>
 <div class="wrap"><p class="crumb"><a href="index.html">ホーム</a> ＞ 研究</p></div>
 <section class="wrap">
-  <p class="updated">最終更新：2026年9月27日</p>
+  <p class="updated">最終更新：2026年9月28日</p>
   <div class="chips" role="group" aria-label="分野で絞り込み">
     <button class="chip" aria-pressed="true" data-filter="all">すべて（7）</button>
     <button class="chip" aria-pressed="false" data-filter="mech">機構・制御（2）</button>
@@ -65,7 +65,7 @@
     <p class="rmeta"><span class="ib">分野：画像認識／走行制御</span>　<span class="ib">状態：PC上で動作確認済み、実機での計測へ</span></p>
     <dl>
       <dt>目的</dt><dd>追加のセンサーを使わず、ロボットに搭載したカメラだけで走行・停車・対象の認識を行う技術を確立する。Raspberry Pi 4B で動く軽さを条件とする。</dd>
-      <dt>これまでの成果</dt><dd>床面認識では、灰色の床と灰色の壁の境界をカメラ映像だけで概ね検出できた。ライン認識では、直線・カーブ・停車位置の赤マーカー・ラインの終端を判定できた。物体検知では、学習済みモデルに含まれない「ねじ」を写真25枚の追加学習で判定できるようにした。色・形の認識では、5つの認識モードと3種類の出力を1つの画面で切り替えられるようにした。いずれもPC上の試験結果である。</dd>
+      <dt>これまでの取り組み</dt><dd>床面認識では、灰色の床と灰色の壁の境界をカメラ映像だけで概ね検出できた。ライン認識では、直線・カーブ・停車位置の赤マーカー・ラインの終端を判定できた。物体検知では、学習済みモデルに含まれない「ねじ」を写真25枚の追加学習で判定できるようにした。色・形の認識では、5つの認識モードと3種類の出力を1つの画面で切り替えられるようにした。いずれもPC上の試験結果である。</dd>
       <dt>次の段階</dt><dd>Raspberry Pi 4B での処理速度と、実機での走行成功率・停車成功率を計測する。その後、4つの認識技術を組み合わせて使う方法を段階的に検討する。</dd>
       <dt>関連レポート</dt><dd><ul class="replinks">
         <li><a href="reports.html#MTIC-DR-2026-006"><span class="nw">MTIC-DR-2026-006</span>　カメラ自動運転ソフト「<span class="nw">M-TIC</span> AutoDrive」の開発</a></li>
@@ -81,7 +81,7 @@
     <p class="rmeta"><span class="ib">分野：自律搬送／運行管理／機体内通信</span>　<span class="ib">状態：開発中</span></p>
     <dl>
       <dt>目的</dt><dd>屋内輸送を担うロボット（CTR等）と、その運行管理システムを構築する。</dd>
-      <dt>これまでの成果</dt><dd>CTR旧型3台に共通の運行管理システムを開発し、ライントレース運搬・QR運搬・リモコン操作・タッチパネル操作の4モード、非常停止、音声案内の画面遷移をPC上で確認した。電源系の過電圧運用を特定し、是正する構成を決めた。機体内の複数のマイコンを結ぶ通信としてCANバスを構築し、1時間の連続受信で7147フレームを欠番なく受信した。</dd>
+      <dt>これまでの取り組み</dt><dd>CTR旧型3台に共通の運行管理システムを開発し、ライントレース運搬・QR運搬・リモコン操作・タッチパネル操作の4モード、非常停止、音声案内の画面遷移をPC上で確認した。電源系の過電圧運用を特定し、是正する構成を決めた。機体内の複数のマイコンを結ぶ通信としてCANバスを構築し、1時間の連続受信で7147フレームを欠番なく受信した。</dd>
       <dt>次の段階</dt><dd>電源系の組付け確認、停車位置の精度と連続稼働時間の計測、CANバスの3ノード以上への拡張を行う。</dd>
       <dt>関連レポート</dt><dd><ul class="replinks">
         <li><a href="reports.html#MTIC-DR-2026-005"><span class="nw">MTIC-DR-2026-005</span>　総合輸送型ロボットCTRの開発</a></li>
@@ -95,7 +95,7 @@
     <p class="rmeta"><span class="ib">分野：機構設計／モーター制御</span>　<span class="ib">状態：継続研究</span></p>
     <dl>
       <dt>目的</dt><dd>搬送ロボットに適した走行機構と駆動系を確立する。</dd>
-      <dt>これまでの成果</dt><dd>前輪駆動・後輪オムニホイールの走行機構で、自在キャスターで起きていた切り替え時の抵抗をなくし、直角通路を3通りの操作で通過できた。現行機の実測寸法から、旋回時に車体が振り回す最大半径をスピンで500 mm、片輪旋回で560 mmと計算した。インホイールモーターは低速域でコギングのない回転を確認した。ステッピングモーターはマイコンの2本の信号線で回転・停止・方向を制御できた。</dd>
+      <dt>これまでの取り組み</dt><dd>前輪駆動・後輪オムニホイールの走行機構で、自在キャスターで起きていた切り替え時の抵抗をなくし、直角通路を3通りの操作で通過できた。現行機の実測寸法から、旋回時に車体が振り回す最大半径をスピンで500 mm、片輪旋回で560 mmと計算した。インホイールモーターは低速域でコギングのない回転を確認した。ステッピングモーターはマイコンの2本の信号線で回転・停止・方向を制御できた。</dd>
       <dt>次の段階</dt><dd>車輪の位置を変えられる試験台車で、旋回時の後方の振れと消費電流を計測する。インホイールモーターはRS485（Modbus）による制御で、低速時のトルクを確保できるか検証する。</dd>
       <dt>関連レポート</dt><dd><ul class="replinks">
         <li><a href="reports.html#MTIC-DR-2024-001"><span class="nw">MTIC-DR-2024-001</span>　前輪駆動・後輪オムニホイール走行機構の開発と旋回特性</a></li>
@@ -119,8 +119,8 @@
     <h3>パフォーマンスロボティクス</h3>
     <p class="rmeta"><span class="ib">分野：表現・制御</span>　<span class="ib">状態：継続研究</span></p>
     <dl>
-      <dt>目的</dt><dd>RoboCupJunior OnStageにおけるロボットの表現技術・機構・制御の研究。2027年世界大会での成果発表を目標とする。</dd>
-      <dt>実績</dt><dd>RCJ Japan World League OnStage 準優勝（2024）、人工知能学会賞（2024）、ブラザー工業株式会社賞（2025）、関東ブロック プレゼンテーション オンステージ部門ワールドリーグ1位（2024）。</dd>
+      <dt>目的</dt><dd>RoboCupJunior OnStageにおけるロボットの表現技術・機構・制御の研究。2027年世界大会での発表を目標とする。</dd>
+      <dt>受賞</dt><dd>RCJ Japan World League OnStage 準優勝（2024）、人工知能学会賞（2024）、ブラザー工業株式会社賞（2025）、関東ブロック プレゼンテーション オンステージ部門ワールドリーグ1位（2024）。</dd>
     </dl>
   </article>
 
@@ -129,23 +129,24 @@
     <p class="rmeta"><span class="ib">分野：表現・エンターテイメント</span>　<span class="ib">状態：開発中</span>　<span class="ib">担当：HAWLEY David</span></p>
     <dl>
       <dt>目的</dt><dd>モーター駆動による物理的なディスプレイと、人と対話するロボット表現の探求。計算の過程やアルゴリズムの動きを、誰にとっても分かりやすい実体のある形で可視化する。</dd>
-      <dt>これまでの成果</dt><dd>8×8のパズルボードをモーターで駆動し、コンピュータがパイプゲームを解く様子を物理的に観察できる「パイプゲーム キネティックディスプレイ」、対話的に動作するヘッド型作品「空気を読むヘッド（Conversing Heads）」を開発。</dd>
+      <dt>これまでの取り組み</dt><dd>8×8のパズルボードをモーターで駆動し、コンピュータがパイプゲームを解く様子を物理的に観察できる「パイプゲーム キネティックディスプレイ」、対話的に動作するヘッド型作品「空気を読むヘッド（Conversing Heads）」を開発。</dd>
       <dt>展示ポスター</dt><dd><ul class="replinks"><li><a href="reports.html#poster-pipe-game">パイプゲーム キネティックディスプレイ</a></li><li><a href="reports.html#poster-conversing-heads">空気を読むヘッド（Conversing Heads）</a></li></ul></dd>
     </dl>
   </article>
 
   <article class="rsec" id="daily" data-cat="applied">
     <h3>防災・エネルギー応用技術</h3>
-    <p class="rmeta"><span class="ib">分野：応用技術・防災</span>　<span class="ib">状態：高効率化を検討中</span>　<span class="ib">担当：蔭山 悠人</span></p>
+    <p class="rmeta"><span class="ib">分野：応用技術・防災</span>　<span class="ib">状態：試作・検証中</span>　<span class="ib">担当：蔭山 悠人</span></p>
     <dl>
       <dt>目的</dt><dd>身近な材料だけで誰でも安価に作れる防災器具の開発。技術を災害時の暮らしに役立つ形へ落とし込む。</dd>
-      <dt>これまでの成果</dt><dd>防災用アルミブランケットとプラスチック桶を組み合わせた凹面鏡型の簡易ソーラークッカーを開発し、加熱実験で有効性を確認。</dd>
-      <dt>展示ポスター</dt><dd><ul class="replinks"><li><a href="reports.html#poster-solar-cooker">アルミブランケットで作る簡易ソーラークッカーの開発</a></li></ul></dd>
+      <dt>これまでの取り組み</dt><dd>防災用アルミブランケットを桶の開口部に張り、内部の空気を手動ポンプで抜くことで凹面鏡を形成する「減圧成形式」の簡易ソーラークッカーを試作した。屋外での加熱試験では、焦点付近に置いた缶コーヒーの中身が沸騰に至った（所要時間は降雨を挟む不安定な日射下での参考値）。</dd>
+      <dt>次の段階</dt><dd>安定した晴天下での再測定、焦点付近の温度測定、凹面の保持時間と耐風性の確認を行う。</dd>
+      <dt>関連レポート</dt><dd><ul class="replinks"><li><a href="reports.html#MTIC-DR-2026-010"><span class="nw">MTIC-DR-2026-010</span>　減圧成形式 簡易ソーラークッカーの開発</a></li></ul></dd>
     </dl>
   </article>
 
   <div class="pagenote">
-<p>機械・電気・情報を横断するロボティクスの研究を行っています。成果は<a href="reports.html">技術レポート</a>で公開し、詳細な開発記録は<a href="https://matsudorobohome.wordpress.com/">研究ノート</a>に蓄積しています。</p>
+<p>機械・電気・情報を横断するロボティクスの研究を行っています。研究の内容は<a href="reports.html">技術レポート</a>で公開し、詳細な開発記録は<a href="https://matsudorobohome.wordpress.com/">研究ノート</a>に蓄積しています。</p>
 <p>QRコードは株式会社デンソーウェーブの登録商標です。</p>
   </div>
 </section>
