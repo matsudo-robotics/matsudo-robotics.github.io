@@ -314,55 +314,6 @@ header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid 
 .reports th{background:var(--pcb-dark)}
 footer{border-top:3px solid var(--orange)}
 
-/* ===== 開発製品：一覧（全分類を同じ扱い）＋詳しく ===== */
-.itemlist{border:1px solid var(--line);background:#fff}
-.it-head,.item summary{display:grid;grid-template-columns:10rem minmax(0,1.3fr) 9rem minmax(0,1.4fr) 6rem 1.5rem;gap:12px;align-items:center;padding:12px 16px}
-.it-head{background:var(--pcb-dark);color:#fff;font-size:.78rem;font-weight:600;letter-spacing:.04em;padding-top:9px;padding-bottom:9px}
-.it-head::after{content:""}
-.item{border-top:1px solid var(--line)}
-.item summary{cursor:pointer;list-style:none;font-size:.92rem}
-.item summary::-webkit-details-marker{display:none}
-.item summary::after{content:"＋";color:var(--pcb);font-weight:700;text-align:center}
-.item[open] summary::after{content:"－"}
-.item summary:hover{background:var(--blue-tint)}
-.item[open] summary{background:var(--blue-tint);border-bottom:1px solid var(--line)}
-.item summary:focus-visible{outline:2px solid var(--pcb);outline-offset:-2px}
-.it-model{font-weight:700;color:var(--pcb-dark);font-size:.82rem;font-variant-numeric:tabular-nums}
-.it-name{font-weight:600}
-.hasph{display:inline-block;font-size:.66rem;font-weight:600;color:var(--copper);border:1px solid var(--copper);border-radius:2px;padding:0 5px;margin-left:6px;vertical-align:2px}
-.it-cat{font-size:.78rem;color:var(--muted)}
-.it-sum{font-size:.86rem;color:var(--muted)}
-.it-st{font-size:.8rem}
-.it-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:24px;padding:20px}
-.it-body.noph{grid-template-columns:1fr}
-.it-ph{background:#E7EAE6;aspect-ratio:4/3;overflow:hidden}
-.it-ph img{width:100%;height:100%;object-fit:cover;display:block}
-.it-info .spec th{font-weight:500;color:var(--muted);width:6.5em;text-align:left;vertical-align:top;padding:6px 8px 6px 0;border-top:1px solid var(--line);font-size:.85rem}
-.it-info .spec td{border-top:1px solid var(--line);padding:6px 0;font-size:.9rem}
-.it-info .spec{width:100%;border-collapse:collapse}
-.it-links{list-style:none;margin-top:14px;display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.88rem}
-.it-links a::before{content:"";display:inline-block;width:4px;height:.9em;background:var(--orange);margin-right:6px;vertical-align:-1px}
-.it-hint{margin-top:10px;font-size:.82rem;color:var(--muted)}
-@media(max-width:900px){
-  .it-head{display:none}
-  .item summary{grid-template-columns:1fr 1.5em;grid-template-areas:"model mark" "name mark" "meta mark";gap:2px 10px}
-  .it-model{grid-area:model}
-  .it-name{grid-area:name}
-  .it-cat,.it-st{display:inline}
-  .it-cat{grid-area:meta}
-  .it-sum,.it-st{display:none}
-  .item summary::after{grid-area:mark}
-  .it-body{grid-template-columns:1fr;padding:16px}
-}
-.reports tr[id]{scroll-margin-top:150px}
-.reports tr:target td{background:#FFF1E3}
-.reports tr:target td:first-child{box-shadow:inset 4px 0 0 var(--orange)}
-.updated{font-size:.8rem;color:var(--muted);margin-bottom:14px}
-.replinks{list-style:none}
-.replinks li{padding:3px 0}
-.replinks a::before{content:"";display:inline-block;width:4px;height:.9em;background:var(--orange);margin-right:8px;vertical-align:-1px}
-.rsec[hidden]{display:none}
-
 /* ===== 開発製品 v2：見出し付き一覧（すべて）／写真カード（絞り込み） ===== */
 .products-page .chips{margin-bottom:10px}
 .pgroup{margin-top:40px}
@@ -447,3 +398,30 @@ img[src$="visionstudio.jpg"]{object-position:85% 60%}
 .pgroup[data-group="robot"] .it-ph,.pgroup[data-group="unit"] .it-ph,.pgroup[data-group="robot"] .more-ph,.pgroup[data-group="unit"] .more-ph{background:#fff}
 .pgroup[data-group="robot"] .it-ph img,.pgroup[data-group="unit"] .it-ph img,.pgroup[data-group="robot"] .more-ph img,.pgroup[data-group="unit"] .more-ph img{object-fit:contain;padding:6px}
 @media(max-width:640px){.kv img{height:min(56vh,440px);object-position:center 28%}.kv-text{padding-top:28px}.kv h1{font-size:1.75rem}}
+
+/* 開発品：スマホ（Safari含む）での一覧の崩れ対策 */
+.products-page .it-model,.products-page .it-name,.products-page .it-sub,.products-page .it-sum,.products-page .it-st{grid-area:auto}
+@media(max-width:900px){
+  .mode-all .item{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start}
+  .mode-all .it-main{display:block}
+  .mode-all .it-main > *{display:block}
+  .mode-all .it-main .it-sum,.mode-all .it-main .it-st{display:none}
+  .mode-all .it-model{margin-bottom:2px}
+  .mode-all .it-sub{margin-top:2px}
+  .mode-all .it-more summary{grid-column:2;grid-row:1;align-self:start;margin-top:2px}
+}
+/* （誤って削除した共通ルールを復元） */
+.reports tr[id]{scroll-margin-top:150px}
+.reports tr:target td{background:#FFF1E3}
+.reports tr:target td:first-child{box-shadow:inset 4px 0 0 var(--orange)}
+.updated{font-size:.8rem;color:var(--muted);margin-bottom:14px}
+.replinks{list-style:none}
+.replinks li{padding:3px 0}
+.replinks a::before{content:"";display:inline-block;width:4px;height:.9em;background:var(--orange);margin-right:8px;vertical-align:-1px}
+.rsec[hidden]{display:none}
+/* Safari対策：details に display:contents を使わず、「詳しく」は右上に固定 */
+.mode-all .item,.nophoto .item{display:block!important;position:relative;padding:12px 96px 12px 16px!important}
+.mode-all .it-more,.nophoto .it-more{display:block!important;position:static;padding:0!important;border:none!important;margin:0!important}
+.mode-all .it-more summary,.nophoto .it-more summary{position:absolute;top:12px;right:16px;margin:0!important}
+.mode-all .more-body,.nophoto .more-body{margin-right:-80px}
+@media(max-width:900px){.mode-all .more-body,.nophoto .more-body{grid-template-columns:1fr}}
