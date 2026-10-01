@@ -51,7 +51,7 @@
 </div>
 <div class="wrap"><p class="crumb"><a href="index.html">ホーム</a> ＞ 研究</p></div>
 <section class="wrap">
-  <p class="updated">最終更新：2026年9月30日</p>
+  <p class="updated">最終更新：2026年10月2日</p>
   <div class="chips" role="group" aria-label="分野で絞り込み">
     <button class="chip" aria-pressed="true" data-filter="all">すべて（7）</button>
     <button class="chip" aria-pressed="false" data-filter="mech">機構・制御（2）</button>
@@ -111,7 +111,7 @@
     <dl>
       <dt>目的</dt><dd>不整地・多環境に対応する4脚移動装置を実現する。</dd>
       <dt>手法</dt><dd>試験用実験機 <a href="https://matsudorobohome.wordpress.com/eclipse/">Eclipse</a>・<a href="https://matsudorobohome.wordpress.com/aldebaran/">Aldebaran</a> を用いた段階的な検証。</dd>
-      <dt>これまでの取り組み</dt><dd>1本の脚をサーボ2個で動かす自由度2の構成とし、4脚で合計8個のサーボを ESP32 から制御する実験機を、部品代1万円以下（概算）で製作した。無線での操作と、対角の2脚を交互に接地させるトロット歩行を実装し、平坦な床での前進を確認した。</dd>
+      <dt>これまでの取り組み</dt><dd>1本の脚をサーボ2個で動かす自由度2の構成とし、4脚で合計8個のサーボを ESP32 からサーボドライバ経由で制御する実験機を、部品代1万円以下（概算）で製作した。ESP32 を無線LANのアクセスポイントにしてブラウザから操作し、対角の2脚を交互に接地させるトロット歩行で、前進と旋回の指令を歩幅の違いに変換して歩かせる。平坦な床での前進を確認した。</dd>
       <dt>次の段階</dt><dd>歩行速度と安定性を計測する。シミュレーターで歩き方を学習させ、実機に戻して歩行の質を上げていく。</dd>
       <dt>関連レポート</dt><dd><ul class="replinks"><li><a href="reports.html#MTIC-DR-2026-008"><span class="nw">MTIC-DR-2026-008</span>　4脚移動装置の試験用実験機「Aldebaran」の開発</a></li></ul></dd>
     </dl>
