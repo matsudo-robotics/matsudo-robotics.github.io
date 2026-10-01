@@ -68,10 +68,10 @@
       <dt>これまでの取り組み</dt><dd>床面認識では、灰色の床と灰色の壁の境界をカメラ映像だけで概ね検出できた。ライン認識では、直線・カーブ・停車位置の赤マーカー・ラインの終端を判定できた。物体検知では、学習済みモデルに含まれない「ねじ」を写真25枚の追加学習で判定できるようにした。色・形の認識では、5つの認識モードと3種類の出力を1つの画面で切り替えられるようにした。いずれもPC上の試験結果である。</dd>
       <dt>次の段階</dt><dd>Raspberry Pi 4B での処理速度と、実機での走行成功率・停車成功率を計測する。その後、4つの認識技術を組み合わせて使う方法を段階的に検討する。</dd>
       <dt>関連レポート</dt><dd><ul class="replinks">
-        <li><a href="reports.html#MTIC-DR-2026-002"><span class="nw">MTIC-DR-2026-002</span>　カメラ自動運転ソフト「<span class="nw">M-TIC</span> AutoDrive」の開発</a></li>
-        <li><a href="reports.html#MTIC-DR-2026-005"><span class="nw">MTIC-DR-2026-005</span>　ライントレースソフト「CWM_CamLine」の開発</a></li>
-        <li><a href="reports.html#MTIC-DR-2026-004"><span class="nw">MTIC-DR-2026-004</span>　物体検知・自作学習アプリ「<span class="nw">M-TIC</span> Detect」の開発</a></li>
-        <li><a href="reports.html#MTIC-DR-2026-003"><span class="nw">MTIC-DR-2026-003</span>　カメラ認識技術検証アプリ「Vision Studio」の開発</a></li>
+        <li><a href="reports.html#MTIC-DR-2026-003"><span class="nw">MTIC-DR-2026-003</span>　カメラ自動運転ソフト「<span class="nw">M-TIC</span> AutoDrive」の開発</a></li>
+        <li><a href="reports.html#MTIC-DR-2026-006"><span class="nw">MTIC-DR-2026-006</span>　ライントレースソフト「CWM_CamLine」の開発</a></li>
+        <li><a href="reports.html#MTIC-DR-2026-005"><span class="nw">MTIC-DR-2026-005</span>　物体検知・自作学習アプリ「<span class="nw">M-TIC</span> Detect」の開発</a></li>
+        <li><a href="reports.html#MTIC-DR-2026-004"><span class="nw">MTIC-DR-2026-004</span>　カメラ認識技術検証アプリ「Vision Studio」の開発</a></li>
       </ul></dd>
     </dl>
   </article>
@@ -84,7 +84,7 @@
       <dt>これまでの取り組み</dt><dd>CTR旧型3台に共通の運行管理システムを開発し、ライントレース運搬・QR運搬・リモコン操作・タッチパネル操作の4モード、非常停止、音声案内の画面遷移をPC上で確認した。電源系の過電圧運用を特定し、是正する構成を決めた。機体内の複数のマイコンを結ぶ通信としてCANバスを構築し、1時間の連続受信で7147フレームを欠番なく受信した。</dd>
       <dt>次の段階</dt><dd>電源系の組付け確認、停車位置の精度と連続稼働時間の計測、CANバスの3ノード以上への拡張を行う。</dd>
       <dt>関連レポート</dt><dd><ul class="replinks">
-        <li><a href="reports.html#MTIC-DR-2026-001"><span class="nw">MTIC-DR-2026-001</span>　総合輸送型ロボットCTRの開発</a></li>
+        <li><a href="reports.html#MTIC-DR-2026-002"><span class="nw">MTIC-DR-2026-002</span>　総合輸送型ロボットCTRの開発</a></li>
         <li><a href="reports.html#MTIC-TR-2026-001"><span class="nw">MTIC-TR-2026-001</span>　CANバスによるマイコン間通信の構築と検証</a></li>
       </ul></dd>
     </dl>
@@ -98,9 +98,9 @@
       <dt>これまでの取り組み</dt><dd>前輪駆動・後輪オムニホイールの走行機構で、自在キャスターで起きていた切り替え時の抵抗をなくし、直角通路を3通りの操作で通過できた。現行機の実測寸法から、旋回時に車体が振り回す最大半径をスピンで500 mm、片輪旋回で560 mmと計算した。インホイールモーターは低速域でコギングのない回転を確認した。ステッピングモーターはマイコンの2本の信号線で回転・停止・方向を制御できた。</dd>
       <dt>次の段階</dt><dd>車輪の位置を変えられる試験台車で、旋回時の後方の振れと消費電流を計測する。インホイールモーターはRS485（Modbus）による制御で、低速時のトルクを確保できるか検証する。</dd>
       <dt>関連レポート</dt><dd><ul class="replinks">
-        <li><a href="reports.html#MTIC-DR-2024-001"><span class="nw">MTIC-DR-2024-001</span>　前輪駆動・後輪オムニホイール走行機構の開発と旋回特性</a></li>
+        <li><a href="reports.html#MTIC-DR-2026-001"><span class="nw">MTIC-DR-2026-001</span>　前輪駆動・後輪オムニホイール走行機構の開発と旋回特性</a></li>
         <li><a href="reports.html#MTIC-TR-2026-002"><span class="nw">MTIC-TR-2026-002</span>　インホイールモーターの駆動検証と低速制御の課題</a></li>
-        <li><a href="reports.html#MTIC-TR-2026-003"><span class="nw">MTIC-TR-2026-003</span>　ステッピングモーターの仕組みとデジタル制御</a></li>
+        <li><a href="reports.html#MTIC-TR-2026-003"><span class="nw">MTIC-TR-2026-003</span>　ステッピングモーターの仕組みとマイコンによる加減速制御</a></li>
       </ul></dd>
     </dl>
   </article>
@@ -113,7 +113,7 @@
       <dt>手法</dt><dd>試験用実験機 <a href="https://matsudorobohome.wordpress.com/eclipse/">Eclipse</a>・<a href="https://matsudorobohome.wordpress.com/aldebaran/">Aldebaran</a> を用いた段階的な検証。</dd>
       <dt>これまでの取り組み</dt><dd>1本の脚をサーボ2個で動かす自由度2の構成とし、4脚で合計8個のサーボを ESP32 から制御する実験機を、部品代1万円以下（概算）で製作した。無線での操作と、対角の2脚を交互に接地させるトロット歩行を実装し、平坦な床での前進を確認した。</dd>
       <dt>次の段階</dt><dd>歩行速度と安定性を計測する。シミュレーターで歩き方を学習させ、実機に戻して歩行の質を上げていく。</dd>
-      <dt>関連レポート</dt><dd><ul class="replinks"><li><a href="reports.html#MTIC-DR-2026-007"><span class="nw">MTIC-DR-2026-007</span>　4脚移動装置の試験用実験機「Aldebaran」の開発</a></li></ul></dd>
+      <dt>関連レポート</dt><dd><ul class="replinks"><li><a href="reports.html#MTIC-DR-2026-008"><span class="nw">MTIC-DR-2026-008</span>　4脚移動装置の試験用実験機「Aldebaran」の開発</a></li></ul></dd>
     </dl>
   </article>
 
@@ -143,7 +143,7 @@
       <dt>目的</dt><dd>身近な材料だけで誰でも安価に作れる防災器具の開発。技術を災害時の暮らしに役立つ形へ落とし込む。</dd>
       <dt>これまでの取り組み</dt><dd>防災用アルミブランケットを桶の開口部に張り、内部の空気を手動ポンプで抜くことで凹面鏡を形成する「減圧成形式」の簡易ソーラークッカーを試作した。屋外での加熱試験では、焦点付近に置いた缶コーヒーの中身が沸騰に至った（所要時間は降雨を挟む不安定な日射下での参考値）。</dd>
       <dt>次の段階</dt><dd>安定した晴天下での再測定、焦点付近の温度測定、凹面の保持時間と耐風性の確認を行う。</dd>
-      <dt>関連レポート</dt><dd><ul class="replinks"><li><a href="reports.html#MTIC-DR-2026-006"><span class="nw">MTIC-DR-2026-006</span>　減圧成形式 簡易ソーラークッカーの開発</a></li></ul></dd>
+      <dt>関連レポート</dt><dd><ul class="replinks"><li><a href="reports.html#MTIC-DR-2026-007"><span class="nw">MTIC-DR-2026-007</span>　減圧成形式 簡易ソーラークッカーの開発</a></li></ul></dd>
     </dl>
   </article>
 
