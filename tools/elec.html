@@ -27,7 +27,6 @@ body{
   background-size:24px 24px;
   font-size:14px;line-height:1.6;
 }
-/* ===== 表題欄風ヘッダー ===== */
 header{
   background:var(--panel);border-bottom:2px solid var(--ink);
   display:flex;align-items:stretch;flex-wrap:wrap;
@@ -43,7 +42,6 @@ header{
   border-radius:50%;color:var(--red);display:flex;align-items:center;justify-content:center;
   font-size:11px;font-weight:700;transform:rotate(-8deg);flex-shrink:0;
 }
-/* ===== レイアウト ===== */
 .app{display:flex;min-height:calc(100vh - 62px)}
 nav{
   width:216px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--ink);
@@ -62,7 +60,6 @@ main{flex:1;padding:20px 24px 120px;min-width:0}
 h2.page-title{font-size:19px;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:4px}
 .page-sub{color:var(--ink2);font-size:12.5px;margin-bottom:14px}
 .page-sub code{font-family:var(--mono)}
-/* ===== テーブル ===== */
 .tool-bar{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
 input[type=text],input[type=number],select{
   font-family:var(--mono);font-size:13.5px;padding:6px 9px;border:1px solid var(--ink);
@@ -80,7 +77,6 @@ table.data td.jp{font-family:var(--sans)}
 table.data tr.sel-row{cursor:pointer}
 table.data tr.sel-row:hover{background:var(--blue-soft)}
 table.data tr.selected{background:var(--blue-soft);box-shadow:inset 3px 0 0 var(--blue)}
-/* ===== 詳細パネル ===== */
 .detail{
   display:none;margin-top:16px;background:var(--panel);border:1px solid var(--ink);
 }
@@ -94,7 +90,6 @@ table.data tr.selected{background:var(--blue-soft);box-shadow:inset 3px 0 0 var(
 .spec-grid dt{color:var(--ink2)}
 .spec-grid dd{font-family:var(--mono);font-weight:500}
 .note{margin-top:10px;font-size:12px;color:var(--ink2);border-left:3px solid var(--line);padding-left:8px}
-/* ===== 計算フォーム ===== */
 .calc-card{background:var(--panel);border:1px solid var(--ink);padding:16px 18px;margin-bottom:16px;max-width:760px}
 .calc-card h3{font-size:15px;margin-bottom:10px}
 .form-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
@@ -117,14 +112,12 @@ button.ghost{
 }
 button.ghost:hover{background:var(--blue-soft)}
 .preset-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-/* ===== SVG図面 ===== */
 svg text{font-family:var(--mono);font-size:11px;fill:var(--ink)}
 svg .dim{stroke:var(--blue);stroke-width:1;fill:none}
 svg .dimtxt{fill:var(--blue);font-size:11px}
 svg .body{stroke:var(--ink);stroke-width:1.6;fill:#fff}
 svg .hatch{stroke:var(--ink2);stroke-width:.7}
 svg .cl{stroke:var(--red);stroke-width:.7;stroke-dasharray:8 3 2 3}
-/* ===== 電卓 ===== */
 #calcFab{
   position:fixed;right:22px;bottom:22px;z-index:900;width:58px;height:58px;border-radius:50%;
   background:var(--ink);color:#fff;border:none;font-size:22px;cursor:pointer;
@@ -158,7 +151,6 @@ svg .cl{stroke:var(--red);stroke-width:.7;stroke-dasharray:8 3 2 3}
 #calcHist div{cursor:pointer;padding:1px 0}
 #calcHist div:hover{color:var(--blue)}
 .deg-toggle{font-family:var(--mono);font-size:11px;background:var(--red);padding:1px 6px;border-radius:2px;cursor:pointer}
-/* footer note */
 .foot-note{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--ink);
   font-size:11px;color:var(--ink2);padding:4px 14px;z-index:800}
 @media(max-width:860px){
@@ -222,9 +214,6 @@ function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;","
 function show(sel,html){const el=$(sel);el.innerHTML=html;el.classList.add("show")}
 function specList(pairs){return `<dl class="spec-grid">${pairs.map(p=>`<dt>${p[0]}</dt><dd>${p[1]}</dd>`).join("")}</dl>`}
 
-/* =========================================================
-   エレキ支援ツール データ
-   ========================================================= */
 // 抵抗カラーコード
 const RCOLORS=[
  ["黒","#1a1a1a",0],["茶","#7b4a12",1],["赤","#c0392b",2],["橙","#e67e22",3],["黄","#f1c40f",4],
@@ -257,9 +246,6 @@ const CONNECTORS=[
 // LiPo
 const LIPO=[["1S",3.7,4.2],["2S",7.4,8.4],["3S",11.1,12.6],["4S",14.8,16.8],["6S",22.2,25.2]];
 
-/* =========================================================
-   ページ定義
-   ========================================================= */
 const PAGES=[
  {group:"部品を読む・選ぶ"},
  {id:"rescolor",label:"抵抗カラーコード"},
@@ -295,7 +281,6 @@ const PAGES=[
 ];
 const RENDER={};
 
-/* ---- 抵抗カラーコード ---- */
 function drawResistor(c1,c2,c3,c4){
  const bx=70,bw=240,by=60,bh=70;
  let g=`<line class="body" x1="10" y1="${by+bh/2}" x2="370" y2="${by+bh/2}"/>
@@ -352,7 +337,6 @@ RENDER.rescolor=()=>{
  };
 };
 
-/* ---- E系列 ---- */
 RENDER.eseries=()=>{
  $("#main").innerHTML=`<h2 class="page-title">E系列・近い抵抗値検索</h2>
  <p class="page-sub">市販の抵抗はE系列の値しかありません。計算値に近い実在の値を探せます。</p>
@@ -397,7 +381,6 @@ RENDER.eseries=()=>{
  };
 };
 
-/* ---- コンデンサ表記 ---- */
 RENDER.capcode=()=>{
  $("#main").innerHTML=`<h2 class="page-title">コンデンサ表記変換</h2>
  <p class="page-sub">セラコンの「104」表記 ⇔ 容量値。3桁表記＝上位2桁×10ⁿ [pF]。</p>
@@ -437,7 +420,6 @@ RENDER.capcode=()=>{
  };
 };
 
-/* ---- コネクタ ---- */
 RENDER.connector=()=>{
  $("#main").innerHTML=`<h2 class="page-title">コネクタ早見表</h2>
  <p class="page-sub">ロボット・電子工作でよく使うコネクタ。定格は<b>目安</b>（メーカー・使用環境で変わります）。</p>
@@ -454,7 +436,6 @@ RENDER.connector=()=>{
  </tbody></table></div></div>`;
 };
 
-/* ---- 電線・電圧降下 ---- */
 RENDER.wire=()=>{
  $("#main").innerHTML=`<h2 class="page-title">電線（AWG）・電圧降下</h2>
  <p class="page-sub">許容電流は機器内・単線・短距離での<b>目安</b>。束ねる・長い・高温では下げてください。</p>
@@ -480,7 +461,6 @@ RENDER.wire=()=>{
  };
 };
 
-/* ---- オームの法則 ---- */
 RENDER.ohm=()=>{
  $("#main").innerHTML=`<h2 class="page-title">オームの法則・電力</h2>
  <p class="page-sub">V・I・R・P のうち<b>2つ</b>を入力して計算（残りは空欄に）。</p>
@@ -514,7 +494,6 @@ RENDER.ohm=()=>{
  };
 };
 
-/* ---- LED ---- */
 RENDER.led=()=>{
  $("#main").innerHTML=`<h2 class="page-title">LED電流制限抵抗</h2>
  <div class="calc-card">
@@ -542,7 +521,6 @@ RENDER.led=()=>{
  };
 };
 
-/* ---- 分圧 ---- */
 RENDER.divider=()=>{
  $("#main").innerHTML=`<h2 class="page-title">分圧・ADC計算</h2>
  <div class="calc-card"><h3>抵抗分圧</h3>
@@ -575,7 +553,6 @@ RENDER.divider=()=>{
  };
 };
 
-/* ---- レギュレータ ---- */
 RENDER.reg=()=>{
  $("#main").innerHTML=`<h2 class="page-title">レギュレータ発熱計算（リニア）</h2>
  <div class="calc-card">
@@ -598,7 +575,6 @@ RENDER.reg=()=>{
  };
 };
 
-/* ---- RC時定数 ---- */
 RENDER.rc=()=>{
  $("#main").innerHTML=`<h2 class="page-title">RC時定数・フィルタ</h2>
  <div class="calc-card">
@@ -618,7 +594,6 @@ RENDER.rc=()=>{
  };
 };
 
-/* ---- バッテリー ---- */
 RENDER.battery=()=>{
  $("#main").innerHTML=`<h2 class="page-title">バッテリー計算</h2>
  <div class="calc-card"><h3>稼働時間の見積り</h3>
@@ -651,7 +626,6 @@ RENDER.battery=()=>{
  };
 };
 
-/* ---- ロジック ---- */
 RENDER.logic=()=>{
  $("#main").innerHTML=`<h2 class="page-title">ロジックレベル・プルアップ</h2>
  <div class="calc-card"><h3>3.3V / 5V 混在の注意</h3>
@@ -671,7 +645,6 @@ RENDER.logic=()=>{
  <p>1ピンあたりの絶対最大は多くのマイコンで20〜40mA、常用は<b>10mA以下</b>が安全圏（合計にも上限あり）。モーターやソレノイドは絶対に直結せず、必ずトランジスタ・MOSFET・ドライバICを介すこと。誘導負荷には還流ダイオードを。</p></div>`;
 };
 
-/* ---- サーボ ---- */
 RENDER.servo=()=>{
  $("#main").innerHTML=`<h2 class="page-title">RCサーボ・PWM</h2>
  <div class="calc-card"><h3>RCサーボ信号の基本</h3>
@@ -706,7 +679,6 @@ RENDER.servo=()=>{
  };
 };
 
-/* ---- 配線の作法 ---- */
 RENDER.wiring=()=>{
  $("#main").innerHTML=`<h2 class="page-title">配線の作法・ノイズ対策</h2>
  <div class="calc-card"><h3>配線色の慣例（DC機器・ロボット）</h3>
@@ -730,10 +702,6 @@ RENDER.wiring=()=>{
  </tbody></table></div></div>`;
 };
 
-/* =========================================================
-   Rev.2.0 追加：寸法図・PCB・モータードライバ
-   ========================================================= */
-/* ---- SVG helpers ---- */
 function svgWrap(inner,w=380,h=300){return `<svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:${w}px" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`}
 function dimH(x1,x2,y,label,off=0){
  return `<line class="dim" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>
@@ -748,7 +716,6 @@ function dimV(x,y1,y2,label){
  <text class="dimtxt" x="${x+7}" y="${(y1+y2)/2+4}">${label}</text>`;
 }
 
-/* ---- データ ---- */
 // 平型端子（ファストン） [型, タブ幅, タブ厚, 定格目安A]
 const FASTON=[["110型",2.8,0.5,"5"],["187型",4.75,0.5,"10"],["250型",6.35,0.8,"15〜20"]];
 // 丸形圧着端子 JIS C 2805 [呼び, 適用電線mm2, AWG目安, ねじ, 被覆色]
@@ -781,7 +748,6 @@ const PKGS=[
  ["TO-220","2.54","パワー素子。取付穴φ3.6(M3)","◎ 放熱器・絶縁シート併用"]
 ];
 
-/* ---- 圧着端子 ---- */
 function drawFaston(r){
  const [nm,w,t]=r;
  const sc=22;
@@ -827,7 +793,6 @@ RENDER.terminal=()=>{
  });
 };
 
-/* ---- チップ部品・パッケージ寸法 ---- */
 function drawChip(r){
  const [inch,met,L,W]=r;
  const sc=Math.min(240/L,120);
@@ -867,7 +832,6 @@ RENDER.pkg=()=>{
  });
 };
 
-/* ---- PCB設計 ---- */
 RENDER.pcb=()=>{
  $("#main").innerHTML=`<h2 class="page-title">PCB設計支援</h2>
  <div class="calc-card"><h3>トレース幅計算（IPC-2221ベース）</h3>
@@ -916,7 +880,6 @@ ${wMm>5?'<span class="warn">→ かなり太い。ポリゴン＋銅厚2ozや、
  };
 };
 
-/* ---- スイッチ ---- */
 function drawSwitchSym(kind){
  // 回路記号: SPST/SPDT/DPDT
  const cy=100;
@@ -969,7 +932,6 @@ RENDER.switch=()=>{
  $("#swDraw").innerHTML=drawSwitchSym("SPDT");
 };
 
-/* ---- モータードライバ配線 ---- */
 function drawStepperWiring(){
  // ドライバ結線の模式図
  let g="";
@@ -1063,10 +1025,6 @@ RENDER.motordrv=()=>{
  };
 };
 
-/* =========================================================
-   Rev.3.0 追加：定番IC・論理回路
-   ========================================================= */
-/* ---- 定番IC・素子早見 ---- */
 RENDER.ics=()=>{
  const GROUPS=[
   ["三端子レギュレータ",[
@@ -1159,7 +1117,6 @@ E24近似は「E系列・近い抵抗値検索」ページでどうぞ。`);
  };
 };
 
-/* ---- 論理回路 ---- */
 function drawGate(kind){
  const cx=150,cy=90;
  let g="";
@@ -1223,10 +1180,6 @@ RENDER.logicgate=()=>{
  render("AND");
 };
 
-/* =========================================================
-   Rev.4.0 追加：端子台・DCDC・センサースイッチ
-   ========================================================= */
-/* ---- 端子台・産業系端子 ---- */
 RENDER.termblock=()=>{
  const FERRULE=[
   ["0.25","AWG24","—※","—※"],
@@ -1261,7 +1214,6 @@ RENDER.termblock=()=>{
  </tbody></table></div></div>`;
 };
 
-/* ---- DCDCコンバータ ---- */
 RENDER.dcdc=()=>{
  $("#main").innerHTML=`<h2 class="page-title">DCDCコンバータ</h2>
  <p class="page-sub">スイッチングで電圧変換。リニアと違い差分が熱にならず効率85〜95%。ロボットの電源系の主役。</p>
@@ -1301,7 +1253,6 @@ RENDER.dcdc=()=>{
  };
 };
 
-/* ---- コンパレータ・センサースイッチ ---- */
 function drawSensorWiring(type){
  // NPN(シンク)/PNP(ソース) 3線式センサ配線図
  const bx=60,by=50,bw=110,bh=130;
@@ -1381,9 +1332,6 @@ RENDER.sensorsw=()=>{
  };
 };
 
-/* =========================================================
-   Rev.5.0 追加：マイコンピン配置早見
-   ========================================================= */
 RENDER.pinout=()=>{
  // Raspberry Pi 40ピン (物理ピン, 名称) 奇数=左列 偶数=右列
  const RPI=[
@@ -1455,9 +1403,6 @@ function buildNav(){
  nav.querySelector(".nav-item").click();
 }
 
-/* =========================================================
-   関数電卓
-   ========================================================= */
 let calcExpr="", degMode=true;
 const KEYS_LAYOUT=[
  ["sin","cos","tan","π","C"],

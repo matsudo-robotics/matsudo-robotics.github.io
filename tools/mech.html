@@ -27,7 +27,6 @@ body{
   background-size:24px 24px;
   font-size:14px;line-height:1.6;
 }
-/* ===== 表題欄風ヘッダー ===== */
 header{
   background:var(--panel);border-bottom:2px solid var(--ink);
   display:flex;align-items:stretch;flex-wrap:wrap;
@@ -43,7 +42,6 @@ header{
   border-radius:50%;color:var(--red);display:flex;align-items:center;justify-content:center;
   font-size:11px;font-weight:700;transform:rotate(-8deg);flex-shrink:0;
 }
-/* ===== レイアウト ===== */
 .app{display:flex;min-height:calc(100vh - 62px)}
 nav{
   width:216px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--ink);
@@ -62,7 +60,6 @@ main{flex:1;padding:20px 24px 120px;min-width:0}
 h2.page-title{font-size:19px;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:4px}
 .page-sub{color:var(--ink2);font-size:12.5px;margin-bottom:14px}
 .page-sub code{font-family:var(--mono)}
-/* ===== テーブル ===== */
 .tool-bar{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
 input[type=text],input[type=number],select{
   font-family:var(--mono);font-size:13.5px;padding:6px 9px;border:1px solid var(--ink);
@@ -80,7 +77,6 @@ table.data td.jp{font-family:var(--sans)}
 table.data tr.sel-row{cursor:pointer}
 table.data tr.sel-row:hover{background:var(--blue-soft)}
 table.data tr.selected{background:var(--blue-soft);box-shadow:inset 3px 0 0 var(--blue)}
-/* ===== 詳細パネル ===== */
 .detail{
   display:none;margin-top:16px;background:var(--panel);border:1px solid var(--ink);
 }
@@ -94,7 +90,6 @@ table.data tr.selected{background:var(--blue-soft);box-shadow:inset 3px 0 0 var(
 .spec-grid dt{color:var(--ink2)}
 .spec-grid dd{font-family:var(--mono);font-weight:500}
 .note{margin-top:10px;font-size:12px;color:var(--ink2);border-left:3px solid var(--line);padding-left:8px}
-/* ===== 計算フォーム ===== */
 .calc-card{background:var(--panel);border:1px solid var(--ink);padding:16px 18px;margin-bottom:16px;max-width:760px}
 .calc-card h3{font-size:15px;margin-bottom:10px}
 .form-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
@@ -117,14 +112,12 @@ button.ghost{
 }
 button.ghost:hover{background:var(--blue-soft)}
 .preset-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-/* ===== SVG図面 ===== */
 svg text{font-family:var(--mono);font-size:11px;fill:var(--ink)}
 svg .dim{stroke:var(--blue);stroke-width:1;fill:none}
 svg .dimtxt{fill:var(--blue);font-size:11px}
 svg .body{stroke:var(--ink);stroke-width:1.6;fill:#fff}
 svg .hatch{stroke:var(--ink2);stroke-width:.7}
 svg .cl{stroke:var(--red);stroke-width:.7;stroke-dasharray:8 3 2 3}
-/* ===== 電卓 ===== */
 #calcFab{
   position:fixed;right:22px;bottom:22px;z-index:900;width:58px;height:58px;border-radius:50%;
   background:var(--ink);color:#fff;border:none;font-size:22px;cursor:pointer;
@@ -158,7 +151,6 @@ svg .cl{stroke:var(--red);stroke-width:.7;stroke-dasharray:8 3 2 3}
 #calcHist div{cursor:pointer;padding:1px 0}
 #calcHist div:hover{color:var(--blue)}
 .deg-toggle{font-family:var(--mono);font-size:11px;background:var(--red);padding:1px 6px;border-radius:2px;cursor:pointer}
-/* footer note */
 .foot-note{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--ink);
   font-size:11px;color:var(--ink2);padding:4px 14px;z-index:800}
 @media(max-width:860px){
@@ -215,10 +207,7 @@ svg .cl{stroke:var(--red);stroke-width:.7;stroke-dasharray:8 3 2 3}
 <div class="foot-note">※ 本ツールの数値はJIS規格等に基づく<b>参考値</b>です。最終決定時は必ず最新の規格票・メーカーカタログで確認してください。文中の製品型番・規格名称は各社・各団体の商標または登録商標です。</div>
 
 <script>
-/* =========================================================
-   データベース
-   ========================================================= */
-// --- メートルねじ（並目 JIS B 0205 / 細目 JIS B 0207）---
+// メートルねじ（並目 JIS B 0205 / 細目 JIS B 0207）
 // [呼び, ピッチ, 種別]  有効径・谷径は式から算出
 const THREADS = [
  ["M1.6",0.35,"並目"],["M2",0.4,"並目"],["M2.5",0.45,"並目"],["M3",0.5,"並目"],
@@ -228,7 +217,7 @@ const THREADS = [
  ["M8",1.0,"細目"],["M10",1.25,"細目"],["M10",1.0,"細目"],["M12",1.5,"細目"],
  ["M12",1.25,"細目"],["M16",1.5,"細目"],["M20",1.5,"細目"],["M24",2.0,"細目"]
 ];
-// --- 六角穴付きボルト JIS B 1176 ---
+// 六角穴付きボルト JIS B 1176
 // size: [d, dk(頭径max), k(頭高), s(六角二面幅), キリ穴2級, 深ざぐり径]
 const CAPSCREW = [
  ["M2",2,3.8,2,1.5,2.4,4.4],["M2.5",2.5,4.5,2.5,2,2.9,5.4],
@@ -238,7 +227,7 @@ const CAPSCREW = [
  ["M12",12,18,12,10,13.5,20],["M16",16,24,16,14,17.5,26],
  ["M20",20,30,20,17,22,32]
 ];
-// --- 六角ボルト JIS B 1180（本体規格＝ISO寸法）---
+// 六角ボルト JIS B 1180（本体規格＝ISO寸法）
 // [呼び, d, s(二面幅), k(頭高), 備考]
 const HEXBOLT = [
  ["M3",3,5.5,2,""],["M4",4,7,2.8,""],["M5",5,8,3.5,""],["M6",6,10,4,""],
@@ -246,7 +235,7 @@ const HEXBOLT = [
  ["M12",12,18,7.5,"附属書品(旧JIS)は s=19"],["M14",14,21,8.8,"附属書品は s=22"],
  ["M16",16,24,10,""],["M20",20,30,12.5,""],["M24",24,36,15,""]
 ];
-// --- 六角ナット JIS B 1181 ---
+// 六角ナット JIS B 1181
 // [呼び, d, s, m(1種/スタイル1), m3(3種/低)]
 const NUTS = [
  ["M2",2,4,1.6,1.2],["M2.5",2.5,5,2,1.6],["M3",3,5.5,2.4,1.8],
@@ -254,14 +243,14 @@ const NUTS = [
  ["M8",8,13,6.8,4],["M10",10,16,8.4,5],["M12",12,18,10.8,6],
  ["M16",16,24,14.8,8],["M20",20,30,18,10]
 ];
-// --- 平座金 JIS B 1256 並形 ---
+// 平座金 JIS B 1256 並形
 // [呼び, d1(内径), d2(外径), t]
 const WASHERS = [
  ["M2",2.2,5,0.3],["M2.5",2.7,6,0.5],["M3",3.2,7,0.5],["M4",4.3,9,0.8],
  ["M5",5.3,10,1],["M6",6.4,12,1.6],["M8",8.4,16,1.6],["M10",10.5,20,2],
  ["M12",13,24,2.5],["M16",17,30,3],["M20",21,37,3]
 ];
-// --- 深溝玉軸受 ---
+// 深溝玉軸受
 // [呼び番号, d, D, B, 系列]
 const BEARINGS = [
  ["623",3,10,4,"62"],["624",4,13,5,"62"],["625",5,16,5,"62"],
@@ -277,7 +266,7 @@ const BEARINGS = [
  ["6203",17,40,12,"62"],["6204",20,47,14,"62"],
  ["6300",10,35,11,"63"],["6301",12,37,12,"63"],["6302",15,42,13,"63"]
 ];
-// --- 平行キー JIS B 1301 ---
+// 平行キー JIS B 1301
 // [適用軸径, b, h, t1(軸溝深さ), t2(穴溝深さ)]
 const KEYS = [
  ["6を超え8以下",2,2,1.2,1.0],["8を超え10以下",3,3,1.8,1.4],
@@ -286,16 +275,16 @@ const KEYS = [
  ["30を超え38以下",10,8,5.0,3.3],["38を超え44以下",12,8,5.0,3.3],
  ["44を超え50以下",14,9,5.5,3.8]
 ];
-// --- C形止め輪 軸用 JIS B 2804 ---
+// C形止め輪 軸用 JIS B 2804
 // [適用軸径d, 溝径d2, 板厚t, 溝幅m]
 const SNAPRINGS = [
  [5,4.8,0.6,0.7],[6,5.7,0.7,0.8],[8,7.6,0.8,0.9],[10,9.6,1.0,1.15],
  [12,11.5,1.0,1.15],[15,14.3,1.0,1.15],[17,16.2,1.0,1.15],
  [20,19.0,1.2,1.35],[25,23.9,1.2,1.35]
 ];
-// --- 平行ピン JIS B 1354 ---
+// 平行ピン JIS B 1354
 const PINS = [1,1.5,2,2.5,3,4,5,6,8,10,12];
-// --- 材料 ---
+// 材料
 // [名称, 分類, 密度g/cm3, 引張強さMPa, ヤング率GPa, 特徴]
 const MATERIALS = [
  ["SS400","鉄鋼",7.85,"400〜510",206,"一般構造用。溶接性良好、安価。フレームやブラケットの定番"],
@@ -311,7 +300,7 @@ const MATERIALS = [
  ["PLA(3Dプリント)","樹脂",1.24,"約50(造形条件で低下)",3.5,"印刷しやすいが熱に弱い(約60℃で軟化)。治具・試作向き"],
  ["PC(ポリカーボネート)","樹脂",1.20,"約62",2.3,"耐衝撃性◎。透明カバーやガード向き"]
 ];
-// --- はめあい JIS B 0401 ---
+// はめあい JIS B 0401
 const FIT_RANGES=[[0,3],[3,6],[6,10],[10,18],[18,30],[30,50],[50,80],[80,120]];
 const IT={5:[4,5,6,8,9,11,13,15],6:[6,8,9,11,13,16,19,22],7:[10,12,15,18,21,25,30,35],
  8:[14,18,22,27,33,39,46,54],9:[25,30,36,43,52,62,74,87],10:[40,48,58,70,84,100,120,140],
@@ -340,15 +329,11 @@ const HOLE_DEV={
 // ねじ強度区分 [表示, 耐力MPa]
 const STRENGTH=[["4.8 (一般鋼)",320],["8.8 (中強度)",640],["10.9 (高強度)",900],["12.9 (キャップスクリュー標準)",1080],["A2-70 (ステンレス)",450]];
 
-/* =========================================================
-   ユーティリティ
-   ========================================================= */
 const $=s=>document.querySelector(s);
 const fmt=(x,n=3)=>Number(x.toFixed(n)).toString();
 const threadCalc=(d,p)=>({d2:d-0.6495*p, d1:d-1.0825*p, As:Math.PI/4*Math.pow((d-0.6495*p + d-1.2269*p)/2,2)});
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 
-/* ---- SVG 寸法線ヘルパー ---- */
 function dimH(x1,x2,y,label,off=0){
  return `<line class="dim" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>
  <line class="dim" x1="${x1}" y1="${y-4}" x2="${x1}" y2="${y+4}"/>
@@ -362,9 +347,6 @@ function dimV(x,y1,y2,label){
  <text class="dimtxt" x="${x+7}" y="${(y1+y2)/2+4}">${label}</text>`;
 }
 
-/* =========================================================
-   図面描画（模式図・寸法入り）
-   ========================================================= */
 function svgWrap(inner,w=380,h=300){return `<svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:${w}px" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`}
 
 // 六角穴付きボルト
@@ -544,9 +526,6 @@ function drawPin(dv){
  return svgWrap(g,380,220);
 }
 
-/* =========================================================
-   ページ定義
-   ========================================================= */
 const PAGES=[
  {group:"ねじ・締結"},
  {id:"thread",label:"メートルねじ 基準寸法"},
@@ -594,7 +573,6 @@ const PAGES=[
  {id:"surface",label:"表面粗さ・幾何公差メモ"}
 ];
 
-/* ---- 汎用テーブルページ ---- */
 function tablePage(o){
  // o: {title, std, cols, rows, rowHtml, detail(row), searchKey}
  let html=`<h2 class="page-title">${o.title}</h2><p class="page-sub">${o.std}　<b>行をクリックすると図面と詳細を表示します。</b></p>
@@ -626,7 +604,6 @@ function tablePage(o){
 }
 function specList(pairs){return `<dl class="spec-grid">${pairs.map(p=>`<dt>${p[0]}</dt><dd>${p[1]}</dd>`).join("")}</dl>`}
 
-/* ---- 各ページ ---- */
 const RENDER={};
 
 RENDER.thread=()=>tablePage({
@@ -731,7 +708,6 @@ RENDER.pin=()=>tablePage({
  ])+`<p class="note">2部品の位置決めは「ピン2本＋ボルト締結」が基本。ピン間距離はなるべく離すと角度精度が出ます。</p>`})
 });
 
-/* ---- 材料 ---- */
 RENDER.material=()=>{
  let html=`<h2 class="page-title">材料データベース</h2><p class="page-sub">ロボット・機械設計でよく使う材料の代表値。値は代表値・目安です。</p>
  <div class="data-wrap"><table class="data"><thead><tr><th>材料</th><th>分類</th><th>密度 g/cm³</th><th>引張強さ MPa</th><th>ヤング率 GPa</th><th>特徴・用途</th></tr></thead><tbody>`;
@@ -769,7 +745,6 @@ RENDER.material=()=>{
 
 function show(sel,html){const el=$(sel);el.innerHTML=html;el.classList.add("show")}
 
-/* ---- はめあい ---- */
 function fitRange(D){for(let i=0;i<FIT_RANGES.length;i++){if(D>FIT_RANGES[i][0]&&D<=FIT_RANGES[i][1])return i}return -1}
 // 単品公差を "上/下" 文字列で返す（µm→mm表記）
 function fitCalcOne(D,kind,letter,grade){
@@ -844,7 +819,6 @@ RENDER.fit=()=>{
  go();
 };
 
-/* ---- タップ下穴 ---- */
 RENDER.tap=()=>{
  $("#main").innerHTML=`<h2 class="page-title">タップ下穴計算</h2>
  <p class="page-sub">下穴径 = 呼び径 − 1.299 × P × (ひっかかり率/100)。一般には75%前後、樹脂・アルミなど柔らかい材料は高め(80〜85%)が目安。</p>
@@ -869,7 +843,6 @@ RENDER.tap=()=>{
  };
 };
 
-/* ---- ねじ強度 ---- */
 RENDER["bolt-strength"]=()=>{
  const coarse=THREADS.filter(t=>t[2]==="並目");
  $("#main").innerHTML=`<h2 class="page-title">ねじ強度計算（軸方向引張）</h2>
@@ -896,7 +869,6 @@ RENDER["bolt-strength"]=()=>{
  };
 };
 
-/* ---- はり計算 ---- */
 RENDER.beam=()=>{
  $("#main").innerHTML=`<h2 class="page-title">はり(梁)のたわみ・応力計算</h2>
  <p class="page-sub">集中荷重。フレームやアーム剛性のあたり付けに。</p>
@@ -942,7 +914,6 @@ RENDER.beam=()=>{
  };
 };
 
-/* ---- モーター ---- */
 RENDER.motor=()=>{
  $("#main").innerHTML=`<h2 class="page-title">モーター・減速比計算</h2>
  <div class="calc-card"><h3>① トルク・回転数 → 出力</h3>
@@ -983,7 +954,6 @@ RENDER.motor=()=>{
 車輪回転数 = ${fmt(rpm,0)} rpm　(Crr=0.02仮定。詳細は「摩擦・転がり抵抗」ページで)`)};
 };
 
-/* ---- 単位変換 ---- */
 RENDER.unit=()=>{
  const groups=[
   {name:"長さ",units:[["mm",1],["cm",10],["m",1000],["inch",25.4],["mil(thou)",0.0254]]},
@@ -1009,7 +979,6 @@ RENDER.unit=()=>{
  });
 };
 
-/* ---- 表面粗さ・幾何公差メモ ---- */
 RENDER.surface=()=>{
  $("#main").innerHTML=`<h2 class="page-title">表面粗さ・幾何公差メモ</h2>
  <div class="calc-card"><h3>表面粗さ Ra の目安</h3>
@@ -1040,25 +1009,21 @@ RENDER.surface=()=>{
 };
 
 
-/* =========================================================
-   Rev.2.0 追加：小ねじ・止めねじ・伝動要素・加工支援
-   ========================================================= */
-// --- 小ねじ・頭部バリエーション ---
+// 小ねじ・頭部バリエーション
 // [呼び, d, dk(頭径), k(頭高), 穴/リセス]
 const PANHEAD=[["M2",2,3.5,1.3],["M2.5",2.5,4.5,1.7],["M3",3,5.5,2.0],["M4",4,7,2.6],["M5",5,9,3.3],["M6",6,10.5,3.9]];
 const TRUSS=[["M2",2,4.6,1.2],["M2.5",2.5,5.7,1.5],["M3",3,6.9,1.75],["M4",4,9.4,2.3],["M5",5,11.8,2.85],["M6",6,13.8,3.4]];
 const FLATCAP=[["M3",3,6.72,1.86,2],["M4",4,8.96,2.48,2.5],["M5",5,11.2,3.1,3],["M6",6,13.44,3.72,4],["M8",8,17.92,4.96,5]];
 const BUTTONCAP=[["M3",3,5.7,1.65,2],["M4",4,7.6,2.2,2.5],["M5",5,9.5,2.75,3],["M6",6,10.5,3.3,4],["M8",8,14,4.4,5],["M10",10,17.5,5.5,6]];
 const UNC=[["#2-56",2.18,56],["#4-40",2.85,40],["#6-32",3.51,32],["#8-32",4.17,32],["#10-24",4.83,24],['1/4"-20',6.35,20],['5/16"-18',7.94,18],['3/8"-16',9.53,16]];
-// --- 六角穴付き止めねじ JIS B 1177 ---
+// 六角穴付き止めねじ JIS B 1177
 const SETSCREW=[["M2",0.9],["M2.5",1.3],["M3",1.5],["M4",2],["M5",2.5],["M6",3],["M8",4],["M10",5],["M12",6]];
-// --- ミニチュアリニアガイド 参考寸法（MGN系互換, メーカー規格） ---
+// ミニチュアリニアガイド 参考寸法（MGN系互換, メーカー規格）
 // [呼び, レール幅, レール高, 組立高H, ブロック幅W]
 const LINEAR=[["7番(MGN7相当)",7,4.8,8,17],["9番(MGN9相当)",9,6.5,10,20],["12番(MGN12相当)",12,8,13,27],["15番(MGN15相当)",15,10,16,32]];
-// --- タイミングベルト ピッチ ---
+// タイミングベルト ピッチ
 const BELTS=[["GT2(2GT)",2],["MXL",2.032],["S2M",2],["S3M",3],["S5M",5],["HTD3M",3],["HTD5M",5],["XL",5.08],["T5",5]];
 
-/* ---- 頭形状の図 ---- */
 function drawHeadScrew(type,r){
  const nm=r[0],d=r[1],dk=r[2],k=r[3];
  const sc=Math.min(130/dk,24);
@@ -1101,7 +1066,6 @@ function drawSetScrew(r){
  return svgWrap(g,380,topY+L+70);
 }
 
-/* ---- 小ねじ・頭部形状ページ ---- */
 RENDER.screwheads=()=>{
  const sets={
   pan:{name:"なべ小ねじ",std:"JIS B 1111（十字穴付き）系の代表寸法。",rows:PANHEAD,type:"pan",
@@ -1162,7 +1126,6 @@ RENDER.screwheads=()=>{
  $("#shSel").onchange=render;render();
 };
 
-/* ---- 止めねじ・セットカラー ---- */
 RENDER.setscrew=()=>{
  $("#main").innerHTML=`<h2 class="page-title">止めねじ（イモねじ）・セットカラー</h2>
  <p class="page-sub">JIS B 1177（六角穴付き止めねじ）。行クリックで図面表示。</p>
@@ -1198,7 +1161,6 @@ RENDER.setscrew=()=>{
  });
 };
 
-/* ---- ボールねじ ---- */
 RENDER.ballscrew=()=>{
  $("#main").innerHTML=`<h2 class="page-title">ボールねじ</h2>
  <p class="page-sub">回転→直動の高効率変換。台形ねじより効率が高く（90%前後）、バックラッシも小さい。</p>
@@ -1230,7 +1192,6 @@ RENDER.ballscrew=()=>{
  };
 };
 
-/* ---- リニアガイド ---- */
 RENDER.linear=()=>{
  $("#main").innerHTML=`<h2 class="page-title">リニアガイド（LMガイド）</h2>
  <p class="page-sub">ミニチュアサイズの参考寸法。<b>メーカー規格品</b>のため採用前に必ずカタログ確認。行クリックで断面図。</p>
@@ -1268,7 +1229,6 @@ RENDER.linear=()=>{
  });
 };
 
-/* ---- 歯車・ベルト・慣性 ---- */
 RENDER.drive=()=>{
  $("#main").innerHTML=`<h2 class="page-title">歯車・タイミングベルト・慣性計算</h2>
  <div class="calc-card"><h3>① 平歯車（モジュール計算）</h3>
@@ -1337,7 +1297,6 @@ z2: PCD=${fmt(m*z2,2)} / 歯先径=${fmt(m*(z2+2),2)} mm
  };
 };
 
-/* ---- 3Dプリント補正 ---- */
 RENDER.print3d=()=>{
  $("#main").innerHTML=`<h2 class="page-title">3Dプリント補正計算</h2>
  <p class="page-sub">FDM(熱溶解積層)向け。収縮率はプリンタ・温度・充填率で大きく変わるので、<b>実測から補正率を出すのがいちばん確実</b>です。</p>
@@ -1385,7 +1344,6 @@ RENDER.print3d=()=>{
  };
 };
 
-/* ---- 切削条件 ---- */
 RENDER.milling=()=>{
  // [材料, Vc下限, Vc上限, fz係数(fz≈係数×D), メモ]
  const CUT=[
@@ -1434,10 +1392,6 @@ ${capped?"※上限回転のため実Vcは "+fmt(N*Math.PI*D/1000,0)+" m/min に
  };
 };
 
-/* =========================================================
-   Rev.3.0 追加：摩擦・ばね・Oリング
-   ========================================================= */
-/* ---- 摩擦・転がり抵抗 ---- */
 RENDER.friction=()=>{
  // [組合せ, 静摩擦μs, 動摩擦μk] 代表値レンジ
  const FRIC=[
@@ -1499,7 +1453,6 @@ RENDER.friction=()=>{
  };
 };
 
-/* ---- ばね計算 ---- */
 RENDER.spring=()=>{
  $("#main").innerHTML=`<h2 class="page-title">圧縮コイルばね計算</h2>
  <p class="page-sub">k＝G·d⁴/(8·D³·Na)。D＝コイル中心径（外径−線径）、Na＝有効巻数（総巻数−2が目安）。</p>
@@ -1538,7 +1491,6 @@ RENDER.spring=()=>{
  };
 };
 
-/* ---- Oリング ---- */
 RENDER.oring=()=>{
  $("#main").innerHTML=`<h2 class="page-title">Oリング溝計算</h2>
  <p class="page-sub">JIS B 2401系。溝深さ＝線径×(1−つぶし率)、溝幅≈線径×1.25〜1.4 が基本の考え方。</p>
@@ -1571,10 +1523,6 @@ RENDER.oring=()=>{
  };
 };
 
-/* =========================================================
-   Rev.4.0 追加：リンク機構・歯車・チェーン
-   ========================================================= */
-/* ---- リンク機構 ---- */
 let fbAnim=null;
 RENDER.linkage=()=>{
  if(fbAnim){cancelAnimationFrame(fbAnim);fbAnim=null}
@@ -1606,7 +1554,7 @@ RENDER.linkage=()=>{
   <svg id="fbSvg" viewBox="0 0 460 320" width="100%" style="max-width:560px"></svg>
  </div>
  <p class="note">青の点線＝カプラ点（bの中点から高さhの位置）の軌跡。h・各リンク長をいじると軌跡の形が大きく変わります。ロボットの脚機構・すくい上げ機構の当たり付けにどうぞ。グレー領域はロッカーの届く範囲です。</p></div>`;
- // ---- グラスホフ判定＋描画 ----
+ // グラスホフ判定＋描画
  const getL=()=>({g:+$("#fbG").value,a:+$("#fbA").value,b:+$("#fbB").value,c:+$("#fbC").value,h:+$("#fbH").value});
  const grashof=L=>{
   const arr=[["固定リンク",L.g],["クランク",L.a],["カプラ",L.b],["ロッカー",L.c]];
@@ -1684,7 +1632,6 @@ RENDER.linkage=()=>{
  judge();draw();playing=true;loop();
 };
 
-/* ---- 歯車の種類 ---- */
 RENDER.geartypes=()=>{
  const GT=[
   ["平歯車","平行軸","◎ 安い・作りやすい・効率98%","音が出やすい。まずこれ"],
@@ -1740,7 +1687,6 @@ RENDER.geartypes=()=>{
  };
 };
 
-/* ---- チェーン ---- */
 RENDER.chain=()=>{
  // [呼び, ピッチ, ローラ径, 内リンク内幅, 参考最小引張強さkN]
  const CH=[
@@ -1786,10 +1732,6 @@ RENDER.chain=()=>{
  };
 };
 
-/* =========================================================
-   Rev.5.0 追加：アーム・クローラ・機構・仕上げ
-   ========================================================= */
-/* ---- ロボットアーム FK/IK ---- */
 RENDER.arm=()=>{
  $("#main").innerHTML=`<h2 class="page-title">ロボットアーム（2リンク FK／IK シミュレータ）</h2>
  <div class="calc-card"><h3>アーム形式の使い分け</h3>
@@ -1886,7 +1828,6 @@ RENDER.arm=()=>{
  draw();
 };
 
-/* ---- クローラ（履帯） ---- */
 RENDER.crawler=()=>{
  $("#main").innerHTML=`<h2 class="page-title">クローラ（履帯・無限軌道）</h2>
  <p class="page-sub">豆知識：「キャタピラー」は米Caterpillar社の商標。一般名は<b>クローラ・履帯・無限軌道</b>です（公開資料ではこちらを使うのが安全）。</p>
@@ -1933,7 +1874,6 @@ L/B = ${fmt(L/B,2)}${L/B>1.2?'　<span class="warn">→ 旋回が重い比率。
  };
 };
 
-/* ---- 滑車・ワイヤ ---- */
 RENDER.pulley=()=>{
  $("#main").innerHTML=`<h2 class="page-title">滑車・ワイヤ</h2>
  <div class="calc-card"><h3>滑車の基本</h3>
@@ -1967,7 +1907,6 @@ RENDER.pulley=()=>{
  };
 };
 
-/* ---- 戸車・スライド機構 ---- */
 RENDER.slidedoor=()=>{
  $("#main").innerHTML=`<h2 class="page-title">戸車・スライド機構</h2>
  <div class="calc-card"><h3>戸車とレールの種類</h3>
@@ -1996,7 +1935,6 @@ RENDER.slidedoor=()=>{
  </tbody></table></div></div>`;
 };
 
-/* ---- サスペンション・衝撃吸収 ---- */
 RENDER.suspension=()=>{
  $("#main").innerHTML=`<h2 class="page-title">サスペンション・衝撃吸収材</h2>
  <div class="calc-card"><h3>サスペンション方式（ロボット向け）</h3>
@@ -2028,7 +1966,6 @@ RENDER.suspension=()=>{
  </tbody></table></div></div>`;
 };
 
-/* ---- 表面処理・めっき ---- */
 RENDER.plating=()=>{
  $("#main").innerHTML=`<h2 class="page-title">表面処理・めっき</h2>
  <div class="calc-card"><h3>鉄鋼向け</h3>
@@ -2059,7 +1996,6 @@ RENDER.plating=()=>{
  <p class="note">めっき屋さんへの指示は「処理名＋膜厚＋マスキング箇所」の3点セットで。ねじ穴はめっき後に通しタップ（さらい）を頼むと組立が楽。</p></div>`;
 };
 
-/* ---- 塗装・やすり ---- */
 RENDER.finishing=()=>{
  $("#main").innerHTML=`<h2 class="page-title">塗装・やすり（仕上げ）</h2>
  <div class="calc-card"><h3>塗料の種類と使い分け</h3>
@@ -2092,9 +2028,6 @@ RENDER.finishing=()=>{
  <p class="note">飛ばせるのは1.5〜2倍まで（#240→#400はOK、#240→#800は傷が残る）。<b>耐水ペーパー＋水研ぎ</b>は目詰まりせず仕上がりが安定。金属のバリ取りは番手より「面取り工具（カウンターシンク・バリ取りナイフ）」の方が速いことも多い。</p></div>`;
 };
 
-/* =========================================================
-   ナビゲーション
-   ========================================================= */
 function buildNav(){
  const nav=$("#nav");
  PAGES.forEach(p=>{
@@ -2111,9 +2044,6 @@ function buildNav(){
  nav.querySelector(".nav-item").click();
 }
 
-/* =========================================================
-   関数電卓
-   ========================================================= */
 let calcExpr="", degMode=true;
 const KEYS_LAYOUT=[
  ["sin","cos","tan","π","C"],

@@ -26,15 +26,11 @@ section{padding:56px 0;border-top:1px solid var(--line)}
 section:first-of-type{border-top:none}
 h2{font-size:1.5rem;letter-spacing:.02em;margin-bottom:6px}
 .sec-en{color:var(--muted);font-size:.85rem;margin-bottom:28px}
-
-/* ===== ページ見出し(下層ページ用) ===== */
 .pagehead{padding:44px 0 36px;border-bottom:1px solid var(--line)}
 .pagehead h1{font-size:clamp(1.5rem,3.5vw,2.1rem);letter-spacing:.02em}
 .pagehead p{color:var(--muted);font-size:.9rem;margin-top:4px}
 .crumb{font-size:.8rem;color:var(--muted);margin-bottom:10px}
 .crumb a{color:var(--muted)}
-
-/* ===== ヘッダー ===== */
 header{border-bottom:1px solid var(--line);background:var(--paper);position:sticky;top:0;z-index:10}
 .hd{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;max-width:1060px;margin:0 auto;flex-wrap:wrap}
 .brand{font-weight:700;font-size:1.05rem;letter-spacing:.03em;text-decoration:none;color:var(--ink)}
@@ -43,8 +39,6 @@ nav ul{display:flex;gap:20px;list-style:none;flex-wrap:wrap}
 nav a{text-decoration:none;font-size:.92rem;color:var(--ink)}
 nav a:hover,nav a[aria-current="page"]{color:var(--pcb)}
 nav a[aria-current="page"]{font-weight:700}
-
-/* ===== ヒーロー: 図面タイトルブロック風 ===== */
 .hero{padding:64px 0 48px;border-top:none}
 .frame{border:1.5px solid var(--ink);position:relative;padding:48px 40px 0}
 .frame::before,.frame::after{content:"";position:absolute;width:14px;height:14px;border:1.5px solid var(--ink)}
@@ -63,8 +57,6 @@ nav a[aria-current="page"]{font-weight:700}
   .titleblock div:nth-child(3){border-left:none;border-top:1px solid var(--line)}
   .titleblock div:nth-child(4){border-top:1px solid var(--line)}
 }
-
-/* ===== 事業3本柱 ===== */
 .pillars{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:0;border:1px solid var(--line)}
 .pillar{padding:26px 24px;border-left:1px solid var(--line)}
 .pillar:first-child{border-left:none;background:#FFF4EA}
@@ -72,8 +64,6 @@ nav a[aria-current="page"]{font-weight:700}
 .pillar .no{font-size:.75rem;color:var(--pcb-dark);font-weight:700;letter-spacing:.06em}
 .pillar p{font-size:.9rem;color:var(--muted)}
 @media(max-width:760px){.pillars{grid-template-columns:1fr}.pillar{border-left:none;border-top:1px solid var(--line)}.pillar:first-child{border-top:none}}
-
-/* ===== 開発製品: データシート風カード ===== */
 .products{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 @media(max-width:760px){.products{grid-template-columns:1fr}}
 .product{border:1px solid var(--line);background:#fff}
@@ -87,65 +77,46 @@ nav a[aria-current="page"]{font-weight:700}
 .spec td:first-child{color:var(--muted);width:6.5em}
 .status{display:inline-block;font-size:.72rem;font-weight:700;color:#fff;background:var(--pcb);padding:2px 10px;border-radius:2px}
 .status.dev{background:var(--copper)}
-
-/* ===== 技術レポート: 台帳風テーブル ===== */
 .reports{width:100%;border-collapse:collapse;font-size:.9rem;background:#fff;border:1px solid var(--line)}
 .reports th{background:var(--ink);color:#fff;font-weight:600;font-size:.8rem;text-align:left;padding:9px 12px;letter-spacing:.04em}
 .reports td{border-top:1px solid var(--line);padding:10px 12px;vertical-align:top}
 .reports .num{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--pcb-dark);font-weight:700;font-size:.83rem}
 @media(max-width:640px){.reports .hide-sp{display:none}}
-
-/* ===== ニュース ===== */
 .news{list-style:none}
 .news li{display:flex;gap:20px;padding:12px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .news time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.88rem;min-width:7em}
 .tag{font-size:.7rem;border:1px solid var(--pcb-dark);color:var(--pcb-dark);padding:1px 8px;border-radius:2px;align-self:center}
-
-/* ===== 研究テーマ一覧 ===== */
 .themes{list-style:none;display:grid;gap:12px}
 .themes li{border:1px solid var(--line);background:#fff;padding:16px 20px}
-
-/* ===== 研究詳細の型 ===== */
 .rsec{border:1px solid var(--line);background:#fff;padding:24px 26px;margin-bottom:24px}
 .rsec h3{font-size:1.15rem;margin-bottom:4px}
 .rsec .rmeta{font-size:.8rem;color:var(--muted);margin-bottom:14px}
 .rsec dt{font-size:.78rem;color:var(--pcb-dark);font-weight:700;margin-top:12px}
 .rsec dd{font-size:.92rem}
-
-/* ===== 概要 ===== */
 .about{display:grid;grid-template-columns:1fr 1fr;gap:32px}
 @media(max-width:760px){.about{grid-template-columns:1fr}}
 .about dl{font-size:.92rem}
 .about dt{color:var(--muted);font-size:.78rem;margin-top:14px}
 .about dd{border-bottom:1px solid var(--line);padding-bottom:6px}
-
-/* ===== 沿革 ===== */
 .history{list-style:none;font-size:.92rem}
 .history li{display:flex;gap:18px;padding:8px 0;border-bottom:1px solid var(--line)}
 .history time{min-width:6.5em;color:var(--muted);font-variant-numeric:tabular-nums}
-
 footer{border-top:1.5px solid var(--ink);padding:34px 0 44px;margin-top:56px}
 footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
 .cta{display:inline-block;background:var(--pcb);color:#fff;text-decoration:none;padding:11px 26px;font-size:.92rem;font-weight:600;border-radius:2px}
 .cta:hover{background:var(--pcb-dark);color:#fff}
 .formbox{border:1px solid var(--line);background:#fff;padding:8px}
 .formbox iframe{width:100%;border:0;min-height:900px}
-
-/* ===== カテゴリフィルタ ===== */
 .chips{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 26px}
 .chip{border:1px solid var(--line);background:#fff;color:var(--ink);font-size:.85rem;padding:6px 16px;border-radius:2px;cursor:pointer;font-family:inherit}
 .chip[aria-pressed="true"]{background:var(--pcb);border-color:var(--pcb);color:#fff}
 .chip:hover{border-color:var(--pcb-dark)}
 [data-cat].hidden{display:none}
-
-/* ===== スクロールリビール(控えめ) ===== */
 html.js .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
 html.js .reveal.shown{opacity:1;transform:none}
 @media (prefers-reduced-motion: reduce){
   html.js .reveal{opacity:1;transform:none;transition:none}
 }
-
-/* ===== 起動演出(CTR走行) ===== */
 #boot{position:fixed;inset:0;background:var(--paper);z-index:99;display:flex;align-items:center;justify-content:center}
 .bootwrap{width:100%;max-width:1060px;padding:0 20px}
 .bootmsg{font-family:'Yomogi',cursive;font-size:clamp(1.3rem,3.5vw,2rem);color:var(--ink);transform:rotate(-2.5deg);margin:0 0 18px 4%;opacity:0;animation:breeze 1.4s ease-out .15s forwards}
@@ -158,12 +129,8 @@ html.js .reveal.shown{opacity:1;transform:none}
 @keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
 #boot.done{opacity:0;transition:opacity .4s;pointer-events:none}
 @media (prefers-reduced-motion: reduce){#boot{display:none}}
-
-/* ===== フッターロゴ ===== */
 .footlogos{display:flex;justify-content:center;align-items:center;gap:34px;padding:26px 20px 0;flex-wrap:wrap}
 .footlogos img{height:38px;width:auto;opacity:.9}
-
-/* ===== 絞り込み(折りたたみ)+カテゴリバッジ ===== */
 .filterbox{margin:0 0 26px}
 .filterbox summary{display:inline-block;border:1px solid var(--line);background:#fff;font-size:.85rem;padding:6px 18px;border-radius:2px;cursor:pointer;list-style:none;user-select:none}
 .filterbox summary::-webkit-details-marker{display:none}
@@ -172,16 +139,12 @@ html.js .reveal.shown{opacity:1;transform:none}
 .filterbox summary:hover{border-color:var(--pcb-dark)}
 .filterbox .chips{margin-top:12px}
 .catbadge{display:inline-block;font-size:.72rem;border:1px solid var(--line);color:var(--muted);padding:2px 10px;border-radius:2px;margin-left:6px;vertical-align:1px}
-
-/* ===== 2段ナビ(内部/外部) ===== */
 .hd nav{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
 .hd nav ul{justify-content:flex-end}
 .extnav{display:flex;gap:14px;list-style:none;flex-wrap:wrap;font-size:.8rem;align-items:center}
 .extnav .lbl{color:var(--muted);font-size:.72rem;letter-spacing:.04em}
 .extnav a{text-decoration:none;color:var(--pcb-dark)}
 .extnav a:hover{color:var(--pcb)}
-
-/* ===== モバイルメニュー ===== */
 .menubtn{display:none;border:1px solid var(--line);background:#fff;font-size:.85rem;padding:7px 16px;border-radius:2px;cursor:pointer;font-family:inherit}
 .menubtn::before{content:"☰ ";color:var(--pcb-dark)}
 @media(max-width:760px){
@@ -195,8 +158,6 @@ html.js .reveal.shown{opacity:1;transform:none}
   .extnav li a{border-bottom:none !important;padding:8px 4px !important;font-size:.9rem !important}
   .extnav .lbl{padding:8px 4px 0}
 }
-
-/* レポート台帳：版と過去の版 */
 .tscroll{overflow-x:auto}
 .reports .ver{white-space:nowrap}
 .reports details{margin-top:6px;font-size:.8rem;color:var(--muted);white-space:normal}
@@ -210,20 +171,15 @@ html.js .reveal.shown{opacity:1;transform:none}
   .reports .ver{white-space:normal;min-width:6.5em}
   .reports td:nth-child(2){min-width:10em}
 }
-
-/* 日本語の改行：文節で折り返す（Chrome/Edge）。Safari向けに語のまとまりを .ib で保護 */
 body{line-break:strict}
 h1,h2,h3{word-break:auto-phrase}
 .nw{white-space:nowrap}
 .ib{display:inline}
 h1,h2,h3{text-wrap:balance}
 .about dd.jigyo span{display:block}
-/* section.wrap で上下の余白が消えていたのを修正 */
 section.wrap{padding:56px 20px}
 @media(max-width:640px){section.wrap{padding:40px 20px}}
 .rmeta .ib{display:inline-block;margin-right:1em}
-
-/* ===== トップ：写真のキービジュアル ===== */
 .kv{position:relative;padding:0;border-top:none;overflow:hidden;background:#6F93C2}
 .kv img{display:block;width:100%;height:clamp(360px,52vw,620px);object-fit:cover;object-position:center 45%}
 .kv-text{position:absolute;inset:0;max-width:1060px;margin:0 auto;padding:clamp(40px,7vw,96px) 20px 0;color:#fff}
@@ -232,16 +188,12 @@ section.wrap{padding:56px 20px}
 .kv h1{font-size:clamp(1.9rem,4.6vw,3.2rem);line-height:1.3;letter-spacing:.03em;text-shadow:0 2px 12px rgba(0,0,0,.35)}
 .kv h1 span{display:block;font-size:.36em;font-weight:500;letter-spacing:.16em;margin-top:14px}
 @media(max-width:640px){.kv img{height:min(74vh,560px)}.kv-text{padding-top:44px}}
-
-/* ===== トップ：概要（文章＋基本情報の2列） ===== */
 .intro{display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:start}
 .intro-text p+p{margin-top:12px}
 .facts{display:grid;grid-template-columns:6em 1fr;border-top:1px solid var(--ink);font-size:.9rem}
 .facts dt,.facts dd{padding:10px 0;border-bottom:1px solid var(--line)}
 .facts dt{color:var(--muted);font-size:.8rem}
 @media(max-width:760px){.intro{grid-template-columns:1fr;gap:28px}}
-
-/* ===== 見出し帯つきパネル ===== */
 .panels{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .panel{border:1px solid var(--line);background:#fff;display:flex;flex-direction:column}
 .panel h2{background:var(--blue-tint);border-bottom:1px solid var(--line);font-size:1.12rem;padding:14px 20px;margin:0}
@@ -255,13 +207,9 @@ section.wrap{padding:56px 20px}
 .replist .num{display:block;font-size:.74rem;font-weight:700;color:var(--pcb-dark);font-variant-numeric:tabular-nums}
 .panel .more{padding:12px 20px 16px;font-size:.88rem;text-align:right}
 @media(max-width:760px){.panels{grid-template-columns:1fr}}
-
-/* 研究テーマは横に並べて幅を使う */
 .themes{grid-template-columns:repeat(3,1fr);gap:16px}
 @media(max-width:900px){.themes{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.themes{grid-template-columns:1fr}}
-
-/* ===== ヘッダー（ロゴ＋ユーティリティ＋グローバルナビ） ===== */
 header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line)}
 .hd{max-width:1060px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:nowrap}
 .brand img{display:block;height:52px;width:auto}
@@ -289,8 +237,6 @@ header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid 
   .gnav li:nth-child(odd){border-right:1px solid var(--line)}
   .gnav a{text-align:left;padding:12px 20px}
 }
-
-/* ===== 写真の帯（下層ページ見出し） ===== */
 .pagebanner{position:relative;overflow:hidden;background:#6F93C2}
 .pagebanner img{display:block;width:100%;height:clamp(150px,20vw,240px);object-fit:cover;object-position:center 55%}
 .pb-title{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;max-width:1060px;margin:0 auto;padding:0 20px;color:#fff}
@@ -299,22 +245,16 @@ header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid 
 .pagebanner::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,30,70,.45),rgba(10,30,70,.1) 60%,rgba(10,30,70,0))}
 .credit{position:absolute;right:10px;bottom:6px;font-size:.68rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6);z-index:2}
 .crumb{margin:18px 0 0;font-size:.8rem}
-
-/* ===== トップのキービジュアル調整（横長・文字を上に） ===== */
 .kv img{height:clamp(300px,38vw,560px);object-position:center 35%}
 .kv-text{padding-top:clamp(28px,4.2vw,64px)}
 .kv h1{border-left:6px solid var(--orange);padding-left:18px}
 .kv h1 span{margin-top:12px}
 .kv-org{padding-left:24px}
 @media(max-width:640px){.kv img{height:min(70vh,540px);object-position:center 30%}.kv-text{padding-top:32px}}
-
-/* ===== ページ下部の補足 ===== */
 .pagenote{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:.9rem;color:var(--muted)}
 .pagenote p+p{margin-top:8px}
 .reports th{background:var(--pcb-dark)}
 footer{border-top:3px solid var(--orange)}
-
-/* ===== 開発製品 v2：見出し付き一覧（すべて）／写真カード（絞り込み） ===== */
 .products-page .chips{margin-bottom:10px}
 .pgroup{margin-top:40px}
 .pgroup[hidden],.item[hidden]{display:none!important}
@@ -342,8 +282,6 @@ footer{border-top:3px solid var(--orange)}
 .it-ph{background:#E9EDF3;overflow:hidden}
 .it-ph img{display:block;width:100%;height:100%;object-fit:cover}
 .it-ph.noimg{display:flex;align-items:center;justify-content:center;color:#8A94A6;font-weight:700;font-size:.9rem;letter-spacing:.04em}
-
-/* すべて：コンパクトな一覧（写真は「詳しく」を開くと表示） */
 .mode-all .plist{border:1px solid var(--line);background:#fff}
 .mode-all .item{padding:12px 16px;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) 5.5rem;gap:0 12px}
 .mode-all .item:first-child{border-top:none}
@@ -356,7 +294,6 @@ footer{border-top:3px solid var(--orange)}
 .more-ph{aspect-ratio:4/3;background:#E9EDF3;overflow:hidden}
 .more-ph img{width:100%;height:100%;object-fit:cover;display:block}
 .mode-cards .more-ph{display:none}
-/* 絞り込み：写真カード */
 .mode-cards .subchips{display:flex}
 .mode-cards .plist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
 .mode-cards .item{background:#fff;border:1px solid var(--line);display:flex;flex-direction:column}
@@ -383,7 +320,6 @@ footer{border-top:3px solid var(--orange)}
 .mode-cards .it-sum,.mode-cards .it-st{display:block}
 @media(max-width:600px){.mode-cards .plist{grid-template-columns:1fr 1fr;gap:12px}.mode-cards .it-main{padding:10px 10px 4px}.mode-cards .it-name{font-size:.9rem}.mode-cards .it-sum{font-size:.78rem}.mode-cards .it-more{padding:6px 10px 10px}}
 img[src$="visionstudio.jpg"]{object-position:85% 60%}
-/* 試作・構想：写真なしの一覧（カード表示のときも一覧） */
 .nophoto .plist{display:block!important;border:1px solid var(--line);background:#fff}
 .nophoto .item{display:grid!important;grid-template-columns:minmax(0,1fr) 5.5rem;gap:0 12px;padding:12px 16px;border:none;border-top:1px solid var(--line)}
 .nophoto .item:first-child{border-top:none}
@@ -394,12 +330,9 @@ img[src$="visionstudio.jpg"]{object-position:85% 60%}
 .nophoto .it-more summary{grid-column:2;grid-row:1;justify-self:end;align-self:center}
 .nophoto .more-body{grid-column:1 / -1;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
 @media(max-width:900px){.nophoto .it-main{grid-template-columns:1fr;gap:2px}.nophoto .it-sum{display:block}}
-/* 機体・ユニットの写真は切り取らず全体を見せる */
 .pgroup[data-group="robot"] .it-ph,.pgroup[data-group="unit"] .it-ph,.pgroup[data-group="robot"] .more-ph,.pgroup[data-group="unit"] .more-ph{background:#fff}
 .pgroup[data-group="robot"] .it-ph img,.pgroup[data-group="unit"] .it-ph img,.pgroup[data-group="robot"] .more-ph img,.pgroup[data-group="unit"] .more-ph img{object-fit:contain;padding:6px}
 @media(max-width:640px){.kv img{height:min(56vh,440px);object-position:center 28%}.kv-text{padding-top:28px}.kv h1{font-size:1.75rem}}
-
-/* 開発品：スマホ（Safari含む）での一覧の崩れ対策 */
 .products-page .it-model,.products-page .it-name,.products-page .it-sub,.products-page .it-sum,.products-page .it-st{grid-area:auto}
 @media(max-width:900px){
   .mode-all .item{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start}
@@ -410,7 +343,6 @@ img[src$="visionstudio.jpg"]{object-position:85% 60%}
   .mode-all .it-sub{margin-top:2px}
   .mode-all .it-more summary{grid-column:2;grid-row:1;align-self:start;margin-top:2px}
 }
-/* （誤って削除した共通ルールを復元） */
 .reports tr[id]{scroll-margin-top:150px}
 .reports tr:target td{background:#FFF1E3}
 .reports tr:target td:first-child{box-shadow:inset 4px 0 0 var(--orange)}
@@ -419,7 +351,6 @@ img[src$="visionstudio.jpg"]{object-position:85% 60%}
 .replinks li{padding:3px 0}
 .replinks a::before{content:"";display:inline-block;width:4px;height:.9em;background:var(--orange);margin-right:8px;vertical-align:-1px}
 .rsec[hidden]{display:none}
-/* Safari対策：details に display:contents を使わず、「詳しく」は右上に固定 */
 .mode-all .item,.nophoto .item{display:block!important;position:relative;padding:12px 96px 12px 16px!important}
 .mode-all .it-more,.nophoto .it-more{display:block!important;position:static;padding:0!important;border:none!important;margin:0!important}
 .mode-all .it-more summary,.nophoto .it-more summary{position:absolute;top:12px;right:16px;margin:0!important}
