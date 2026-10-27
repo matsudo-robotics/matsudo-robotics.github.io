@@ -59,6 +59,33 @@ nav{
 main{flex:1;padding:20px 24px 120px;min-width:0}
 h2.page-title{font-size:19px;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:4px}
 .page-sub{color:var(--ink2);font-size:12.5px;margin-bottom:14px}
+.fs-grid{display:grid;grid-template-columns:minmax(300px,440px) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:900px){.fs-grid{grid-template-columns:1fr}}
+.fs-grid .calc-card{max-width:none;margin-bottom:0}
+.fs-grid h3{margin:14px 0 6px;font-size:13px}
+.fs-grid label{display:block;font-size:12px;color:var(--ink2);margin-top:8px}
+.fs-grid label select{display:block;width:100%;margin-top:3px}
+.fs-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px;font-size:12.5px}
+.fs-row select{flex:1;min-width:160px}.fs-row input[type=number]{width:80px}
+.fs-small{font-size:12px;color:var(--ink2)}
+.fs-pt{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;padding:6px 8px;margin-top:4px;cursor:grab;font-size:12.5px}
+.fs-pt.dragging{opacity:.4}.fs-pt.over{border-color:#FF7701;box-shadow:inset 0 2px 0 #FF7701}
+.fs-grip{color:#9aa3ad;letter-spacing:-2px}.fs-pn{font-weight:600;flex:1;min-width:0}.fs-pi{color:var(--ink2);font-size:11.5px}
+.fs-ops{margin-left:auto;display:flex;gap:2px}.fs-ops button{font:inherit;font-size:11px;border:1px solid #b9c0ca;background:#fff;border-radius:3px;padding:2px 6px;cursor:pointer}
+.fs-plate{cursor:default;background:#f1f8f1}.fs-plate input{width:70px}
+.fs-empty{color:var(--ink2);font-size:12px;padding:6px 2px}
+@media(max-width:640px){.fs-pt{flex-wrap:wrap}.fs-pn{flex:1 1 50%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fs-pi{flex-basis:100%;order:3;padding-left:22px}}
+button.act.fs-add{background:#fff;color:var(--accent,#0142A8);border:1px solid var(--accent,#0142A8)}
+.fs-big{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-bottom:1px solid var(--line);padding:8px 0;flex-wrap:wrap}
+.fs-big span{color:var(--ink2)}.fs-big b{font-size:20px;color:#0142A8}.fs-big small{flex-basis:100%;color:var(--ink2)}
+table.fs-res{width:100%;border-collapse:collapse;margin-top:12px;font-size:12.5px}
+table.fs-res th{text-align:left;background:#eef2f8;padding:6px 8px;color:#0142A8}table.fs-res td{padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.fs-res td:first-child{color:var(--ink2);width:48%}
+.fs-warn{background:#fff4e5;border-left:4px solid #FF7701;padding:8px 12px;margin-bottom:10px}.fs-warn p{margin:2px 0}
+.fs-note{font-size:12px;color:var(--ink2);margin:8px 0 0}
+#fs-svg svg{width:100%;max-width:420px;display:block;margin:6px auto}
+table.fs-src{font-size:12px;color:var(--ink2);border-collapse:collapse}table.fs-src td{padding:2px 8px 2px 0;border-bottom:1px solid var(--line)}
+
 .page-sub code{font-family:var(--mono)}
 .tool-bar{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
 input[type=text],input[type=number],select{
@@ -179,7 +206,7 @@ svg .cl{stroke:var(--red);stroke-width:.7;stroke-dasharray:8 3 2 3}
   </div>
   <div class="tb-cell">
     <span class="tb-label">版</span>
-    <span class="tb-value" style="font-size:13px;font-family:var(--mono)">Rev.5.0</span>
+    <span class="tb-value" style="font-size:13px;font-family:var(--mono)">Rev.6.0</span>
   </div>
 </header>
 
@@ -534,6 +561,9 @@ const PAGES=[
  {id:"hexbolt",label:"六角ボルト"},
  {id:"nut",label:"六角ナット"},
  {id:"washer",label:"平座金"},
+ {id:"stack",label:"ねじ締結の組立計算（長さ・STEP）"},
+ {id:"hole",label:"通し穴・ざぐり径"},
+ {id:"insert",label:"インサートナット下穴（3Dプリント）"},
  {id:"setscrew",label:"止めねじ・セットカラー"},
  {id:"pin",label:"平行ピン"},
  {group:"軸まわり・案内"},
@@ -1011,8 +1041,8 @@ RENDER.surface=()=>{
 
 // 小ねじ・頭部バリエーション
 // [呼び, d, dk(頭径), k(頭高), 穴/リセス]
-const PANHEAD=[["M2",2,3.5,1.3],["M2.5",2.5,4.5,1.7],["M3",3,5.5,2.0],["M4",4,7,2.6],["M5",5,9,3.3],["M6",6,10.5,3.9]];
-const TRUSS=[["M2",2,4.6,1.2],["M2.5",2.5,5.7,1.5],["M3",3,6.9,1.75],["M4",4,9.4,2.3],["M5",5,11.8,2.85],["M6",6,13.8,3.4]];
+const PANHEAD=[["M2",2,3.5,1.3],["M2.5",2.5,4.5,1.7],["M3",3,5.5,2.0],["M4",4,7,2.6],["M5",5,9,3.4],["M6",6,10.5,4.0],["M8",8,14,5.4]];
+const TRUSS=[["M2",2,4.5,1.2],["M2.5",2.5,5.7,1.5],["M3",3,6.9,1.9],["M4",4,9.4,2.5],["M5",5,11.8,3.1],["M6",6,14,3.7],["M8",8,17.8,4.8]];
 const FLATCAP=[["M3",3,6.72,1.86,2],["M4",4,8.96,2.48,2.5],["M5",5,11.2,3.1,3],["M6",6,13.44,3.72,4],["M8",8,17.92,4.96,5]];
 const BUTTONCAP=[["M3",3,5.7,1.65,2],["M4",4,7.6,2.2,2.5],["M5",5,9.5,2.75,3],["M6",6,10.5,3.3,4],["M8",8,14,4.4,5],["M10",10,17.5,5.5,6]];
 const UNC=[["#2-56",2.18,56],["#4-40",2.85,40],["#6-32",3.51,32],["#8-32",4.17,32],["#10-24",4.83,24],['1/4"-20',6.35,20],['5/16"-18',7.94,18],['3/8"-16',9.53,16]];
@@ -2157,6 +2187,428 @@ function evaluate(){
  calcExpr=fmtCalc(v);
  update();
 }
+
+const FS_PITCH={ "M2":0.4,"M2.5":0.45,"M3":0.5,"M4":0.7,"M5":0.8,"M6":1,"M8":1.25,"M10":1.5,"M12":1.75,"M14":2,"M16":2,"M20":2.5,"M24":3 };
+const FS_DIA={ "M2":2,"M2.5":2.5,"M3":3,"M4":4,"M5":5,"M6":6,"M8":8,"M10":10,"M12":12,"M14":14,"M16":16,"M20":20,"M24":24 };
+// JIS B 1001 [1級,2級,3級,面取りe,黒皮ざぐり径D']
+const FS_HOLE={ "M2":[2.2,2.4,2.6,0.3,7],"M2.5":[2.7,2.9,3.1,0.3,8],"M3":[3.2,3.4,3.6,0.3,9],"M4":[4.3,4.5,4.8,0.4,11],"M5":[5.3,5.5,5.8,0.4,13],"M6":[6.4,6.6,7,0.4,15],"M8":[8.4,9,10,0.6,20],"M10":[10.5,11,12,0.6,24],"M12":[13,13.5,14.5,1.1,28],"M14":[15,15.5,16.5,1.1,32],"M16":[17,17.5,18.5,1.1,35],"M20":[21,22,24,1.2,43],"M24":[25,26,28,1.2,50] };
+// 4級（主に鋳抜き穴）
+const FS_HOLE4={ "M4":5.5,"M5":6.5,"M6":7.8,"M8":10,"M10":13,"M12":15,"M14":17,"M16":20,"M20":25,"M24":29 };
+// 各ねじ: d=[頭径dk, 頭高k, (六角穴対辺)]  geo=3D用（R:頭の丸み半径, m:十字穴径, t:穴深さ, rf:首下丸み）
+const FS_SCREWS={
+ pan:{name:"なべ小ねじ",std:"JIS B 1111:2017 附属書JA（十字穴付き）",measure:"under",shape:"dome",
+  d:{"M2":[3.5,1.3],"M2.5":[4.5,1.7],"M3":[5.5,2],"M4":[7,2.6],"M5":[9,3.4],"M6":[10.5,4],"M8":[14,5.4]},
+  geo:{"M2":{R:2.1,m:2.1,t:0.91,rf:0.1},"M2.5":{R:2.7,m:2.5,t:1.32,rf:0.1},"M3":{R:3.3,m:3.5,t:1.33,rf:0.1},"M4":{R:4.2,m:4.1,t:1.93,rf:0.2},"M5":{R:5.4,m:4.8,t:2.63,rf:0.2},"M6":{R:6.3,m:6.2,t:2.76,rf:0.25},"M8":{R:8.4,m:7.7,t:4.26,rf:0.4}}},
+ truss:{name:"トラス小ねじ",std:"JIS B 1111:2017 附属書JA（十字穴付き）",measure:"under",shape:"dome",
+  d:{"M2":[4.5,1.2],"M2.5":[5.7,1.5],"M3":[6.9,1.9],"M4":[9.4,2.5],"M5":[11.8,3.1],"M6":[14,3.7],"M8":[17.8,4.8]},
+  geo:{"M2":{R:3,m:2.2,t:1.01,rf:0.1},"M2.5":{R:3.7,m:2.5,t:1.32,rf:0.1},"M3":{R:4.6,m:2.9,t:1.72,rf:0.1},"M4":{R:6.1,m:4.3,t:2.13,rf:0.2},"M5":{R:7.7,m:5,t:2.83,rf:0.2},"M6":{R:9.1,m:6.3,t:2.86,rf:0.25},"M8":{R:11.7,m:7.8,t:4.36,rf:0.4}}},
+ flat:{name:"皿小ねじ",std:"JIS B 1111:2017 附属書JA（十字穴付き・頭部角度90°）",measure:"top",shape:"csk",
+  d:{"M2":[4,1.2],"M2.5":[5,1.45],"M3":[6,1.75],"M4":[8,2.3],"M5":[10,2.8],"M6":[12,3.4],"M8":[16,4.4]},
+  geo:{"M2":{m:2.2},"M2.5":{m:2.6},"M3":{m:3.6},"M4":{m:4.5},"M5":{m:5.1},"M6":{m:6.7},"M8":{m:8.4}}},
+ cap:{name:"六角穴付きボルト（キャップ）",std:"JIS B 1176",measure:"under",shape:"cyl",
+  d:{"M2":[3.8,2,1.5],"M2.5":[4.5,2.5,2],"M3":[5.5,3,2.5],"M4":[7,4,3],"M5":[8.5,5,4],"M6":[10,6,5],"M8":[13,8,6],"M10":[16,10,8],"M12":[18,12,10],"M14":[21,14,12],"M16":[24,16,14],"M20":[30,20,17],"M24":[36,24,19]},
+  geo:{"M2":{t:1,rf:0.1},"M2.5":{t:1.1,rf:0.1},"M3":{t:1.3,rf:0.1},"M4":{t:2,rf:0.2},"M5":{t:2.5,rf:0.2},"M6":{t:3,rf:0.25},"M8":{t:4,rf:0.4},"M10":{t:5,rf:0.4},"M12":{t:6,rf:0.6},"M14":{t:7,rf:0.6},"M16":{t:8,rf:0.6},"M20":{t:10,rf:0.8},"M24":{t:12,rf:0.8}}},
+ hexJA:{name:"六角ボルト（旧JIS寸法・市販品に多い）",std:"JIS B 1180 附属書JA",measure:"under",shape:"hex",
+  d:{"M3":[5.5,2],"M4":[7,2.8],"M5":[8,3.5],"M6":[10,4],"M8":[13,5.5],"M10":[17,7],"M12":[19,8],"M14":[22,9],"M16":[24,10],"M20":[30,13],"M24":[36,15]},
+  geo:{"M3":{rf:0.1},"M4":{rf:0.2},"M5":{rf:0.2},"M6":{rf:0.25},"M8":{rf:0.4},"M10":{rf:0.4},"M12":{rf:0.6},"M14":{rf:0.6},"M16":{rf:0.6},"M20":{rf:0.8},"M24":{rf:0.8}}},
+ hexISO:{name:"六角ボルト（ISO寸法）",std:"JIS B 1180 本体（ISO 4014／4017）",measure:"under",shape:"hex",
+  d:{"M3":[5.5,2],"M4":[7,2.8],"M5":[8,3.5],"M6":[10,4],"M8":[13,5.3],"M10":[16,6.4],"M12":[18,7.5],"M14":[21,8.8],"M16":[24,10],"M20":[30,12.5],"M24":[36,15]},
+  geo:{"M3":{rf:0.1},"M4":{rf:0.2},"M5":{rf:0.2},"M6":{rf:0.25},"M8":{rf:0.4},"M10":{rf:0.4},"M12":{rf:0.6},"M14":{rf:0.6},"M16":{rf:0.6},"M20":{rf:0.8},"M24":{rf:0.8}}}
+};
+const FS_PARTS={
+ wNormal:{name:"平座金（並形）",std:"JIS B 1256:2008 並形 部品等級A",kind:"washer",
+  d:{"M2":[2.2,5,0.3],"M2.5":[2.7,6,0.5],"M3":[3.2,7,0.5],"M4":[4.3,9,0.8],"M5":[5.3,10,1],"M6":[6.4,12,1.6],"M8":[8.4,16,1.6],"M10":[10.5,20,2],"M12":[13,24,2.5],"M14":[15,28,2.5],"M16":[17,30,3],"M20":[21,37,3],"M24":[25,44,4]}},
+ wISO:{name:"平座金（旧JIS・ISOみがき丸）",std:"JIS B 1256:1978（市販の丸ワッシャーに多い寸法）",kind:"washer",
+  d:{"M2":[2.2,5,0.3],"M2.5":[2.7,6.5,0.5],"M3":[3.2,7,0.5],"M4":[4.3,9,0.8],"M5":[5.3,10,1],"M6":[6.4,12.5,1.6],"M8":[8.4,17,1.6],"M10":[10.5,21,2],"M12":[13,24,2.3],"M14":[15,28,3.2],"M16":[17,30,3.2],"M20":[21,37,3.2],"M24":[25,44,4.5]}},
+ wSmall:{name:"平座金（小形）",std:"JIS B 1256:2008 小形 部品等級A",kind:"washer",
+  d:{"M2":[2.2,4.5,0.3],"M2.5":[2.7,5,0.5],"M3":[3.2,6,0.5],"M4":[4.3,8,0.5],"M5":[5.3,9,1],"M6":[6.4,11,1.6],"M8":[8.4,15,1.6],"M10":[10.5,18,1.6],"M12":[13,20,2],"M14":[15,24,2.5],"M16":[17,28,2.5],"M20":[21,34,3],"M24":[25,39,4]}},
+ wLarge:{name:"平座金（大形）",std:"JIS B 1256:2008 大形 部品等級A",kind:"washer",
+  d:{"M3":[3.2,9,0.8],"M4":[4.3,12,1],"M5":[5.3,15,1],"M6":[6.4,18,1.6],"M8":[8.4,24,2],"M10":[10.5,30,2.5],"M12":[13,37,3],"M14":[15,44,3],"M16":[17,50,3],"M20":[21,60,4],"M24":[25,72,5]}},
+ spring:{name:"ばね座金（2号・一般用）",std:"JIS B 1251 2号（厚さは断面厚さt。締付け後はほぼtまで潰れる前提）",kind:"spring",
+  d:{"M2":[2.1,4.4,0.5],"M2.5":[2.6,5.2,0.6],"M3":[3.1,5.9,0.7],"M4":[4.1,7.6,1],"M5":[5.1,9.2,1.3],"M6":[6.1,12.2,1.5],"M8":[8.2,15.4,2],"M10":[10.2,18.4,2.5],"M12":[12.2,21.5,3],"M14":[14.2,24.5,3.5],"M16":[16.2,28,4],"M20":[20.2,33.8,5.1],"M24":[24.5,40.3,5.9]}},
+ nut1:{name:"六角ナット（1種・市販品に多い）",std:"JIS B 1181 附属書JA（旧JIS 1種）",kind:"nut",
+  d:{"M2":[4,1.6],"M2.5":[5,2],"M3":[5.5,2.4],"M4":[7,3.2],"M5":[8,4],"M6":[10,5],"M8":[13,6.5],"M10":[17,8],"M12":[19,10],"M14":[22,11],"M16":[24,13],"M20":[30,16],"M24":[36,19]}},
+ nut3:{name:"六角ナット（3種・薄形）",std:"JIS B 1181 附属書JA（旧JIS 3種）",kind:"nut",
+  d:{"M2":[4,1.2],"M2.5":[5,1.6],"M3":[5.5,1.8],"M4":[7,2.4],"M5":[8,3.2],"M6":[10,3.6],"M8":[13,5],"M10":[17,6],"M12":[19,7],"M14":[22,8],"M16":[24,10],"M20":[30,12]}},
+ nutISO:{name:"六角ナット（ISO スタイル1）",std:"JIS B 1181:2014 本体 スタイル1",kind:"nut",
+  d:{"M2":[4,1.6],"M2.5":[5,2],"M3":[5.5,2.4],"M4":[7,3.2],"M5":[8,4.7],"M6":[10,5.2],"M8":[13,6.8],"M10":[16,8.4],"M12":[18,10.8],"M14":[21,12.8],"M16":[24,14.8],"M20":[30,18],"M24":[36,21.5]}},
+ spacer:{name:"スペーサー（寸法を入力）",std:"規格なし（長さ・外径は自分で入力）",kind:"spacer"}
+};
+const FS_LENGTHS=[2,3,4,5,6,8,10,12,14,15,16,18,20,22,25,28,30,32,35,38,40,45,50,55,60,65,70,75,80,85,90,95,100,110,120,130,140,150,160,180,200];
+// ヒートインサート下穴 参考値 [下穴径, インサート外径, 最小ボス外径, 肉厚]  出典: Albany County Fasteners 仕様表
+const FS_INSERT={ "M2":[3.2,3.5,5.0,0.75],"M2.5":[3.7,4.0,5.5,0.75],"M3":[4.0,4.6,6.5,0.95],"M4":[5.3,6.0,8.5,1.25],"M5":[6.4,7.1,10.0,1.45],"M6":[7.6,8.4,11.5,1.55],"M8":[10.2,11.1,15.0,1.95] };
+
+function StepWriter(){ this.e=[]; this.n=0; }
+StepWriter.prototype={
+ add(t){ this.n++; this.e.push("#"+this.n+"="+t+";"); return this.n; },
+ f(x){ return (Math.round(x*1e6)/1e6).toFixed(6); },
+ pt(x,y,z){ return this.add("CARTESIAN_POINT('',("+this.f(x)+","+this.f(y)+","+this.f(z)+"))"); },
+ dir(x,y,z){ return this.add("DIRECTION('',("+this.f(x)+","+this.f(y)+","+this.f(z)+"))"); },
+ ax(p,z,x){ return this.add("AXIS2_PLACEMENT_3D('',#"+p+",#"+z+",#"+x+")"); },
+ vtx(p){ return this.add("VERTEX_POINT('',#"+p+")"); },
+ line(p,d){ const v=this.add("VECTOR('',#"+d+",1.000000)"); return this.add("LINE('',#"+p+",#"+v+")"); },
+ circle(a,r){ return this.add("CIRCLE('',#"+a+","+this.f(r)+")"); },
+ edge(v1,v2,c){ return this.add("EDGE_CURVE('',#"+v1+",#"+v2+",#"+c+",.T.)"); },
+ oe(e,same){ return this.add("ORIENTED_EDGE('',*,*,#"+e+","+(same?".T.":".F.")+")"); },
+ loop(a){ return this.add("EDGE_LOOP('',("+a.map(x=>"#"+x).join(",")+"))"); },
+ face(b,s,same){ return this.add("ADVANCED_FACE('',("+b.map(x=>"#"+x).join(",")+"),#"+s+","+(same?".T.":".F.")+")"); },
+ outer(l){ return this.add("FACE_OUTER_BOUND('',#"+l+",.T.)"); },
+ bound(l){ return this.add("FACE_BOUND('',#"+l+",.T.)"); },
+ plane(a){ return this.add("PLANE('',#"+a+")"); },
+ cyl(a,r){ return this.add("CYLINDRICAL_SURFACE('',#"+a+","+this.f(r)+")"); },
+ zax(z){ return this.ax(this.pt(0,0,z),this.dir(0,0,1),this.dir(1,0,0)); }
+};
+function V(S,x,y,z){ const p=S.pt(x,y,z); return {x,y,z,p,v:S.vtx(p)}; }
+function lineEdge(S,a,b){ const L=Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z); return S.edge(a.v,b.v,S.line(a.p,S.dir((b.x-a.x)/L,(b.y-a.y)/L,(b.z-a.z)/L))); }
+function arcEdge(S,a,b,c,n){
+ const R=Math.hypot(a.x-c.x,a.y-c.y,a.z-c.z);
+ const rx=(a.x-c.x)/R, ry=(a.y-c.y)/R, rz=(a.z-c.z)/R;
+ const yx=n.y*rz-n.z*ry, yy=n.z*rx-n.x*rz, yz=n.x*ry-n.y*rx;
+ const bx=b.x-c.x, by=b.y-c.y, bz=b.z-c.z;
+ let ang=Math.atan2(bx*yx+by*yy+bz*yz, bx*rx+by*ry+bz*rz); if(ang<0) ang+=2*Math.PI;
+ let nn=n; if(ang>Math.PI) nn={x:-n.x,y:-n.y,z:-n.z};
+ const circ=S.circle(S.ax(S.pt(c.x,c.y,c.z),S.dir(nn.x,nn.y,nn.z),S.dir(rx,ry,rz)),R);
+ return S.edge(a.v,b.v,circ);
+}
+function revolveFaces(S,prof){
+ const ring=prof.map(p=>{ if(p.r<1e-9) return null; const o=V(S,p.r,0,p.z); o.r=p.r; o.c=S.circle(S.zax(p.z),p.r); o.e=S.edge(o.v,o.v,o.c); return o; });
+ const faces=[];
+ for(let i=0;i<prof.length-1;i++){
+  const a=prof[i], b=prof[i+1], A=ring[i], B=ring[i+1], arc=b.arc;
+  if(!A&&!B) continue;
+  if(!arc&&Math.abs(a.z-b.z)<1e-9){
+   const up=(b.r<a.r); const pl=S.plane(S.zax(a.z));
+   if(!A||!B){ const C=A||B; faces.push(S.face([S.outer(S.loop([S.oe(C.e,true)]))],pl,up)); }
+   else { const O=a.r>b.r?A:B, I=a.r>b.r?B:A; faces.push(S.face([S.outer(S.loop([S.oe(O.e,true)])),S.bound(S.loop([S.oe(I.e,false)]))],pl,up)); }
+   continue;
+  }
+  if(!A||!B) throw new Error("profile segment touching the axis must be horizontal");
+  const lo=a.z<b.z?A:B, hi=a.z<b.z?B:A, upward=(b.z>a.z);
+  let seam, surf, same;
+  if(arc){
+   seam=arcEdge(S,A,B,{x:arc.rc,y:0,z:arc.zc},{x:0,y:1,z:0});
+   const R=Math.hypot(a.r-arc.rc,a.z-arc.zc);
+   const cross=(b.r-a.r)*(arc.zc-a.z)-(b.z-a.z)*(arc.rc-a.r); const convex=cross>0;
+   if(Math.abs(arc.rc)<1e-9) surf=S.add("SPHERICAL_SURFACE('',#"+S.zax(arc.zc)+","+S.f(R)+")");
+   else surf=S.add("TOROIDAL_SURFACE('',#"+S.zax(arc.zc)+","+S.f(arc.rc)+","+S.f(R)+")");
+   same=convex;
+  } else if(Math.abs(a.r-b.r)<1e-9){ seam=lineEdge(S,A,B); surf=S.cyl(S.zax(lo.z),a.r); same=upward; }
+  else { seam=lineEdge(S,A,B); const rlo=lo.r, rhi=hi.r; const semi=Math.atan2(Math.abs(rhi-rlo),hi.z-lo.z);
+   if(rhi>=rlo) surf=S.add("CONICAL_SURFACE('',#"+S.zax(lo.z)+","+S.f(rlo)+","+S.f(semi)+")");
+   else surf=S.add("CONICAL_SURFACE('',#"+S.ax(S.pt(0,0,hi.z),S.dir(0,0,-1),S.dir(1,0,0))+","+S.f(rhi)+","+S.f(semi)+")");
+   same=upward; }
+  const seamUp=(lo===A);
+  const lp=S.loop([S.oe(lo.e,false),S.oe(seam,seamUp),S.oe(hi.e,true),S.oe(seam,!seamUp)]);
+  faces.push(S.face([S.outer(lp)],surf,same));
+ }
+ return {faces,ring};
+}
+function pocket(S,poly,topZ,zb,topArc){
+ const n=poly.length, T=[],Bt=[];
+ poly.forEach(q=>{ T.push(V(S,q.x,q.y,topZ(q.x,q.y))); Bt.push(V(S,q.x,q.y,zb)); });
+ const ver=T.map((t,i)=>lineEdge(S,Bt[i],t));
+ const bot=[],top=[];
+ for(let i=0;i<n;i++){ const j=(i+1)%n; bot.push(lineEdge(S,Bt[i],Bt[j])); top.push(topArc?topArc(T[i],T[j]):lineEdge(S,T[i],T[j])); }
+ const faces=[];
+ for(let i=0;i<n;i++){ const j=(i+1)%n; const a=poly[i], b=poly[j]; const L=Math.hypot(b.x-a.x,b.y-a.y);
+  const nx=(b.y-a.y)/L, ny=-(b.x-a.x)/L;
+  const pl=S.plane(S.ax(Bt[i].p,S.dir(nx,ny,0),S.dir((b.x-a.x)/L,(b.y-a.y)/L,0)));
+  const lp=S.loop([S.oe(bot[i],true),S.oe(ver[j],true),S.oe(top[i],false),S.oe(ver[i],false)]);
+  faces.push(S.face([S.outer(lp)],pl,false)); }
+ faces.push(S.face([S.outer(S.loop(bot.map(e=>S.oe(e,true))))],S.plane(S.zax(zb)),true));
+ return {faces,top,T};
+}
+function innerLoopRev(S,edges){ return S.bound(S.loop(edges.slice().reverse().map(e=>S.oe(e,false)))); }
+function topPlaneWithPocket(S,R,z,p){ return S.face([S.outer(S.loop([S.oe(R.e,true)])),innerLoopRev(S,p.top)],S.plane(S.zax(z)),true); }
+function crossPoly(a,w){ const h=w/2; return [{x:a,y:0},{x:a,y:h},{x:h,y:h},{x:h,y:a},{x:-h,y:a},{x:-h,y:h},{x:-a,y:h},{x:-a,y:-h},{x:-h,y:-h},{x:-h,y:-a},{x:h,y:-a},{x:h,y:-h},{x:a,y:-h}]; }
+function hexPoly(s,rot){ const R=s/Math.sqrt(3); const o=[]; for(let i=0;i<6;i++){ const t=Math.PI/3*i+(rot||0); o.push({x:R*Math.cos(t),y:R*Math.sin(t)}); } return o; }
+function cylinderSolid(S,r,z0,z1,ri){
+ if(!ri) return revolveFaces(S,[{r:0,z:z0},{r:r,z:z0},{r:r,z:z1},{r:0,z:z1}]).faces;
+ const o=revolveFaces(S,[{r:ri,z:z0},{r:r,z:z0},{r:r,z:z1},{r:ri,z:z1}]);
+ const faces=o.faces.slice(); const A=o.ring[3],B=o.ring[0]; const seam=lineEdge(S,A,B);
+ faces.push(S.face([S.outer(S.loop([S.oe(B.e,false),S.oe(seam,false),S.oe(A.e,true),S.oe(seam,true)]))],S.cyl(S.zax(z0),ri),false));
+ return faces;
+}
+function solidHexPrism(S,af,z0,z1,ri){
+ const P=hexPoly(af,0), T=P.map(q=>V(S,q.x,q.y,z1)), B=P.map(q=>V(S,q.x,q.y,z0));
+ const bot=[],top=[],ver=[]; for(let i=0;i<6;i++){ const j=(i+1)%6; bot.push(lineEdge(S,B[i],B[j])); top.push(lineEdge(S,T[i],T[j])); ver.push(lineEdge(S,B[i],T[i])); }
+ const faces=[];
+ for(let i=0;i<6;i++){ const j=(i+1)%6; const a=P[i],b=P[j]; const L=Math.hypot(b.x-a.x,b.y-a.y); const ang=Math.PI/3*i+Math.PI/6;
+  const pl=S.plane(S.ax(B[i].p,S.dir(Math.cos(ang),Math.sin(ang),0),S.dir((b.x-a.x)/L,(b.y-a.y)/L,0)));
+  faces.push(S.face([S.outer(S.loop([S.oe(bot[i],true),S.oe(ver[j],true),S.oe(top[i],false),S.oe(ver[i],false)]))],pl,true)); }
+ let bore=null;
+ if(ri){ const a=V(S,ri,0,z0), b=V(S,ri,0,z1); a.c=S.circle(S.zax(z0),ri); b.c=S.circle(S.zax(z1),ri); a.e=S.edge(a.v,a.v,a.c); b.e=S.edge(b.v,b.v,b.c);
+  const seam=lineEdge(S,a,b); faces.push(S.face([S.outer(S.loop([S.oe(a.e,false),S.oe(seam,true),S.oe(b.e,true),S.oe(seam,false)]))],S.cyl(S.zax(z0),ri),false)); bore={a,b}; }
+ const bl=[S.outer(S.loop(bot.map(e=>S.oe(e,true))))]; if(bore) bl.push(S.bound(S.loop([S.oe(bore.a.e,false)])));
+ faces.push(S.face(bl,S.plane(S.zax(z0)),false));
+ const tl=[S.outer(S.loop(top.map(e=>S.oe(e,true))))]; if(bore) tl.push(S.bound(S.loop([S.oe(bore.b.e,false)])));
+ faces.push(S.face(tl,S.plane(S.zax(z1)),true));
+ return faces;
+}
+function shankProfile(d,L,c,rf,zs){
+ const r=d/2, tip=zs-L; const prof=[{r:0,z:tip},{r:r-c,z:tip},{r:r,z:tip+c}];
+ if(rf>0){ prof.push({r:r,z:zs-rf}); prof.push({r:r+rf,z:zs,arc:{rc:r+rf,zc:zs-rf}}); } else prof.push({r:r,z:zs});
+ return prof;
+}
+function screwCapSolid(S,p){
+ const c=Math.min(0.1*p.d+0.1,p.L/4), rf=p.rf||0, ch=Math.min(0.08*p.dk,0.6);
+ const prof=shankProfile(p.d,p.L,c,rf,0);
+ prof.push({r:p.dk/2,z:0},{r:p.dk/2,z:p.k-ch},{r:p.dk/2-ch,z:p.k});
+ const o=revolveFaces(S,prof); const faces=o.faces.slice();
+ const pk=pocket(S,hexPoly(p.s,Math.PI/6),()=>p.k,p.k-p.t,null); faces.push(...pk.faces);
+ faces.push(topPlaneWithPocket(S,o.ring[o.ring.length-1],p.k,pk));
+ return faces;
+}
+function screwCskSolid(S,p){
+ const c=Math.min(0.1*p.d+0.1,p.L/4); const kc=(p.dk-p.d)/2; let rim=p.k-kc; if(rim<0.15) rim=0.15;
+ const zt=0, zcone=-rim, zneck=-rim-kc;
+ const prof=[{r:0,z:-p.L},{r:p.d/2-c,z:-p.L},{r:p.d/2,z:-p.L+c},{r:p.d/2,z:zneck},{r:p.dk/2,z:zcone},{r:p.dk/2,z:zt}];
+ const o=revolveFaces(S,prof); const faces=o.faces.slice();
+ const pk=pocket(S,crossPoly(p.m/2,0.3*p.m),()=>zt,zt-p.t,null); faces.push(...pk.faces);
+ faces.push(topPlaneWithPocket(S,o.ring[o.ring.length-1],zt,pk));
+ return faces;
+}
+function screwDomeSolid(S,p){
+ const c=Math.min(0.1*p.d+0.1,p.L/4), rf=p.rf||0;
+ const R=Math.max(p.R,p.dk/2+0.01), zc=p.k-R; const ze=zc+Math.sqrt(R*R-(p.dk/2)*(p.dk/2));
+ const prof=shankProfile(p.d,p.L,c,rf,0); prof.push({r:p.dk/2,z:0},{r:p.dk/2,z:Math.max(ze,0.05)});
+ const o=revolveFaces(S,prof); const faces=o.faces.slice(); const E=o.ring[o.ring.length-1];
+ const a=p.m/2, w=0.3*p.m, zb=p.k-p.t; const C={x:0,y:0,z:zc};
+ const topZ=(x,y)=>zc+Math.sqrt(R*R-x*x-y*y);
+ const pk=pocket(S,crossPoly(a,w),topZ,zb,(A,B)=>{ const nx=-(B.y-A.y), ny=(B.x-A.x); const L=Math.hypot(nx,ny); const n={x:nx/L,y:ny/L,z:0};
+  const dd=(A.x-C.x)*n.x+(A.y-C.y)*n.y; const cc={x:C.x+dd*n.x,y:C.y+dd*n.y,z:zc}; return arcEdge(S,A,B,cc,n); });
+ faces.push(...pk.faces);
+ const P0=pk.T[0]; const seam=arcEdge(S,E,P0,C,{x:0,y:1,z:0});
+ const sphere=S.add("SPHERICAL_SURFACE('',#"+S.zax(zc)+","+S.f(R)+")");
+ const lp=S.loop([S.oe(E.e,false),S.oe(seam,true),...pk.top.map(e=>S.oe(e,true)),S.oe(seam,false)]);
+ faces.push(S.face([S.outer(lp)],sphere,true));
+ return faces;
+}
+function screwHexSolid(S,p){
+ const c=Math.min(0.1*p.d+0.1,p.L/4), rf=p.rf||0;
+ const prof=shankProfile(p.d,p.L,c,rf,0); const o=revolveFaces(S,prof); const faces=o.faces.slice();
+ const I=o.ring[o.ring.length-1];
+ const P=hexPoly(p.s,0), B=P.map(q=>V(S,q.x,q.y,0)), T=P.map(q=>V(S,q.x,q.y,p.k));
+ const bot=[],top=[],ver=[]; for(let i=0;i<6;i++){ const j=(i+1)%6; bot.push(lineEdge(S,B[i],B[j])); top.push(lineEdge(S,T[i],T[j])); ver.push(lineEdge(S,B[i],T[i])); }
+ for(let i=0;i<6;i++){ const j=(i+1)%6; const a=P[i],b=P[j]; const L=Math.hypot(b.x-a.x,b.y-a.y); const ang=Math.PI/3*i+Math.PI/6;
+  const pl=S.plane(S.ax(B[i].p,S.dir(Math.cos(ang),Math.sin(ang),0),S.dir((b.x-a.x)/L,(b.y-a.y)/L,0)));
+  faces.push(S.face([S.outer(S.loop([S.oe(bot[i],true),S.oe(ver[j],true),S.oe(top[i],false),S.oe(ver[i],false)]))],pl,true)); }
+ faces.push(S.face([S.outer(S.loop(bot.map(e=>S.oe(e,true)))),S.bound(S.loop([S.oe(I.e,false)]))],S.plane(S.zax(0)),false));
+ faces.push(S.face([S.outer(S.loop(top.map(e=>S.oe(e,true))))],S.plane(S.zax(p.k)),true));
+ return faces;
+}
+function writeAssembly(parts,asmName){
+ const S=new StepWriter();
+ const app=S.add("APPLICATION_CONTEXT('automotive design')");
+ S.add("APPLICATION_PROTOCOL_DEFINITION('international standard','automotive_design',2010,#"+app+")");
+ const lu=S.add("( LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.) )");
+ const au=S.add("( NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.) )");
+ const su=S.add("( NAMED_UNIT(*) SI_UNIT($,.STERADIAN.) SOLID_ANGLE_UNIT() )");
+ const unc=S.add("UNCERTAINTY_MEASURE_WITH_UNIT(LENGTH_MEASURE(1.E-06),#"+lu+",'distance_accuracy_value','')");
+ const g=S.add("( GEOMETRIC_REPRESENTATION_CONTEXT(3) GLOBAL_UNCERTAINTY_ASSIGNED_CONTEXT((#"+unc+")) GLOBAL_UNIT_ASSIGNED_CONTEXT((#"+lu+",#"+au+",#"+su+")) REPRESENTATION_CONTEXT('','') )");
+ const pc=S.add("PRODUCT_CONTEXT('',#"+app+",'mechanical')");
+ const pdc=S.add("PRODUCT_DEFINITION_CONTEXT('part definition',#"+app+",'design')");
+ const mkProduct=(name)=>{ const prod=S.add("PRODUCT('"+name+"','"+name+"','',(#"+pc+"))"); const pdf=S.add("PRODUCT_DEFINITION_FORMATION('','',#"+prod+")"); const pd=S.add("PRODUCT_DEFINITION('design','',#"+pdf+",#"+pdc+")"); const pds=S.add("PRODUCT_DEFINITION_SHAPE('','',#"+pd+")"); S.add("PRODUCT_RELATED_PRODUCT_CATEGORY('part','',(#"+prod+"))"); return {prod,pd,pds}; };
+ const asm=mkProduct(asmName); const asmOrigin=S.zax(0);
+ const asmRep=S.add("SHAPE_REPRESENTATION('"+asmName+"',(#"+asmOrigin+"),#"+g+")");
+ S.add("SHAPE_DEFINITION_REPRESENTATION(#"+asm.pds+",#"+asmRep+")");
+ parts.forEach((part,idx)=>{
+  const pr=mkProduct(part.name); const origin=S.zax(0);
+  const bodies=part.solids.map(sd=>{ const faces=sd.fn(S); const shell=S.add("CLOSED_SHELL('',("+faces.map(f=>"#"+f).join(",")+"))"); return S.add("MANIFOLD_SOLID_BREP('"+sd.name+"',#"+shell+")"); });
+  const rep=S.add("ADVANCED_BREP_SHAPE_REPRESENTATION('"+part.name+"',(#"+origin+","+bodies.map(b=>"#"+b).join(",")+"),#"+g+")");
+  S.add("SHAPE_DEFINITION_REPRESENTATION(#"+pr.pds+",#"+rep+")");
+  const nauo=S.add("NEXT_ASSEMBLY_USAGE_OCCURRENCE('"+(idx+1)+"','"+part.name+"','',#"+asm.pd+",#"+pr.pd+",$)");
+  const pdsN=S.add("PRODUCT_DEFINITION_SHAPE('','',#"+nauo+")");
+  const idt=S.add("ITEM_DEFINED_TRANSFORMATION('','',#"+asmOrigin+",#"+origin+")");
+  const rr=S.add("( REPRESENTATION_RELATIONSHIP('','',#"+rep+",#"+asmRep+") REPRESENTATION_RELATIONSHIP_WITH_TRANSFORMATION(#"+idt+") SHAPE_REPRESENTATION_RELATIONSHIP() )");
+  S.add("CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#"+rr+",#"+pdsN+")");
+ });
+ const d=new Date().toISOString().slice(0,19);
+ return "ISO-10303-21;\nHEADER;\nFILE_DESCRIPTION(('M-TIC fastener stack'),'2;1');\nFILE_NAME('"+asmName+".step','"+d+"',(''),(''),'','','');\nFILE_SCHEMA(('AUTOMOTIVE_DESIGN { 1 0 10303 214 1 1 1 1 }'));\nENDSEC;\nDATA;\n"+S.e.join("\n")+"\nENDSEC;\nEND-ISO-10303-21;\n";
+}
+
+const fsFmt=v=>v==null||isNaN(v)?"—":(Math.round(v*100)/100).toString();
+const fsState={type:"cap",size:"M5",head:[{kind:"spring"},{kind:"wNormal"}],plates:[5,5],nutSide:[{kind:"wNormal"},{kind:"nut1"}],mode:"nut",protP:2,engage:1.0,gap:0.5,spacerLen:10,spacerOd:8};
+function fsPartSpec(p,size){
+ const P=FS_PARTS[p.kind];
+ if(P.kind==="spacer") return {kind:"spacer",name:"スペーサー "+p.len+"×φ"+p.od,h:p.len,od:p.od,id:FS_DIA[size]+0.6,shape:"ring",std:P.std};
+ const d=P.d[size]; if(!d) return null;
+ if(P.kind==="nut") return {kind:"nut",name:P.name,h:d[1],s:d[0],e:d[0]/Math.cos(Math.PI/6),od:d[0]/Math.cos(Math.PI/6),id:FS_DIA[size],shape:"hex",std:P.std};
+ return {kind:P.kind,name:P.name,h:d[2],od:d[1],id:d[0],shape:"ring",std:P.std,spring:P.kind==="spring"};
+}
+function fsScrewSpec(){
+ const T=FS_SCREWS[fsState.type], d=T.d[fsState.size]; if(!d) return null;
+ const sp={name:T.name,std:T.std,measure:T.measure,shape:T.shape,k:d[1],pitch:FS_PITCH[fsState.size],dia:FS_DIA[fsState.size],geo:(T.geo||{})[fsState.size]||{}};
+ if(T.shape==="hex"){ sp.s=d[0]; sp.e=d[0]/Math.cos(Math.PI/6); sp.rmin=d[0]/2; sp.rmax=sp.e/2; sp.dk=sp.e; }
+ else { sp.dk=d[0]; sp.rmin=d[0]/2; sp.rmax=d[0]/2; if(T.shape==="cyl") sp.key=d[2]; }
+ return sp;
+}
+function fsCalc(){
+ const S=fsState; const sc=fsScrewSpec(); if(!sc) return {err:"この種類には "+S.size+" の規格値がありません。"};
+ const head=S.head.map(p=>fsPartSpec(p,S.size)), nut=S.nutSide.map(p=>fsPartSpec(p,S.size));
+ if(head.some(x=>!x)||nut.some(x=>!x)) return {err:"選んだ部品に "+S.size+" の規格値がないものがあります。"};
+ const headH=head.reduce((a,b)=>a+b.h,0), plateH=S.plates.reduce((a,b)=>a+(+b||0),0), nutH=nut.reduce((a,b)=>a+b.h,0);
+ const nuts=nut.filter(x=>x.shape==="hex"); const warn=[];
+ if(sc.shape==="csk"&&head.length) warn.push("皿小ねじの頭の下に座金などは入れられません。頭側の部品を外してください。");
+ if(S.mode==="nut"&&nuts.length===0) warn.push("ナット側にナットがありません。ナットを追加するか、相手を「めねじ（タップ穴）」にしてください。");
+ if(S.mode==="tap"&&nuts.length) warn.push("相手がめねじのときはナットは使いません。");
+ head.forEach(h=>{ if(h.shape==="ring"&&!h.spring&&sc.shape!=="hex"&&sc.shape!=="csk"&&h.od<sc.dk) warn.push(h.name+"の外径（"+h.od+"）が頭径（"+sc.dk+"）より小さく、頭が座金からはみ出します。"); });
+ const below=headH+plateH+nutH; let extra,extraLabel;
+ if(S.mode==="nut"){ extra=S.protP*sc.pitch; extraLabel="ナットから出す長さ（"+S.protP+"山＝"+fsFmt(extra)+" mm）"; }
+ else { extra=S.engage*sc.dia; extraLabel="めねじへのかかり長さ（"+S.engage+"×d＝"+fsFmt(extra)+" mm）"; }
+ const need=below+extra; const Ln=FS_LENGTHS.find(L=>L>=need-1e-9), Lnext=FS_LENGTHS.find(L=>L>Ln);
+ return {sc,head,nut,headH,plateH,nutH,below,need,extra,extraLabel,Ln,Lnext,hole:FS_HOLE[S.size],warn,
+  topToNutEnd:(sc.measure==="under"?sc.k:0)+below, totalWithScrew:Ln?((sc.measure==="under"?sc.k:0)+Ln):null, tip:Ln?(Ln-below):null};
+}
+function fsPartRow(p,list,i,size){
+ const sp=fsPartSpec(p,size); const div=document.createElement("div"); div.className="fs-pt"; div.draggable=true; div.dataset.list=list; div.dataset.i=i;
+ const info=sp?(sp.shape==="hex"?("対辺 "+sp.s+"・高さ "+sp.h):("内径 "+sp.id+"・外径 "+sp.od+"・厚さ "+sp.h)):"この呼びの規格値なし";
+ div.innerHTML='<span class="fs-grip">⋮⋮</span><span class="fs-pn">'+(sp?sp.name:FS_PARTS[p.kind].name)+'</span><span class="fs-pi">'+info+'</span><span class="fs-ops"><button type="button" data-op="up" title="上へ">▲</button><button type="button" data-op="down" title="下へ">▼</button><button type="button" data-op="del" title="外す">×</button></span>';
+ return div;
+}
+function fsRenderLists(){
+ ["head","nutSide"].forEach(list=>{ const box=$("#fs-list-"+list); box.innerHTML=""; const arr=fsState[list];
+  if(!arr.length) box.innerHTML='<div class="fs-empty">部品なし（下のメニューから追加）</div>';
+  arr.forEach((p,i)=>box.appendChild(fsPartRow(p,list,i,fsState.size))); });
+ const pb=$("#fs-plates"); pb.innerHTML="";
+ fsState.plates.forEach((t,i)=>{ const d=document.createElement("div"); d.className="fs-pt fs-plate"; d.innerHTML='<span class="fs-pn">固定物 '+(i+1)+'</span><input type="number" step="0.1" min="0" value="'+t+'" data-i="'+i+'"> mm<span class="fs-ops"><button type="button" data-op="pdel" data-i="'+i+'">×</button></span>'; pb.appendChild(d); });
+}
+function fsRenderResults(){
+ const R=fsCalc(); const out=$("#fs-out");
+ if(R.err){ out.innerHTML='<div class="fs-warn"><p>'+R.err+'</p></div>'; $("#fs-svg").innerHTML=""; return; }
+ const sc=R.sc; const S=fsState; let h='';
+ if(R.warn.length) h+='<div class="fs-warn">'+R.warn.map(w=>'<p>'+w+'</p>').join('')+'</div>';
+ h+='<div class="fs-big"><span>必要なねじ長さ</span><b>'+fsFmt(R.need)+' mm 以上</b></div>';
+ h+='<div class="fs-big"><span>選ぶ呼び長さ</span><b>'+(R.Ln?S.size+'×'+R.Ln:'規格の長さを超えています')+'</b>'+(R.Ln?'<small>次の長さ：'+(R.Lnext||'—')+'（先端の出：'+fsFmt(R.Lnext?R.Lnext-R.below:null)+' mm）</small>':'')+'</div>';
+ h+='<table class="fs-res"><tr><th colspan="2">内訳</th></tr>';
+ h+='<tr><td>頭側の部品</td><td>'+fsFmt(R.headH)+' mm（'+R.head.length+'点）</td></tr><tr><td>固定物の合計</td><td>'+fsFmt(R.plateH)+' mm（'+S.plates.length+'枚）</td></tr><tr><td>ナット側の部品（ナット含む）</td><td>'+fsFmt(R.nutH)+' mm（'+R.nut.length+'点）</td></tr><tr><td>'+R.extraLabel+'</td><td>'+fsFmt(R.extra)+' mm</td></tr>';
+ h+='<tr><td>'+(sc.measure==="top"?"頭の上面":"頭の下")+'からナット端まで</td><td>'+fsFmt(R.below)+' mm</td></tr><tr><td>呼び長さ '+(R.Ln||'—')+' のときの先端の出</td><td>'+fsFmt(R.tip)+' mm</td></tr><tr><td>頭の上面からナット端まで（全高）</td><td>'+fsFmt(R.topToNutEnd)+' mm</td></tr><tr><td>頭の上面からねじ先端まで</td><td>'+fsFmt(R.totalWithScrew)+' mm</td></tr></table>';
+ h+='<table class="fs-res"><tr><th colspan="2">頭の寸法（'+sc.name+'）</th></tr><tr><td>規格</td><td>'+sc.std+'</td></tr><tr><td>呼び長さの測り方</td><td>'+(sc.measure==="top"?"頭の上面から先端まで（皿）":"頭の下面（座面）から先端まで")+'</td></tr>';
+ if(sc.shape==="hex") h+='<tr><td>二面幅 s／対角 e</td><td>'+fsFmt(sc.s)+' ／ '+fsFmt(sc.e)+' mm</td></tr>'; else h+='<tr><td>頭の直径 dk</td><td>'+fsFmt(sc.dk)+' mm</td></tr>';
+ h+='<tr><td>頭の高さ k</td><td>'+fsFmt(sc.k)+' mm</td></tr>'; if(sc.key) h+='<tr><td>六角レンチの対辺</td><td>'+sc.key+' mm</td></tr>';
+ h+='<tr><td>頭の最小半径／最大半径</td><td>'+fsFmt(sc.rmin)+' ／ '+fsFmt(sc.rmax)+' mm'+(sc.shape==="hex"?'（二面幅の半分／対角の半分）':'')+'</td></tr>';
+ h+='<tr><td>ねじ中心から壁までの最小距離</td><td><b>'+fsFmt(sc.rmax+S.gap)+' mm</b>（最大半径＋すき間 '+S.gap+'）</td></tr>';
+ h+='<tr><td>通し穴（JIS B 1001）</td><td>1級 '+R.hole[0]+'／2級 '+R.hole[1]+'／3級 '+R.hole[2]+' mm（面取り '+R.hole[3]+'、黒皮ざぐり径 '+R.hole[4]+'）</td></tr></table>';
+ if(sc.shape==="hex") h+='<p class="fs-note">六角ボルトはスパナやソケットを頭の外側に掛けるので、工具の分だけ壁からの距離がさらに必要です。壁に近い場所は六角穴付きボルト（工具が頭の中に入る）が有利です。</p>';
+ if(sc.shape==="cyl") h+='<p class="fs-note">六角穴付きボルトは六角レンチが頭の中に入るため、頭の半径＋すき間があれば締められます。</p>';
+ out.innerHTML=h; fsDrawSvg(R);
+}
+function fsDrawSvg(R){
+ const sc=R.sc, svg=$("#fs-svg"); const L=R.Ln||R.need; const total=(sc.measure==="under"?sc.k:0)+L;
+ const wmax=Math.max(sc.dk,R.nut.reduce((a,b)=>Math.max(a,b.od),0),R.head.reduce((a,b)=>Math.max(a,b.od),0),12)*1.7;
+ const scale=Math.min(360/total,220/wmax,12); const W=400, cx=W/2-30; let y=16; const H=total*scale+40;
+ let s='<svg viewBox="0 0 '+W+' '+Math.max(H,120)+'" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="10">';
+ const rect=(w,h,fill,label)=>{ s+='<rect x="'+(cx-w*scale/2)+'" y="'+y+'" width="'+(w*scale)+'" height="'+(h*scale)+'" fill="'+fill+'" stroke="#333" stroke-width="0.8"/>'; if(label) s+='<text x="'+(cx+w*scale/2+8)+'" y="'+(y+h*scale/2+3)+'" fill="#333">'+label+'</text>'; y+=h*scale; };
+ const dia=sc.dia; let headPoly=''; const yHead=y;
+ if(sc.shape==="csk"){ headPoly='<polygon points="'+(cx-sc.dk*scale/2)+','+y+' '+(cx+sc.dk*scale/2)+','+y+' '+(cx+dia*scale/2)+','+(y+sc.k*scale)+' '+(cx-dia*scale/2)+','+(y+sc.k*scale)+'" fill="#9fb3d9" stroke="#333" stroke-width="0.8"/><text x="'+(cx+sc.dk*scale/2+8)+'" y="'+(y+sc.k*scale/2+3)+'">皿頭 dk'+sc.dk+' k'+sc.k+'</text>'; }
+ else if(sc.shape==="hex") rect(sc.e,sc.k,"#9fb3d9","六角頭 s"+sc.s+" k"+sc.k);
+ else rect(sc.dk,sc.k,"#9fb3d9",(sc.shape==="dome"?"頭 dk":"キャップ dk")+sc.dk+" k"+sc.k);
+ const y0=y; const items=[];
+ R.head.forEach(p=>items.push({p,fill:p.spring?"#f6c56b":"#d9d9d9"}));
+ fsState.plates.forEach((t,i)=>items.push({p:{name:"固定物 "+(i+1),h:+t||0,od:Math.max(sc.dk,12)*1.6,shape:"ring"},fill:"#c8e6c9"}));
+ R.nut.forEach(p=>items.push({p,fill:p.shape==="hex"?"#9fb3d9":(p.spring?"#f6c56b":"#d9d9d9")}));
+ items.forEach(it=>{ const w=it.p.shape==="hex"?it.p.e:it.p.od; rect(w,it.p.h,it.fill,it.p.name.replace(/（.*?）/,"")+" "+fsFmt(it.p.h)); });
+ const yTop=(sc.shape==="csk")?yHead:y0, yEnd=yTop+L*scale;
+ s+='<rect x="'+(cx-dia*scale/2)+'" y="'+yTop+'" width="'+(dia*scale)+'" height="'+(L*scale)+'" fill="#6f8fc7" fill-opacity="0.55" stroke="#1d3f8a" stroke-width="0.8"/>'+headPoly;
+ const xl=cx-wmax*scale/2-18;
+ s+='<line x1="'+xl+'" y1="'+yTop+'" x2="'+xl+'" y2="'+yEnd+'" stroke="#c0392b" stroke-width="1"/><line x1="'+(xl-4)+'" y1="'+yTop+'" x2="'+(xl+4)+'" y2="'+yTop+'" stroke="#c0392b"/><line x1="'+(xl-4)+'" y1="'+yEnd+'" x2="'+(xl+4)+'" y2="'+yEnd+'" stroke="#c0392b"/>';
+ s+='<text x="'+(xl-6)+'" y="'+((yTop+yEnd)/2)+'" fill="#c0392b" text-anchor="middle" transform="rotate(-90 '+(xl-6)+' '+((yTop+yEnd)/2)+')">呼び長さ L='+fsFmt(L)+'</text></svg>';
+ svg.innerHTML=s;
+}
+// STEP: 部品ごとに別プロダクト。固定物は作らない
+function fsBuildStep(){
+ const R=fsCalc(); if(R.err) return null; const sc=R.sc, S=fsState; const L=R.Ln||Math.ceil(R.need); const d=sc.dia; const nm=S.size.replace(".","_"); const g=sc.geo;
+ const parts=[]; let screwFn, screwName;
+ if(sc.shape==="csk"){ screwName="csk_screw_"+nm+"x"+L; screwFn=W=>screwCskSolid(W,{d,L,dk:sc.dk,k:sc.k,m:g.m||0.7*sc.dk,t:0.75*sc.k}); }
+ else if(sc.shape==="dome"){ screwName=(S.type==="pan"?"pan_screw_":"truss_screw_")+nm+"x"+L; screwFn=W=>screwDomeSolid(W,{d,L,dk:sc.dk,k:sc.k,R:g.R||sc.dk,m:g.m||0.6*sc.dk,t:g.t||0.6*sc.k,rf:g.rf||0}); }
+ else if(sc.shape==="cyl"){ screwName="cap_screw_"+nm+"x"+L; screwFn=W=>screwCapSolid(W,{d,L,dk:sc.dk,k:sc.k,s:sc.key,t:g.t||0.5*sc.k,rf:g.rf||0}); }
+ else { screwName="hex_bolt_"+nm+"x"+L; screwFn=W=>screwHexSolid(W,{d,L,s:sc.s,k:sc.k,rf:g.rf||0}); }
+ parts.push({name:screwName,solids:[{name:screwName,fn:screwFn}]});
+ // stack below the seat: z=0 at seat (csk: z=0 at top of head; its head occupies the first plate so the stack starts at z=0 too)
+ let z=0; let i=1;
+ const addRing=(p)=>{ const z0=z-p.h, z1=z; const base=(p.shape==="hex"?"nut":(p.spring?"spring_washer":(p.kind==="spacer"?"spacer":"washer"))); const name=base+"_"+(i++)+"_"+nm;
+  if(p.shape==="hex") parts.push({name,solids:[{name,fn:W=>solidHexPrism(W,p.s,z0,z1,d/2)}]}); else parts.push({name,solids:[{name,fn:W=>cylinderSolid(W,p.od/2,z0,z1,p.id/2)}]}); z=z0; };
+ R.head.forEach(addRing); z-=R.plateH; R.nut.forEach(addRing);
+ return writeAssembly(parts,"fastener_"+nm+"x"+L);
+}
+function fsMkPart(kind){ return kind==="spacer"?{kind,len:fsState.spacerLen,od:fsState.spacerOd}:{kind}; }
+RENDER.stack=()=>{
+ const S=fsState;
+ $("#main").innerHTML=`<h2 class="page-title">ねじ締結の組立計算（必要長さ・全高・STEP）</h2>
+ <p class="page-sub">頭側・固定物・ナット側に部品を並べて、必要なねじ長さ・全高・頭の寸法を出します。部品はドラッグまたは ▲▼ で並べ替えできます。STEP は部品ごとに独立したボディ（固定物は空白）で書き出します。</p>
+ <div class="fs-grid">
+ <section class="calc-card">
+  <h3>ねじ</h3>
+  <label>種類<select id="fs-type">${Object.keys(FS_SCREWS).map(k=>`<option value="${k}">${FS_SCREWS[k].name}</option>`).join("")}</select></label>
+  <label>呼び径<select id="fs-size">${Object.keys(FS_DIA).map(k=>`<option value="${k}">${k}</option>`).join("")}</select></label>
+  <h3>頭側（頭の下に入れる部品）</h3><div id="fs-list-head"></div>
+  <div class="fs-row"><select id="fs-add-head">${Object.keys(FS_PARTS).filter(k=>FS_PARTS[k].kind!=="nut").map(k=>`<option value="${k}">${FS_PARTS[k].name}</option>`).join("")}</select><button type="button" class="act fs-add" id="fs-btn-add-head">＋ 追加</button></div>
+  <h3>固定物（締め付ける板など）</h3><div id="fs-plates"></div>
+  <div class="fs-row"><button type="button" class="act fs-add" id="fs-btn-add-plate">＋ 固定物を追加</button></div>
+  <h3>ナット側（固定物の向こう側）</h3><div id="fs-list-nutSide"></div>
+  <div class="fs-row"><select id="fs-add-nut">${Object.keys(FS_PARTS).map(k=>`<option value="${k}"${k==="nut1"?" selected":""}>${FS_PARTS[k].name}</option>`).join("")}</select><button type="button" class="act fs-add" id="fs-btn-add-nut">＋ 追加</button></div>
+  <div class="fs-row fs-small">スペーサーを追加するときの寸法：長さ <input type="number" id="fs-spacerLen" value="${S.spacerLen}" step="0.5" min="0"> 外径 <input type="number" id="fs-spacerOd" value="${S.spacerOd}" step="0.5" min="0"></div>
+  <h3>条件</h3>
+  <label>相手<select id="fs-mode"><option value="nut">ナットで締める</option><option value="tap">めねじ（タップ穴）にねじ込む</option></select></label>
+  <div id="fs-rowProt" class="fs-row">ナットから出す長さ <input type="number" id="fs-protP" value="${S.protP}" step="0.5" min="0"> 山（ピッチ×山数。一般に2〜3山以上が目安）</div>
+  <div id="fs-rowEng" class="fs-row" hidden>めねじへのかかり長さ <input type="number" id="fs-engage" value="${S.engage}" step="0.25" min="0"> ×d（目安：鋼 1d、アルミ 1.5〜2d、樹脂 2〜3d）</div>
+  <div class="fs-row">頭と壁のすき間（干渉チェック用） <input type="number" id="fs-gap" value="${S.gap}" step="0.1" min="0"> mm</div>
+ </section>
+ <section class="calc-card">
+  <h3>結果</h3><div id="fs-out"></div>
+  <h3>2D 断面図（縮尺はおおよそ）</h3><div id="fs-svg"></div>
+  <div class="fs-row"><button type="button" class="act" id="fs-btn-step">STEP を書き出す</button><button type="button" class="act fs-add" id="fs-btn-svg">2D 図（SVG）を保存</button></div>
+  <p class="fs-note">STEP は1ファイルで、ねじ・座金・ナットがそれぞれ独立したボディ（コンポーネント）になります。固定物はモデル化せず空白にしてあります。ねじは十字穴・六角穴・頭の丸み・首下の丸み・先端の面取りまで再現し、ねじ山は呼び径の円柱で簡略化しています。六角ナットと六角ボルトの頭の面取り、ばね座金の切れ目は省略しています。Fusion 360・Inventor で開けます。</p>
+  <h3>数値の根拠</h3>
+  <table class="fs-src"><tr><td>なべ・トラス・皿小ねじ</td><td>JIS B 1111:2017 附属書JA</td></tr><tr><td>六角穴付きボルト</td><td>JIS B 1176</td></tr><tr><td>六角ボルト</td><td>JIS B 1180（附属書JA＝旧JIS寸法、本体＝ISO寸法）</td></tr><tr><td>六角ナット</td><td>JIS B 1181（附属書JA＝1種・3種、本体＝スタイル1）</td></tr><tr><td>平座金</td><td>JIS B 1256:2008（小形・並形・大形）、1978年版（ISOみがき丸）</td></tr><tr><td>ばね座金</td><td>JIS B 1251 2号</td></tr><tr><td>通し穴・ざぐり</td><td>JIS B 1001</td></tr><tr><td>ピッチ・呼び長さ</td><td>JIS B 0205（並目）、JIS B 1021（呼び長さの系列。15 mm は市販品があるため追加）</td></tr></table>
+  <p class="fs-note">表の値は規格の基準寸法です。ナットからの出し量とめねじへのかかり長さは規格ではなく設計上の目安で、変更できます。</p>
+ </section></div>`;
+ $("#fs-type").value=S.type; $("#fs-size").value=S.size; $("#fs-mode").value=S.mode; $("#fs-rowProt").hidden=S.mode!=="nut"; $("#fs-rowEng").hidden=S.mode!=="tap";
+ const render=()=>{ fsRenderLists(); fsRenderResults(); };
+ $("#fs-type").onchange=e=>{S.type=e.target.value; render();}; $("#fs-size").onchange=e=>{S.size=e.target.value; render();};
+ $("#fs-mode").onchange=e=>{S.mode=e.target.value; $("#fs-rowProt").hidden=S.mode!=="nut"; $("#fs-rowEng").hidden=S.mode!=="tap"; render();};
+ $("#fs-protP").oninput=e=>{S.protP=+e.target.value||0; fsRenderResults();}; $("#fs-engage").oninput=e=>{S.engage=+e.target.value||0; fsRenderResults();}; $("#fs-gap").oninput=e=>{S.gap=+e.target.value||0; fsRenderResults();};
+ $("#fs-spacerLen").oninput=e=>S.spacerLen=+e.target.value||0; $("#fs-spacerOd").oninput=e=>S.spacerOd=+e.target.value||0;
+ $("#fs-btn-add-head").onclick=()=>{ S.head.push(fsMkPart($("#fs-add-head").value)); render(); };
+ $("#fs-btn-add-nut").onclick=()=>{ S.nutSide.push(fsMkPart($("#fs-add-nut").value)); render(); };
+ $("#fs-btn-add-plate").onclick=()=>{ S.plates.push(5); render(); };
+ const main=$("#main"); let drag=null;
+ main.addEventListener("click",e=>{ const b=e.target.closest("button[data-op]"); if(!b) return; const op=b.dataset.op;
+  if(op==="pdel"){ S.plates.splice(+b.dataset.i,1); render(); return; }
+  const row=b.closest(".fs-pt"); const list=row.dataset.list, i=+row.dataset.i, arr=S[list];
+  if(op==="del") arr.splice(i,1); else if(op==="up"&&i>0) [arr[i-1],arr[i]]=[arr[i],arr[i-1]]; else if(op==="down"&&i<arr.length-1) [arr[i+1],arr[i]]=[arr[i],arr[i+1]];
+  render(); });
+ main.addEventListener("input",e=>{ if(e.target.matches("#fs-plates input")){ S.plates[+e.target.dataset.i]=+e.target.value||0; fsRenderResults(); } });
+ main.addEventListener("dragstart",e=>{ const row=e.target.closest(".fs-pt[draggable]"); if(!row) return; drag={list:row.dataset.list,i:+row.dataset.i}; e.dataTransfer.effectAllowed="move"; row.classList.add("dragging"); });
+ main.addEventListener("dragover",e=>{ const row=e.target.closest(".fs-pt[draggable]"); if(row&&drag&&row.dataset.list===drag.list){ e.preventDefault(); row.classList.add("over"); } });
+ main.addEventListener("dragleave",e=>{ const row=e.target.closest(".fs-pt[draggable]"); if(row) row.classList.remove("over"); });
+ main.addEventListener("drop",e=>{ const row=e.target.closest(".fs-pt[draggable]"); if(!row||!drag||row.dataset.list!==drag.list) return; e.preventDefault(); const arr=S[drag.list]; const [m]=arr.splice(drag.i,1); arr.splice(+row.dataset.i,0,m); drag=null; render(); });
+ main.addEventListener("dragend",()=>{ main.querySelectorAll(".dragging,.over").forEach(x=>x.classList.remove("dragging","over")); drag=null; });
+ $("#fs-btn-step").onclick=()=>{ const s=fsBuildStep(); if(!s){ alert("計算できない状態です。警告を確認してください。"); return; } const blob=new Blob([s],{type:"application/step"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="fastener_"+S.size+".step"; a.click(); };
+ $("#fs-btn-svg").onclick=()=>{ const blob=new Blob([$("#fs-svg").innerHTML],{type:"image/svg+xml"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="fastener_"+S.size+".svg"; a.click(); };
+ render();
+};
+RENDER.hole=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">通し穴・ざぐり径（JIS B 1001）</h2>
+ <p class="page-sub">ねじを通すだけの穴（通し穴）の径。1級＝精密（位置精度が要るとき）、2級＝一般、3級＝粗（位置ずれを逃がしたいとき）、4級＝主に鋳抜き穴。ざぐり径 D′ は座面の黒皮を取るための径（深さは黒皮が取れる程度）。</p>
+ <div class="data-wrap"><table class="data"><thead><tr><th>呼び</th><th>1級</th><th>2級</th><th>3級</th><th>4級</th><th>面取り e</th><th>ざぐり径 D′</th><th>頭径の目安（キャップ／なべ）</th></tr></thead><tbody>
+ ${Object.keys(FS_HOLE).map(k=>{const h=FS_HOLE[k];const cap=FS_SCREWS.cap.d[k],pan=FS_SCREWS.pan.d[k];return `<tr><td>${k}</td><td>${h[0]}</td><td><b>${h[1]}</b></td><td>${h[2]}</td><td>${FS_HOLE4[k]||"—"}</td><td>${h[3]}</td><td>${h[4]}</td><td>${cap?cap[0]:"—"} ／ ${pan?pan[0]:"—"}</td></tr>`}).join("")}
+ </tbody></table></div>
+ <p class="note">単位 mm。JIS B 1001:1985 付表より。3Dプリント部品に通し穴をあけるときは、穴が小さく出やすいので2級の値に＋0.2〜0.3 mm を見込むと通りやすくなります（この補正は規格ではなく目安）。</p>`;
+};
+RENDER.insert=()=>{
+ $("#main").innerHTML=`<h2 class="page-title">インサートナット用の下穴（3Dプリント部品・参考値）</h2>
+ <p class="page-sub">熱で埋め込むタイプ（ヒートインサート）の目安です。JIS 規格はなく、メーカーごとに寸法が違うので、使う製品の資料を必ず確認してください。</p>
+ <div class="data-wrap"><table class="data"><thead><tr><th>呼び</th><th>下穴径</th><th>インサート外径</th><th>最小ボス外径</th><th>肉厚</th></tr></thead><tbody>
+ ${Object.keys(FS_INSERT).map(k=>{const r=FS_INSERT[k];return `<tr><td>${k}</td><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`}).join("")}
+ </tbody></table></div>
+ <p class="note">出典：Albany County Fasteners「Heat-Set Insert Specifications」（メートル規格のヒートインサート）。ruthex 製の場合は同社の下穴用ドリルセットが M2〜M6 で φ3.2〜8 mm の範囲です。</p>
+ <div class="calc-card"><h3>材料ごとの埋め込み温度の目安（同資料より）</h3>
+ <div class="data-wrap"><table class="data"><thead><tr><th>材料</th><th>こて先温度</th><th>押し込み時間</th><th>冷却</th></tr></thead><tbody>
+ <tr><td>PLA</td><td>175〜205 ℃</td><td>2〜3 秒</td><td>約30 秒</td></tr><tr><td>ABS</td><td>205〜230 ℃</td><td>2〜3 秒</td><td>約30 秒</td></tr><tr><td>PETG</td><td>220〜245 ℃</td><td>3〜4 秒</td><td>約45 秒</td></tr><tr><td>ナイロン</td><td>230〜260 ℃</td><td>3〜4 秒</td><td>約60 秒</td></tr>
+ </tbody></table></div>
+ <p class="note">華氏の値を摂氏に換算しています。穴は印刷時に小さく出やすいので、まず表の値で印刷して実測し、入らなければ 0.1〜0.2 mm ずつ広げるのが確実です。深さはインサート長さ＋1 mm 以上、壁の肉厚は表の値以上にします。</p></div>`;
+};
 
 buildNav();
 calcInit();
