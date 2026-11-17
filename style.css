@@ -245,7 +245,7 @@ header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid 
 .pagebanner::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,30,70,.45),rgba(10,30,70,.1) 60%,rgba(10,30,70,0))}
 .credit{position:absolute;right:10px;bottom:6px;font-size:.68rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6);z-index:2}
 .crumb{margin:18px 0 0;font-size:.8rem}
-.kv img{height:clamp(300px,38vw,560px);object-position:center 35%}
+.kv img{height:clamp(220px,24vw,340px);object-position:center 30%}
 .kv-text{padding-top:clamp(28px,4.2vw,64px)}
 .kv h1{border-left:6px solid var(--orange);padding-left:18px}
 .kv h1 span{margin-top:12px}
@@ -332,7 +332,7 @@ img[src$="visionstudio.jpg"]{object-position:85% 60%}
 @media(max-width:900px){.nophoto .it-main{grid-template-columns:1fr;gap:2px}.nophoto .it-sum{display:block}}
 .pgroup[data-group="robot"] .it-ph,.pgroup[data-group="unit"] .it-ph,.pgroup[data-group="robot"] .more-ph,.pgroup[data-group="unit"] .more-ph{background:#fff}
 .pgroup[data-group="robot"] .it-ph img,.pgroup[data-group="unit"] .it-ph img,.pgroup[data-group="robot"] .more-ph img,.pgroup[data-group="unit"] .more-ph img{object-fit:contain;padding:6px}
-@media(max-width:640px){.kv img{height:min(56vh,440px);object-position:center 28%}.kv-text{padding-top:28px}.kv h1{font-size:1.75rem}}
+@media(max-width:640px){.kv img{height:min(36vh,280px);object-position:center 22%}.kv-text{padding-top:28px}.kv h1{font-size:1.75rem}}
 .products-page .it-model,.products-page .it-name,.products-page .it-sub,.products-page .it-sum,.products-page .it-st{grid-area:auto}
 @media(max-width:900px){
   .mode-all .item{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start}
